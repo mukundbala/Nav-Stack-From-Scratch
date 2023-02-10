@@ -1,4 +1,5 @@
 # Robot-Control-Planning-Navigation
+[![ROS Build](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml)
 
 This repository contains from scratch implementation of planning and control techniques for differential drive robots (part 1) and quadrotors (part 2)
 
