@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Params -->
+    <rosparam file="$(find ee4308_turtle)/config/turtle.yaml" />
+    <param name="initial_x" value="$(env TURTLE_X)" type="double"/>
+    <param name="initial_y" value="$(env TURTLE_Y)" type="double"/>
+    <param name="goals" value="$(env TURTLE_GOALS)" type="string"/>
+    <param name="min_x" value="$(env TURTLE_MIN_X)" type="double"/>
+    <param name="min_y" value="$(env TURTLE_MIN_Y)" type="double"/>
+    <param name="max_x" value="$(env TURTLE_MAX_X)" type="double"/>
+    <param name="max_y" value="$(env TURTLE_MAX_Y)" type="double"/>
+    <param name="run" value="true" type="bool"/>
+
+    <!-- Nodes -->
+    <node pkg="ee4308_turtle" type="turtle_main" name="turtle_main" output="screen" />
+    <node pkg="ee4308_turtle" type="turtle_motion" name="turtle_motion" output="screen" />
+    <node pkg="ee4308_turtle" type="turtle_move" name="turtle_move" output="screen" />
+</launch>

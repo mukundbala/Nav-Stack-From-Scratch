@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="tf_prefix" default="turtle" />
+
+    <group ns="$(arg tf_prefix)">    
+        <!-- remote requires env TURTLEBOT3_MODEL to be set -->
+        <!-- setting include's arg, model, to burger does not work -->
+
+        <!-- just plug in whatever is inside the remote.launch -->    
+        <include file="$(find turtlebot3_bringup)/launch/includes/description.launch.xml">
+            <arg name="model" value="burger" />
+        </include>
+
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher">
+            <param name="publish_frequency" type="double" value="50.0" />
+            <param name="tf_prefix" value="$(arg tf_prefix)"/>
+        </node>
+
+        <!-- set parameters -->
+        <param name="tf_prefix" value="$(arg tf_prefix)" /> 
+        <param name="initial_x" value="$(env TURTLE_X)" type="double"/>
+        <param name="initial_y" value="$(env TURTLE_Y)" type="double"/>
+
+        <!-- ad-hoc broadcast world to turtle/base_link tf from motion filter -->
+        <node name="tf2_turtle" pkg="ee4308_bringup" type="tf2_turtle" />
+
+    </group>
+    
+
+    <!-- rviz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ee4308_bringup)/rviz/$(env EE4308_TASK).rviz"/>
+</launch>

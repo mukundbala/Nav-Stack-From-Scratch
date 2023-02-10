@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Gazebo -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="world_name" value="$(find ee4308_bringup)/worlds/$(env WORLD).world"/>
+        <arg name="paused" value="false"/>
+        <arg name="use_sim_time" value="true"/>
+        <arg name="gui" value="true"/>
+        <arg name="headless" value="false"/>
+        <arg name="debug" value="false"/>
+    </include>
+
+    <!-- spawn turtle -->
+    <group ns="turtle">
+        <!-- spawn the model-->
+        <param name = "robot_description" command="$(find xacro)/xacro $(find ee4308_bringup)/urdf/turtlebot3_burger.urdf.xacro tf_prefix:=turtle" /><!-- yk: added tf_prefix into urdf-->
+        <node pkg="gazebo_ros" type="spawn_model" name="spawn_turtle"  
+            args="-urdf -model turtlebot3_burger -x $(env TURTLE_X) -y $(env TURTLE_Y) -z 0.002 -param robot_description"
+            respawn="false" output="screen" /> 
+
+        <!-- publish the tf trees -->
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
+            <param name="publish_frequency" type="double" value="50.0" />
+            <param name="tf_prefix" value="turtle" />
+        </node>
+    </group>
+    
+    <!-- merge tf trees -->
+    <node pkg="tf" type="static_transform_publisher" name="world_to_turtle_tf_broadcaster"  args="0 0 0 0 0 0 /world /turtle/odom 100"/>
+
+    <!-- rviz -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find ee4308_bringup)/rviz/$(env EE4308_TASK).rviz"/>
+    
+    
+    <!-- test -->
+</launch>

@@ -1,0 +1,7 @@
+*.sh
+/build
+/devel
+/.catkin_tools
+/logs
+hector/
+*vscode
