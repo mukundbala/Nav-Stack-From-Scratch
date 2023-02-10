@@ -2,7 +2,8 @@
 [![ROS Build](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml)
 
 This repository contains from scratch implementation of planning and control techniques for differential drive robots (part 1) and quadrotors (part 2)
-
+Tested on Ubuntu 20.04 for ROS Noetic.
+(Note for teammates: Please copy hector into your source directory. When you push, hector will not be pushed to git)
 ## How to build
 
 ```bash
