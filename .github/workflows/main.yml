@@ -1,0 +1,49 @@
+name: ROS Build
+
+on:
+  push:
+    branches: main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: 
+      image: ros:noetic
+
+    steps:
+    # performance improvements, see https://abbbi.github.io/actions/
+    - name: Disable man-db update
+      run: sudo rm -f /var/lib/man-db/auto-update
+    # end of performance improvements
+    
+    - name: Environment Info
+      run: |
+        pwd
+        uname -r
+        lsb_release -a
+    - name: Install Catkin
+      run: |
+        apt-get update
+        apt-get install -y python3-catkin-tools python3-osrf-pycommon tree
+    - uses: actions/checkout@v2
+      with: 
+        path: src/Robot-Control-Planning-Navigation
+
+    - name: Rosdep
+      run: |
+        rosdep update
+        rosdep install --from-paths src --ignore-src -r -y
+    - name: Build (Release)
+      shell: bash
+      run: |
+        source /opt/ros/noetic/setup.bash
+        tree 
+        catkin init
+        catkin build --cmake-args -DCMAKE_BUILD_TYPE=Release
+        
+    - name: Test
+      shell: bash
+      run: |
+        source devel/setup.bash
+        catkin run_tests
