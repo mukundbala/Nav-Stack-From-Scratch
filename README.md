@@ -43,7 +43,7 @@ roscd ##this will bring you to the devel folder in your workspace
 - [ ] Commander: PID Controller with Bidirectional Motion
 - [ ] Full code refactor
 - [ ] Improve param loading sequence using expeditious use of launch files
-
+- [ ] Do away with all .sh files and use launch files instead
 ## Part 2: Quadrotor
 
 
