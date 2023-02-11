@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   nav_msgs
   message_generation
+  bot_utils
 )
 
 catkin_package(
@@ -23,7 +24,8 @@ CATKIN_DEPENDS
   roscpp 
   rospy
   message_generation 
-  message_runtime 
+  message_runtime
+  bot_utils
 )
 
 include_directories(
@@ -32,21 +34,21 @@ include_directories(
 )
 
 
-add_executable(${PROJECT_NAME}_motion_filter_node
+add_executable(motion_filter_node
   src/motion_filter.cpp 
   src/motion_filter_node.cpp)
 
-add_executable(${PROJECT_NAME}_occupancy_grid_node 
+add_executable(occupancy_grid_node 
   src/occupancy_grid.cpp 
   src/occupancy_grid_node.cpp)
 
 target_link_libraries(
-  ${PROJECT_NAME}_motion_filter_node
+  motion_filter_node
   ${catkin_LIBRARIES}
 )
 
 target_link_libraries(
-  ${PROJECT_NAME}_occupancy_grid_node 
+  occupancy_grid_node 
   ${catkin_LIBRARIES}
 )
 
