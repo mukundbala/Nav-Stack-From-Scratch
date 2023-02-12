@@ -68,7 +68,7 @@ void MotionFilter::run()
     double linear_vel = 0;
     //store for angular velocity @ step t-1
     double angular_vel = 0;
-
+    
     while(ros::ok()) //ros::ok() && nh.param("run", true)
     {
         ros::spinOnce();
@@ -142,68 +142,69 @@ void MotionFilter::run()
             ROS_INFO_STREAM("Robot Position: " << robot_position_.x << "," << robot_position_.y<<")");
             ROS_INFO_STREAM("Robot Heading: " << robot_heading_);
         }
+        spinrate.sleep();
     }
 
 }
 
 void MotionFilter::loadParams()
 {
-    if (!nh_.param("use_internal_odom", use_internal_odom_, true))
+    if (!nh_.param("use_internal_odom", this->use_internal_odom_, true))
     {
         ROS_WARN(" [Motion Filter] : Param use_internal_odom not found, set to true");
     }
         
-    if (!nh_.param("verbose_mf", verbose_, false))
+    if (!nh_.param("verbose_mf", this->verbose_, false))
     {
         ROS_WARN(" [Motion Filter] : Param verbose_motion not found, set to false");
     }
         
-    if (!nh_.param("initial_x", initial_x_, 0.0))
+    if (!nh_.param("initial_x", this->initial_x_, 0.0))
     {
         ROS_WARN(" [Motion Filter] : Param initial_x not found, set to 0.0");
     }
 
-    if (!nh_.param("initial_y", initial_y_, 0.0))
+    if (!nh_.param("initial_y", this->initial_y_, 0.0))
     {
         ROS_WARN(" [Motion Filter] : Param initial_y not found, set to 0.0");
     }
 
-    if (!nh_.param("initial_x", robot_position_.x, 0.0))
+    if (!nh_.param("initial_x", this->robot_position_.x, 0.0))
     {
         ROS_WARN(" [Motion Filter] : Param initial_x not found, set to 0.0");
     }
         
-    if (!nh_.param("initial_y", robot_position_.y, 0.0))
+    if (!nh_.param("initial_y", this->robot_position_.y, 0.0))
     {
         ROS_WARN(" [Motion Filter] : Param initial_y not found, set to 0.0");
     }
 
-    if (!nh_.param("wheel_radius", wheel_radius_, 0.033))
+    if (!nh_.param("wheel_radius", this->wheel_radius_, 0.033))
     {
         ROS_WARN(" [Motion Filter] : Param wheel_radius not found, set to 0.033");
     }
 
-    if (!nh_.param("axle_track", axle_track_, 0.16))
+    if (!nh_.param("axle_track", this->axle_track_, 0.16))
     {
         ROS_WARN(" [Motion Filter] : Param axle_track not found, set to 0.16");
     }
         
-    if (!nh_.param("weight_odom_v", weight_odom_v_, 0.5))
+    if (!nh_.param("weight_odom_v", this->weight_odom_v_, 0.5))
     {
         ROS_WARN(" [Motion Filter] : Param weight_odom_v not found, set to 0.5");
     }
         
-    if (!nh_.param("weight_odom_w", weight_odom_w_, 0.5))
+    if (!nh_.param("weight_odom_w", this->weight_odom_w_, 0.5))
     {
         ROS_WARN(" [Motion Filter] : Param weight_odom_w not found, set to 0.5");
     }
         
-    if (!nh_.param("straight_thresh", straight_thresh_, 0.05))
+    if (!nh_.param("straight_thresh", this->straight_thresh_, 0.05))
     {
         ROS_WARN(" [Motion Filter] : Param straight_thresh not found, set to 0.05");
     }
         
-    if (!nh_.param("motion_iter_rate", rate_, 50.0))
+    if (!nh_.param("motion_iter_rate", this->rate_, 50.0))
     {
         ROS_WARN(" [Motion Filter] : Param motion_iter_rate not found, set to 50");
     }
