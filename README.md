@@ -33,9 +33,10 @@ roscd ##this will bring you to the devel folder in your workspace
 
 ## Part 1: Differential Drive Robot
 
-- [ ] Motion Filter using odometry and joint states
+- [X] Motion Filter using odometry and joint states
 - [ ] Logs Odd Bayes Filter for Occupancy Grids
 - [ ] Mission Planner
+- [ ] Global Planner base class
 - [ ] Global Planner: Theta*
 - [ ] Global Planner: Djikstra
 - [ ] Global Planner: BFS
@@ -44,6 +45,7 @@ roscd ##this will bring you to the devel folder in your workspace
 - [ ] Full code refactor
 - [ ] Improve param loading sequence using expeditious use of launch files
 - [ ] Do away with all .sh files and use launch files instead
+- [X] Time profiler for measuring loop execution speed. Used to optimize ros rates 
 ## Part 2: Quadrotor
 
 
