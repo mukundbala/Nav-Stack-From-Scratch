@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 #include <cmath>
 #include <deque>
-
+#include <chrono>
 namespace bot_utils
 {//bot_utils namespace
 
@@ -62,5 +62,21 @@ double dampingPieceWise(double error_value , double kill_limit);
 //Line of sight algorithm
 std::deque<Index> bresenham_los(Index &src, Index &tgt);
 
+//testing stuff
+class timeLogger
+{
+private:
+    std::chrono::high_resolution_clock clock_;
+    std::chrono::high_resolution_clock::time_point start_;
+    std::chrono::high_resolution_clock::time_point end_;
+    std::chrono::duration<double,std::milli> elapsed_time_;
+    std::chrono::duration<double,std::milli> total_duration_;
+    double count_;
+
+public:
+    timeLogger();
+    void start();
+    void stop();
+};
 }//bot_utils namespace
 #endif //TBOT__BOT_UTILS_H

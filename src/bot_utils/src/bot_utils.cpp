@@ -267,4 +267,21 @@ std::deque<bot_utils::Index> bot_utils::bresenham_los(Index &src , Index& tgt)
 }
 
 
- 
+bot_utils::timeLogger::timeLogger()
+{
+    count_ = 0;
+}
+
+void bot_utils::timeLogger::start()
+{
+    start_ = clock_.now();
+    count_++;
+}
+void bot_utils::timeLogger::stop()
+{
+    end_ = clock_.now();
+    elapsed_time_ = end_ - start_;
+    total_duration_ += elapsed_time_;
+    ROS_INFO_STREAM("Time taken this loop: " << elapsed_time_.count()<<"ms");
+    ROS_INFO_STREAM("Average loop time: " << total_duration_.count() / count_<<"ms");
+}
