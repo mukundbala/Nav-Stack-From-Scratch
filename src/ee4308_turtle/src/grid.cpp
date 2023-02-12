@@ -133,7 +133,24 @@ void Grid::update(Position pos_rbt, double ang_rbt, const std::vector<float> &ra
 
         // iterate over the ray using the line algorithms (los)
         std::vector<Index> ray = los.get(idx_rbt, idx_edge);
-
+        // bot_utils::Index idx_robot(idx_rbt.i , idx_rbt.j);
+        // bot_utils::Index idx_end(idx_edge.i , idx_edge.j);
+        // std::deque<bot_utils::Index> my_ray = bot_utils::bresenham_los(idx_robot,idx_end);
+        // ROS_INFO("#######################STARTCHECK###############################################");
+        // ROS_INFO_STREAM("Start Ray: " << idx_robot.i << "," << idx_robot.j);
+        // ROS_INFO_STREAM("End Ray: " << idx_end.i << "," << idx_end.j);
+        // ROS_WARN_STREAM_COND(idx_robot.i != idx_rbt.i || idx_end.j != idx_edge.j , "What the fk something is wrong!");
+        // ROS_INFO_STREAM("YK RAY: " << "Size: " << ray.size());
+        // for (auto pt: ray)
+        // {
+        //     ROS_INFO_STREAM("PT: (" << pt.i << ","<<pt.j<<")");
+        // }
+        // ROS_INFO_STREAM("MY RAY:" << "Size: " << ray.size());
+        // for (auto pt2: my_ray)
+        // {
+        //     ROS_INFO_STREAM("PT: (" << pt2.i << ","<<pt2.j<<")");
+        // }
+        // ROS_INFO("###########################ENDCHECK###############################################");
         if (no_obstacles_visible)
         { // all cells to edge are observed to be free
             for (Index &idx : ray)
