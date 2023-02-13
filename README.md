@@ -34,7 +34,7 @@ roscd ##this will bring you to the devel folder in your workspace
 ## Part 1: Differential Drive Robot
 
 - [X] Motion Filter using odometry and joint states
-- [ ] Logs Odd Bayes Filter for Occupancy Grids
+- [X] Logs Odd Bayes Filter for Occupancy Grids
 - [ ] Mission Planner
 - [ ] Global Planner base class
 - [ ] Global Planner: Theta*
