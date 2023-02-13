@@ -5,6 +5,8 @@
 #include <cmath>
 #include <deque>
 #include <chrono>
+#include <functional>
+#include <utility>
 namespace bot_utils
 {//bot_utils namespace
 
@@ -60,7 +62,7 @@ double dampingQuadratic(double error_value);
 double dampingPieceWise(double error_value , double kill_limit); 
 
 //Line of sight algorithm
-std::deque<Index> bresenham_los(Index &src, Index &tgt);
+std::vector<Index> bresenham_los(Index &src, Index &tgt);
 
 //testing stuff
 class timeLogger

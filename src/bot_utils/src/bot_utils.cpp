@@ -134,136 +134,61 @@ double bot_utils::dampingPieceWise(double error_value , double kill_limit)
     }
 }
 
-std::deque<bot_utils::Index> bot_utils::bresenham_los(Index &src , Index& tgt)
+std::vector<bot_utils::Index> bot_utils::bresenham_los(Index &src , Index& tgt)
 {
-    int x0 = src.i; //source coordinates
-    int y0 = src.j;
+    int Di = tgt.i - src.i;
+    int Dj = tgt.j - src.j;
+    int Dl;
+    int Ds;
+    int l;
+    int s;
+    int lf;
+    int sf;
+    std::function<std::pair<int,int>(int l , int s)> func;
+    std::vector<bot_utils::Index> ray;
+    ray.emplace_back(src);
 
-    int x1 = tgt.i; //target coordinates
-    int y1 = tgt.j;
-
-    int dx = x1 - x0; //how much x changes over the line from source to target. This can be negative
-    int dy = y1 - y0; //how much y changes over the line from souurce to target. This can be negative
-    int dx_abs = abs(dx); //the absolute value of dx
-    int dy_abs = abs(dy); //the absolute value of dy
-    
-    std::deque<bot_utils::Index> points;
-    bool pf = false; //flag to push front;
-    if (dx_abs > dy_abs)
+    if (abs(Di) > abs(Dj))
     {
-        if (x0 > x1)
-        {
-            dx = x0 - x1;
-            dy = y0 - y1;
-            int yi = 1;
-            if (dy < 0)
-            {
-                yi = -1;
-                dy = -dy;
-            }
-            int D = (2 * dy) - dx;
-            int y = y1;
-            for (int i = x1 ; i <= x0 ; ++i)
-            {
-                Index pt(i , y);
-                if (D > 0)
-                {
-                    y += yi;
-                    D += (2 * (dy - dx));
-                }
-                else
-                {
-                    D += 2 * dy;
-                }
-                points.push_front(pt);
-            }
-        }
-        else
-        {
-            dx = x1 - x0;
-            dy = y1 - y0;
-            int yi = 1;
-            if (dy < 0)
-            {
-                yi = -1;
-                dy = -dy;
-            }
-            int D = (2 * dy) - dx;
-            int y = y0;
-            for (int i = x0 ; i <= x1 ; ++i)
-            {
-                Index pt(i , y);
-                if (D > 0)
-                {
-                    y += yi;
-                    D += (2 * (dy - dx));
-                }
-                else
-                {
-                    D += 2 * dy;
-                }
-                points.push_back(pt);
-            }
-        }
+        Dl = Di;
+        Ds = Dj;
+        l = src.i;
+        s = src.j;
+        lf = tgt.i;
+        sf = tgt.j;
+        func = [=](int l , int s){return std::pair<int,int>(l,s);};
     }
     else
     {
-        if (y0 > y1)
-        {
-            dx = x0 - x1;
-            dy = y0 - y1 ;
-            double xi = 1;
-            if (dx < 0)
-            {
-                xi = -1;
-                dx = -dx;
-            }
-            int D = (2 * dx) - dy;
-            int x = x1;
-            for (int i = y1 ; i <= y0 ; ++i)
-            {
-                Index pt(x , i);
-                if (D > 0)
-                {
-                    x += xi;
-                    D += 2 * (dx - dy);
-                }
-                else
-                {
-                    D += 2 * dx;
-                }
-                points.push_front(pt);
-            }
-        }
-        else
-        {
-            dx = x0 - x1;
-            dy = y0 - y1;
-            double xi = 1;
-            if (dx < 0)
-            {
-                xi = -1;
-                dx = -dx;
-            }
-            int D = (2 * dx) - dy;
-            int x = x0;
-            for (int i = y0 ; i <= y1 ; ++i)
-            {
-                Index pt(x , i);
-                if (D > 0)
-                {
-                    x += xi;
-                    D += 2 * (dx - dy);
-                }
-                else
-                {
-                    D += 2 * dx;
-                }
-                points.push_back(pt);
-            }
-        }
+        Dl = Dj;
+        Ds = Di;
+        l = src.j;
+        s = src.i;
+        lf = tgt.j;
+        sf = tgt.i;
+        func = [=](int l , int s){return std::pair<int,int>(s,l);};
     }
-    return points;
+
+    int ds = sign(Ds);
+    int dl = sign(Dl);
+    int abs_Dl = std::abs(Dl);
+    int d_esl = std::abs(Dl) * ds;
+    int esl = 0;
+
+    while(l != lf || s != sf)
+    {
+        l += dl;
+        esl += Ds;
+        if (2 * std::abs(esl) >= abs_Dl)
+        {
+            esl -= d_esl;
+            s += ds;
+        }
+        auto [i,j] = func(l,s);
+        bot_utils::Index pt(i,j);
+        ray.emplace_back(pt);
+    }
+    return ray;
 }
 
 
