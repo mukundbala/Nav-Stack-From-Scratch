@@ -1,0 +1,7 @@
+cell_size: 0.05
+inflation_radius: 0.22
+max_scan_range: 3.49999
+log_odds_thresh: 10 # this should be smaller than log_odds_cap
+log_odds_cap: 20
+occ_rate: 25
+occ_verbose: false
