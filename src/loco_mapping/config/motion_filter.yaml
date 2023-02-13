@@ -4,6 +4,6 @@ wheel_radius: 0.033
 weight_odom_v: 0.95
 weight_odom_w: 0.05
 straight_thresh: 0.05
-motion_iter_rate: 50
+mf_rate: 50
 use_internal_odom: false
-verbose_mf: true
+verbose_mf: false

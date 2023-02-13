@@ -24,6 +24,7 @@ wheel_r_(10)
     robot_heading_ = 0;
     robot_pose_mf_.header.frame_id = "world";
     robot_pose_odom_.header.frame_id = "world";
+
     ROS_INFO("[Motion Filter]: Motion Filter Prepared!");
 }
 
@@ -49,7 +50,7 @@ void MotionFilter::run()
     ros::Rate spinrate(rate_);
     ROS_INFO("[Motion Filter]: Waiting for topics");
 
-    while (ros::ok() && odom_msg_.header.seq == 0) // ros::ok() && nh_.param("run", true) && msg_odom.header.seq == 0
+    while (ros::ok() && odom_msg_.header.seq == 0 && nh_.param("trigger_nodes", true)) // ros::ok() && nh_.param("run", true) && msg_odom.header.seq == 0
     {
         spinrate.sleep();
         ros::spinOnce(); //update the topics
@@ -68,8 +69,8 @@ void MotionFilter::run()
     double linear_vel = 0;
     //store for angular velocity @ step t-1
     double angular_vel = 0;
-    
-    while(ros::ok()) //ros::ok() && nh.param("run", true)
+
+    while(ros::ok() && nh_.param("trigger_nodes", true)) //ros::ok() && nh.param("run", true)
     {
         ros::spinOnce();
         dt = ros::Time::now().toSec() - prev_time;
@@ -204,8 +205,8 @@ void MotionFilter::loadParams()
         ROS_WARN(" [Motion Filter] : Param straight_thresh not found, set to 0.05");
     }
         
-    if (!nh_.param("motion_iter_rate", this->rate_, 50.0))
+    if (!nh_.param("mf_rate", this->rate_, 50.0))
     {
-        ROS_WARN(" [Motion Filter] : Param motion_iter_rate not found, set to 50");
+        ROS_WARN(" [Motion Filter] : Param mf_rate not found, set to 50");
     }
 }
