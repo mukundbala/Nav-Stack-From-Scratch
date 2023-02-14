@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   nav_msgs
   message_generation
   bot_utils
+  tmsgs
 )
 
 catkin_package(
@@ -27,6 +28,7 @@ CATKIN_DEPENDS
   message_generation 
   message_runtime
   bot_utils
+  tmsgs
 )
 
 include_directories(

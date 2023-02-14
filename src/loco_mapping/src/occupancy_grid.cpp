@@ -20,17 +20,20 @@ OccupancyGrid::OccupancyGrid(ros::NodeHandle& nh)
     }
 
     //prepare maps
-    map_logsodd_.data.resize(total_cells_);
-    map_logsodd_.header.frame_id = "world";
-    map_logsodd_.info.resolution = cell_size_;
-    map_logsodd_.info.width = map_size_.j;
-    map_logsodd_.info.height = map_size_.i;
-    map_logsodd_.info.origin.position.x = -cell_size_ * 0.5 + pos_min_.x; //we centre our map
-    map_logsodd_.info.origin.position.y = -cell_size_ * 0.5 + pos_min_.y; //we centre our map
-    map_logsodd_.info.origin.orientation.x = 1 / M_SQRT2;
-    map_logsodd_.info.origin.orientation.y = 1 / M_SQRT2;
-    map_inflation_ = map_logsodd_;
+    map_logodds_.data.resize(total_cells_);
+    map_logodds_.header.frame_id = "world";
+    map_logodds_.info.resolution = cell_size_;
+    map_logodds_.info.width = map_size_.j;
+    map_logodds_.info.height = map_size_.i;
+    map_logodds_.info.origin.position.x = -cell_size_ * 0.5 + pos_min_.x; //we centre our map
+    map_logodds_.info.origin.position.y = -cell_size_ * 0.5 + pos_min_.y; //we centre our map
+    map_logodds_.info.origin.orientation.x = 1 / M_SQRT2;
+    map_logodds_.info.origin.orientation.y = 1 / M_SQRT2;
+    map_inflation_ = map_logodds_;
 
+    //prepare msg
+    mapinfo_inflation_.data.reserve(total_cells_);
+    mapinfo_logodds_.data.reserve(total_cells_);
     //setup space for ranges
     ranges.reserve(360);
 
@@ -46,6 +49,8 @@ OccupancyGrid::OccupancyGrid(ros::NodeHandle& nh)
     logsodd_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>("grid/log_odds" , 1 , true);
     inflation_pub_ = nh_.advertise<nav_msgs::OccupancyGrid>("grid/inflation" , 1 , true);
 
+    mapinfo_inflation_pub_ = nh_.advertise<std_msgs::Int32MultiArray>("grid/mapinfo/inflation" , 1 , true);
+    mapinfo_logodds_pub_ = nh_.advertise<std_msgs::Int32MultiArray>("grid/mapinfo/logodds" , 1 , true);
     generateMask();
 
     ROS_INFO("[OccupancyGrid]: Occupancy map prepared!");
@@ -136,6 +141,10 @@ void OccupancyGrid::run()
             }
 
         }
+        
+        mapinfo_logodds_.data.clear();
+        mapinfo_inflation_.data.clear();
+
         for (int k = 0 ; k<grid_log_odds_.size() ; ++k)
         {
             if (grid_inflation_.at(k) > 0)
@@ -146,12 +155,14 @@ void OccupancyGrid::run()
             {
                  map_inflation_.data.at(k) = -1;
             }
-            map_logsodd_.data.at(k) = (((double) grid_log_odds_.at(k)) / log_odds_cap_ + 1) * 50;
+            map_logodds_.data.at(k) = (((double) grid_log_odds_.at(k)) / log_odds_cap_ + 1) * 50;
+            mapinfo_logodds_.data.push_back(grid_log_odds_.at(k));
+            mapinfo_inflation_.data.push_back(grid_inflation_.at(k));
         }
-        logsodd_pub_.publish(map_logsodd_);
+        logsodd_pub_.publish(map_logodds_);
         inflation_pub_.publish(map_inflation_);
-
-        spinrate.sleep();
+        mapinfo_inflation_pub_.publish(mapinfo_inflation_);
+        mapinfo_logodds_pub_.publish(mapinfo_logodds_);
     }
 }
 

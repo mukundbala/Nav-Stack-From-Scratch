@@ -19,6 +19,7 @@
   <build_depend>std_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>bot_utils</build_depend>
+  <build_depend>tmsgs</build_depend>
 
   <build_export_depend>roscpp</build_export_depend>
   <build_export_depend>rospy</build_export_depend>
@@ -29,6 +30,7 @@
   <build_export_depend>message_runtime</build_export_depend>
   <build_export_depend>message_generation</build_export_depend>
   <build_export_depend>bot_utils</build_export_depend>
+  <build_export_depend>tmsgs</build_export_depend>
 
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
@@ -39,6 +41,7 @@
   <exec_depend>message_runtime</exec_depend>
   <exec_depend>message_generation</exec_depend>
   <exec_depend>bot_utils</exec_depend>
+  <exec_depend>tmsgs</exec_depend>
   
   <export>
 

@@ -4,6 +4,7 @@
 #include "ros/ros.h"
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/LaserScan.h>
+#include <std_msgs/Int32MultiArray.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <array>
 #include <vector>
@@ -41,9 +42,11 @@ private:
     double robot_heading_; //the heading of the robot limited to [pi,pi)
 
     //map details to publish
-    nav_msgs::OccupancyGrid map_logsodd_;
+    nav_msgs::OccupancyGrid map_logodds_;
     nav_msgs::OccupancyGrid map_inflation_;
-
+    std_msgs::Int32MultiArray mapinfo_logodds_;
+    std_msgs::Int32MultiArray mapinfo_inflation_;
+    
     //subscribers
     ros::Subscriber pose_sub_;
     ros::Subscriber scan_sub_;
@@ -51,6 +54,8 @@ private:
     //publishers
     ros::Publisher logsodd_pub_;
     ros::Publisher inflation_pub_;
+    ros::Publisher mapinfo_logodds_pub_;
+    ros::Publisher mapinfo_inflation_pub_;
 
     //ros rate
     double rate_;
@@ -157,8 +162,5 @@ public:
     */
     bot_utils::Pos2D idx2pos(bot_utils::Index &idx);
 };
-
-
-
 
 #endif //TBOT__OCCUPANCY_GRID_H
