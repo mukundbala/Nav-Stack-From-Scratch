@@ -6,7 +6,6 @@
     <rosparam file="$(find loco_mapping)/config/occupancy_grid.yaml"/>
     <param name="initial_x" value="$(env TURTLE_X)" type="double"/>
     <param name="initial_y" value="$(env TURTLE_Y)" type="double"/>
-    <param name="goals" value="$(env TURTLE_GOALS)" type="string"/>
     <param name="min_x" value="$(env TURTLE_MIN_X)" type="double"/>
     <param name="min_y" value="$(env TURTLE_MIN_Y)" type="double"/>
     <param name="max_x" value="$(env TURTLE_MAX_X)" type="double"/>
