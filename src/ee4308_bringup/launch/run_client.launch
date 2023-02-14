@@ -7,6 +7,7 @@
         <!-- <rosparam command="load" file="$(find ee4308_turtle)/config/turtle.yaml"/> -->
         <rosparam command="load" file="$(find loco_mapping)/config/motion_filter.yaml"/>
         <rosparam command="load" file="$(find loco_mapping)/config/occupancy_grid.yaml"/>
+        <rosparam command="load" file="$(find mission_planner)/config/mission_planner.yaml"/>
         <param name="initial_x" value="$(env TURTLE_X)" type="double"/>
         <param name="initial_y" value="$(env TURTLE_Y)" type="double"/>
         <param name="min_x" value="$(env TURTLE_MIN_X)" type="double"/>
@@ -20,6 +21,7 @@
         <!-- <node pkg="ee4308_turtle" type="turtle_motion" name="turtle_motion" output="screen" /> -->
         <node pkg="loco_mapping" type="motion_filter_node" name="motion_filter" output="screen"/>
         <node pkg="loco_mapping" type="occupancy_grid_node" name="occupancy_grid" output="screen"/>
+        <node pkg="mission_planner" type="mission_planner_node" name="mission_planner" output="screen"/>
         <!-- <node pkg="ee4308_turtle" type="turtle_move" name="turtle_move" output="screen" /> -->
     </group>
 </launch>
