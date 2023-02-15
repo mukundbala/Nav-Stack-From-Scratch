@@ -7,5 +7,6 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
     MissionPlanner mp(nh);
     mp.run();
+    ROS_INFO("[MissionPlanner]: Halting Mission Planner Node!");
     return 0;
 }

@@ -5,7 +5,7 @@
 #include "bot_utils/bot_utils.h"
 #include "tmsgs/Goal.h"
 #include "geometry_msgs/PoseStamped.h"
-#include "XmlRpc.h"
+#include "xmlrpcpp/XmlRpc.h"
 #include <vector>
 class MissionPlanner
 {
