@@ -6,5 +6,6 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
     OccupancyGrid og(nh);
     og.run();
+    ROS_INFO("[OccupancyGrid]: Halting Occupancy Grid Node!");
     return 0;
 }

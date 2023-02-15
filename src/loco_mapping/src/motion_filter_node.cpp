@@ -6,5 +6,6 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
     MotionFilter mf(nh);
     mf.run();
+    ROS_INFO("[MotionFilter]: Halting Motion Filter Node!");
     return 0;
 }

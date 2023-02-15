@@ -222,7 +222,7 @@ int OccupancyGrid::flatten(bot_utils::Index &idx)
 
 bool OccupancyGrid::oob(bot_utils::Index &idx)
 {
-    return (idx.i <=0 || idx.i >=map_size_.i || idx.j < 0 || idx.j >= map_size_.j);
+    return (idx.i <=0 || idx.i >=map_size_.i || idx.j < 0 && idx.j >= map_size_.j);
 }
 
 
