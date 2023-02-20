@@ -1,6 +1,6 @@
 #ifndef TBOT__ASTAR_H
 #define TBOT__ASTAR_H
-#include "map_data.h"
+#include "bot_utils/map_data.h"
 #include <deque>
 
 class Astar
@@ -23,17 +23,17 @@ public:
         FOpen(double f, bot_utils::Index idx);
     };
 
-    Astar(MapData &map);
+    Astar(bot_utils::MapData &map);
 
     bot_utils::Index start;
 
     bot_utils::Index goal;
 
-    MapData &map_;
+    bot_utils::MapData &map_;
 
-    std::vector<bot_utils::Index> plan(bot_utils::Index idx_start, bot_utils::Index idx_goal , MapData& map_);
+    std::vector<bot_utils::Index> plan(bot_utils::Index idx_start, bot_utils::Index idx_goal , bot_utils::MapData& map_);
 
-    std::vector<bot_utils::Pos2D> plan(bot_utils::Pos2D pos_start, bot_utils::Pos2D pos_goal , MapData& map_);
+    std::vector<bot_utils::Pos2D> plan(bot_utils::Pos2D pos_start, bot_utils::Pos2D pos_goal , bot_utils::MapData& map_);
     
     std::vector<bot_utils::Pos2D> path_smoothing(std::vector<bot_utils::Pos2D>& path);
     

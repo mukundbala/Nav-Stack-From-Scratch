@@ -1,6 +1,6 @@
 #ifndef TBOT__DJIKSTRA_H
 #define TBOT__DJIKSTRA_H
-#include "map_data.h"
+#include "bot_utils/map_data.h"
 
 class Djikstra
 {

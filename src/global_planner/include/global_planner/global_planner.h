@@ -6,14 +6,16 @@
 #include "thetastar.h"
 #include "djikstra.h"
 #include "bot_utils/bot_utils.h"
+#include "bot_utils/map_data.h"
+#include "tmsgs/Goal.h"
 
 #include <geometry_msgs/PoseStamped.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <std_msgs/Bool.h>
 #include <nav_msgs/Path.h>
 #include <vector>
-#include "tmsgs/Goal.h"
-#include "map_data.h"
+
+
 
 /*
 GlobalPlanner class has the following roles:
@@ -38,7 +40,7 @@ private:
     bot_utils::Index robot_index_; //ok
 
     //All the map data and meta data. This to to make it easy to share with planner without copying so much stuff
-    MapData mapdata;
+    bot_utils::MapData mapdata;
     
     //goals
     bot_utils::Pos2D current_goal_; //ok

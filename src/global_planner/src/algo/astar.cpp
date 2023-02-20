@@ -9,7 +9,7 @@ Astar::FOpen::FOpen()
 Astar::FOpen::FOpen(double f, bot_utils::Index idx) 
     : f(f), idx(idx) {}
 
-Astar::Astar(MapData & map): start(-1,-1) , goal(-1,-1), map_(map) , nodes(map.map_size_.i * map.map_size_.j), open_list()
+Astar::Astar(bot_utils::MapData & map): start(-1,-1) , goal(-1,-1), map_(map) , nodes(map.map_size_.i * map.map_size_.j), open_list()
 {
     // write the nodes' indices
     int k = 0;
@@ -57,7 +57,7 @@ Astar::Node * Astar::poll_from_open()
     return node;
 }
 
-std::vector<bot_utils::Index> Astar::plan(bot_utils::Index idx_start, bot_utils::Index idx_goal ,MapData& map_)
+std::vector<bot_utils::Index> Astar::plan(bot_utils::Index idx_start, bot_utils::Index idx_goal ,bot_utils::MapData& map_)
 {
     std::vector<bot_utils::Index> path_idx; // clear previous path
 
@@ -159,7 +159,7 @@ std::vector<bot_utils::Index> Astar::plan(bot_utils::Index idx_start, bot_utils:
     return path_idx; // is empty if open list is empty
 }
 
-std::vector<bot_utils::Pos2D> Astar::plan(bot_utils::Pos2D pos_start, bot_utils::Pos2D pos_goal,MapData& map_)
+std::vector<bot_utils::Pos2D> Astar::plan(bot_utils::Pos2D pos_start, bot_utils::Pos2D pos_goal, bot_utils::MapData& map_)
 {
     std::vector<bot_utils::Index> path_idx = plan(pos2idx(pos_start), pos2idx(pos_goal),map_);
     std::vector<bot_utils::Pos2D> path;
