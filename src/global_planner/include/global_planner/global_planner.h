@@ -53,14 +53,12 @@ private:
     nav_msgs::Path path_msg_;
     std::vector<bot_utils::Pos2D> path_;
 
-    //map meta_data
-
     //subscribers
     ros::Subscriber pose_sub_;
     ros::Subscriber inflation_sub_;
     ros::Subscriber lo_sub_;
     ros::Subscriber goal_sub_;
-    ros::Subscriber replan_sub_;
+    // ros::Subscriber replan_sub_;
 
     //publishers
     ros::Publisher update_goal_pub_;
@@ -69,6 +67,7 @@ private:
     //nodehandle
     ros::NodeHandle nh_;
     double rate_;
+    const double EPS_ = 1e-6; //for float comparisons
 public:
     //Class constructor for global planner
     GlobalPlanner(ros::NodeHandle &nh);

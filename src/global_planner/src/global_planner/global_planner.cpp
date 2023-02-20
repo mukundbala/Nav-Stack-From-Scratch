@@ -66,21 +66,22 @@ void GlobalPlanner::logoddsCallback(const std_msgs::Int32MultiArrayConstPtr &lo)
 
 void GlobalPlanner::goalCallback(const tmsgs::GoalConstPtr &goal)
 {
-    if (goal->idx != current_goal_idx_)
+    //check if the arriving goal is the same as our current goal
+    if (fabs(goal->goal_position.x - current_goal_.x) > EPS_ && fabs(goal->goal_position.y - current_goal_.y) > EPS_)
     {
-        trigger_plan = true;
+        current_goal_.setCoords(goal->goal_position.x , goal->goal_position.y);
+        current_goal_idx_ = goal->idx;
+        trigger_plan = true; //we trigger planning here for this goal
     }
-    current_goal_idx_ = goal->idx;
-    current_goal_.x = goal->goal_position.x;
-    current_goal_.y = goal->goal_position.y;
 }
 
-void GlobalPlanner::replanCallback(const std_msgs::BoolConstPtr &replan)
-{
-    this->trigger_plan = replan->data;
-    this->path_.clear(); //clear the path
-    this->path_msg_.poses.clear();
-}
+// void GlobalPlanner::replanCallback(const std_msgs::BoolConstPtr &replan) //do this shit after commander is done
+// {
+//     this->trigger_plan = replan->data;
+//     this->path_.clear(); //clear the path
+//     this->path_msg_.poses.clear();
+// }
+
 void GlobalPlanner::run()
 {
     ros::Rate spinrate(rate_);
@@ -98,78 +99,51 @@ void GlobalPlanner::run()
     }
 
     Astar main_planner(mapdata);
+    // Djikstra emergency_planner(mapdata); //TODO @karthi
 
     while(ros::ok() && nh_.param("trigger_nodes" , true))
     {
         ros::spinOnce(); //process a round of callbacks
         bool goal_status = testGoal();
         current_goal_state_ = goal_status ? GoalState::GOOD : GoalState::BAD;
-        if (!trigger_plan)
+
+        if (current_goal_state_ == GoalState::GOOD)
         {
-            if (path_.size() != 0) //a path already exists and we can just publish that
+            if (!trigger_plan)
             {
-                path_pub_.publish(path_msg_);
-                continue;
+                if (!path_.empty())
+                {
+                    path_pub_.publish(path_msg_);
+                }
+                else
+                {
+                    trigger_plan = true;
+                }
             }
-            else
-            {
-                trigger_plan = true;
-                continue;
-            }
-        }
-        else if (trigger_plan)
-        {
-            if (current_goal_state_ == GoalState::GOOD)
+            else //trigger_plan is true
             {
                 ROS_INFO("[GlobalPlanner]: Generating a path!");
                 ROS_INFO_STREAM("[GlobalPlanner]: From (" << robot_position_.x << "," << robot_position_.y <<") to (" << current_goal_.x << "," << current_goal_.y << ")");
-                ROS_INFO("Using A*");
+                ROS_INFO("[GlobalPlanner]:Using A*");
 
-                path_ = main_planner.plan(robot_position_ , current_goal_,mapdata);
+                path_ = main_planner.plan(robot_position_ , current_goal_, mapdata);
+
                 ROS_INFO("PRINTING PATH");
                 for (auto &p : path_)
                 {
                     ROS_INFO_STREAM("(" << p.x << "," << p.y << ")");
                 }
                 ROS_INFO("PRINTING PATH DONE");
-                if (path_.size() == 0)
+
+                if (path_.size() == 0) //we shall handle the case of path_size == 1 downstream in the trajectory planner
                 {
                     //we might have moved into an obstacle area
                     current_goal_state_ = GoalState::BAD;
-                    ROS_INFO("BAd goal");
+                    ROS_INFO("[GlobalPlanner]: Bad goal");
                     continue;
-                }
-                path_msg_.poses.clear();
-                for (bot_utils::Pos2D &pos : path_)
-                {
-                    geometry_msgs::PoseStamped pse;
-                    pse.pose.position.x = pos.x;
-                    pse.pose.position.y = pos.y;
-                    path_msg_.poses.push_back(pse);
-                }
-                path_pub_.publish(path_msg_);
-                trigger_plan = false;
-            }
-
-            else if (current_goal_state_ == GoalState::BAD)
-            {
-                // path_ = emergency_planner.generatePath() //path from current robot position to the goal
-                if (path_.empty())
-                {
-                    current_goal_state_ == GoalState::BAD;
-                    ROS_INFO("[Global Planner]: Unable to find a path!");
                 }
                 else
                 {
-                    tmsgs::Goal new_goal;
-                    new_goal.goal_position.x = path_.back().x;
-                    new_goal.goal_position.y = path_.back().y;
-                    new_goal.idx = current_goal_idx_;
-                    update_goal_pub_.publish(new_goal);
-                    
-                    current_goal_ = path_.back();
-                    current_goal_state_ = GoalState::GOOD;
-
                     path_msg_.poses.clear();
                     for (bot_utils::Pos2D &pos : path_)
                     {
@@ -179,10 +153,20 @@ void GlobalPlanner::run()
                         path_msg_.poses.push_back(pse);
                     }
                     path_pub_.publish(path_msg_);
-                    trigger_plan = false;
+                    trigger_plan = false; //finished planning, set the trigger to false
                 }
             }
+        }
 
+        else if (current_goal_state_ == GoalState::BAD)
+        {
+            //TODO @Karthi
+            // trigger_plan = true;
+            // // geometry_msgs::Point new_goal = emergency_planner(current_goal_, robot_position_ , mapdata);
+            // tmsgs::Goal new_goal_msg;
+            // new_goal_msg.goal_position = new_goal;
+            // new_goal_msg.idx = current_goal_idx_;
+            // update_goal_pub_.publish(new_goal_msg);
         }
         spinrate.sleep();
     }
