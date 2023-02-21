@@ -7,6 +7,7 @@
 #include <sensor_msgs/Imu.h>
 #include <nav_msgs/Odometry.h>
 #include <std_msgs/Empty.h>
+#include <std_msgs/Float64.h>
 #include "common.hpp"
 
 double imu_ang_vel = -10; // unlikely to be spinning at -10 at the start
@@ -64,9 +65,10 @@ int main(int argc, char **argv)
         
     // Publisher
     ros::Publisher pub_pose = nh.advertise<geometry_msgs::PoseStamped>("pose", 1, true);
-
+    ros::Publisher mf_velocity_pub = nh.advertise<std_msgs::Float64>("mf_vel", 1 , true);
     // Prepare published message
     geometry_msgs::PoseStamped robot_pose;
+    std_msgs::Float64 velocity_msg;
     robot_pose.header.frame_id = "world"; //for rviz
 
     if (use_internal_odom)
@@ -270,8 +272,11 @@ int main(int argc, char **argv)
             robot_pose.pose.orientation.y = 0;
             robot_pose.pose.orientation.w = cos(robot_angle / 2);
             robot_pose.pose.orientation.z = sin(robot_angle / 2);
+            velocity_msg.data = linear_vel;
+            
+            mf_velocity_pub.publish(velocity_msg);
             pub_pose.publish(robot_pose);
-
+            
             if (verbose)
             {
                 ROS_INFO("TMOTION: Pos(%7.3f, %7.3f)  Ang(%6.3f)",

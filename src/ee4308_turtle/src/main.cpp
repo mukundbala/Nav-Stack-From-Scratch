@@ -11,14 +11,18 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PointStamped.h>
+#include <std_msgs/Float64.h>
 
 std::vector<float> ranges;
+Position pos_rbt(0, 0);
+double ang_rbt = 10; // set to 10, because ang_rbt is between -pi and pi, and integer for correct comparison while waiting for motion to load
+double mf_vel = -1000;
+
 void cbScan(const sensor_msgs::LaserScan::ConstPtr &msg)
 {
     ranges = msg->ranges; // creates a copy
 }
-Position pos_rbt(0, 0);
-double ang_rbt = 10; // set to 10, because ang_rbt is between -pi and pi, and integer for correct comparison while waiting for motion to load
+
 void cbPose(const geometry_msgs::PoseStamped::ConstPtr &msg)
 {
     auto &p = msg->pose.position;
@@ -30,6 +34,11 @@ void cbPose(const geometry_msgs::PoseStamped::ConstPtr &msg)
     double siny_cosp = 2 * (q.w * q.z + q.x * q.y);
     double cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
     ang_rbt = atan2(siny_cosp, cosy_cosp);
+}
+
+void CbMfVel(const std_msgs::Float64::ConstPtr &msg)
+{
+    mf_vel = msg->data;
 }
 
 int main(int argc, char **argv)
@@ -116,7 +125,7 @@ int main(int argc, char **argv)
     // subscribers
     ros::Subscriber sub_scan = nh.subscribe("scan", 1, &cbScan);
     ros::Subscriber sub_pose = nh.subscribe("pose", 1, &cbPose);
-
+    ros::Subscriber sub_mf_vel = nh.subscribe("mf_vel" ,1 , &CbMfVel);
     // Publishers
     ros::Publisher pub_path = nh.advertise<nav_msgs::Path>("path", 1, true);
     ros::Publisher pub_traj = nh.advertise<nav_msgs::Path>("trajectory", 1, true);
@@ -177,8 +186,8 @@ int main(int argc, char **argv)
     {
         // update all topics
         ros::spinOnce();
-
         // update the occ grid
+        std::cout<<mf_vel<<"\n";
         grid.update(pos_rbt, ang_rbt, ranges);
 
         // publish the map
@@ -244,7 +253,10 @@ int main(int argc, char **argv)
                     if (verbose)
                         ROS_INFO(" TMAIN : Begin Post Process");
                     post_process_path = post_process(path, grid);
-
+                    for (auto & p : post_process_path)
+                    {
+                        ROS_INFO_STREAM("point:" << p.x << " " << p.y);
+                    }
                     if (verbose)
                         ROS_INFO(" TMAIN : Begin trajectory generation over all turning points");
                     // generate trajectory over all turning points
@@ -255,7 +267,7 @@ int main(int argc, char **argv)
                         Position &turn_pt_next = post_process_path[m - 1];
                         Position &turn_pt_cur = post_process_path[m];
 
-                        std::vector<Position> traj = generate_trajectory(turn_pt_next, turn_pt_cur, average_speed, target_dt, grid);
+                        std::vector<Position> traj = generate_trajectory(turn_pt_next, turn_pt_cur, average_speed, target_dt, grid , ang_rbt , mf_vel);
                         for (Position &pos_tgt : traj)
                         {
                             trajectory.push_back(pos_tgt);
