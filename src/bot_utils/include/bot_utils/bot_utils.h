@@ -17,7 +17,16 @@ struct Pos2D
     double y;
     Pos2D(double x_, double y_);
     Pos2D();
+    double EPS_ = 1e-6;
     void setCoords(double x_, double y_);
+    bool operator == (Pos2D &rhs) const
+    {
+       return (fabs(this->x - rhs.x) < EPS_) && (fabs(this->y - rhs.y) < EPS_);
+    }
+    bool operator != (Pos2D &rhs)const
+    {
+        return !(fabs(this->x - rhs.x) < EPS_) && (fabs(this->y - rhs.y) < EPS_);
+    }
 };
 
 struct Pos3D

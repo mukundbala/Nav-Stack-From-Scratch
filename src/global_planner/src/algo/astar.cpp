@@ -96,7 +96,7 @@ std::vector<bot_utils::Index> Astar::plan(bot_utils::Index idx_start, bot_utils:
         // (3) return path if node is the goal
         if (node->idx.i == idx_goal.i && node->idx.j == idx_goal.j)
         {   // reached the goal, return the path
-            ROS_INFO("[GlobalPlanner(Astar)]: Goal Reached!");
+            ROS_INFO("[GlobalPlanner(Astar)]: Goal Found!");
 
             path_idx.push_back(node->idx);
 
@@ -229,6 +229,7 @@ std::vector<bot_utils::Pos2D> Astar::path_smoothing(std::vector<bot_utils::Pos2D
     }
     x++;
     smoother.push_back(turning_points.back());
+    std::reverse(smoother.begin(),smoother.end());
     return smoother;
 }
 

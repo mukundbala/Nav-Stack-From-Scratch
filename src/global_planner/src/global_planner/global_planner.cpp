@@ -37,7 +37,8 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     inflation_sub_ = nh_.subscribe("grid/mapinfo/inflation" , 1 , &GlobalPlanner::inflationCallback , this);
     lo_sub_ = nh_.subscribe("grid/mapinfo/logodds" , 1 , &GlobalPlanner::logoddsCallback , this);
     goal_sub_ = nh_.subscribe("goal" , 1 , &GlobalPlanner::goalCallback , this);
-
+    replan_sub_ = nh_.subscribe("trigger_replan" , 1 , &GlobalPlanner::replanCallback , this);
+    
     //setup subscribers
     update_goal_pub_ = nh_.advertise<tmsgs::Goal>("update_goal" , 1 , true);
     path_pub_ = nh_.advertise<nav_msgs::Path>("path", 1 , true);
@@ -75,12 +76,16 @@ void GlobalPlanner::goalCallback(const tmsgs::GoalConstPtr &goal)
     }
 }
 
-// void GlobalPlanner::replanCallback(const std_msgs::BoolConstPtr &replan) //do this shit after commander is done
-// {
-//     this->trigger_plan = replan->data;
-//     this->path_.clear(); //clear the path
-//     this->path_msg_.poses.clear();
-// }
+void GlobalPlanner::replanCallback(const std_msgs::BoolConstPtr &replan) //do this shit after commander is done
+{
+    bool trigger = replan->data;
+    if (trigger)
+    {
+        this->trigger_plan = true;
+        this->path_.clear();
+        this->path_msg_.poses.clear();
+    }
+}
 
 void GlobalPlanner::run()
 {
@@ -113,7 +118,7 @@ void GlobalPlanner::run()
             {
                 if (!path_.empty())
                 {
-                    path_pub_.publish(path_msg_);
+                    //path_pub_.publish(path_msg_);
                 }
                 else
                 {
@@ -126,6 +131,7 @@ void GlobalPlanner::run()
                 ROS_INFO_STREAM("[GlobalPlanner]: From (" << robot_position_.x << "," << robot_position_.y <<") to (" << current_goal_.x << "," << current_goal_.y << ")");
                 ROS_INFO("[GlobalPlanner]:Using A*");
 
+                path_.clear();
                 path_ = main_planner.plan(robot_position_ , current_goal_, mapdata);
 
                 ROS_INFO("PRINTING PATH");
@@ -139,7 +145,7 @@ void GlobalPlanner::run()
                 {
                     //we might have moved into an obstacle area
                     current_goal_state_ = GoalState::BAD;
-                    ROS_INFO("[GlobalPlanner]: Bad goal");
+                    ROS_INFO("[GlobalPlanner]: Path not found. Bad goal");
                     continue;
                 }
                 else

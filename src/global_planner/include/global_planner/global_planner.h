@@ -60,7 +60,7 @@ private:
     ros::Subscriber inflation_sub_;
     ros::Subscriber lo_sub_;
     ros::Subscriber goal_sub_;
-    // ros::Subscriber replan_sub_;
+    ros::Subscriber replan_sub_;
 
     //publishers
     ros::Publisher update_goal_pub_;
@@ -81,6 +81,7 @@ public:
     void logoddsCallback(const std_msgs::Int32MultiArrayConstPtr &inflation);
     void goalCallback(const tmsgs::GoalConstPtr &goal);
     void replanCallback(const std_msgs::BoolConstPtr &replan);
+    
     //load params
     bool loadParams();
 

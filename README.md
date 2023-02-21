@@ -35,16 +35,14 @@ roscd ##this will bring you to the devel folder in your workspace
 
 - [X] Motion Filter using odometry and joint states
 - [X] Logs Odd Bayes Filter for Occupancy Grids
-- [ ] Mission Planner
-- [ ] Global Planner base class
+- [X] Mission Planner
+- [X] Global Planner: Any Angle A*
 - [ ] Global Planner: Theta*
 - [ ] Global Planner: Djikstra
-- [ ] Global Planner: BFS
 - [ ] Commander: Cubic Spline
 - [ ] Commander: PID Controller with Bidirectional Motion
 - [ ] Full code refactor
-- [ ] Improve param loading sequence using expeditious use of launch files
-- [ ] Do away with all .sh files and use launch files instead
+- [X] Improve param loading sequence. Specifically, load goals using XmlRpcTypeArray instead of parsing string
 - [X] Time profiler for measuring loop execution speed. Used to optimize ros rates 
 ## Part 2: Quadrotor
 

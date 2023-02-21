@@ -1,0 +1,3 @@
+com_rate: 25
+enable_commander: true ##set this to false so that we can teleoperate
+close_enough: 0.1 ##this is closer than goal radius so that we going
