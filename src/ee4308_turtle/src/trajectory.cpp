@@ -65,12 +65,12 @@ std::vector<Position> generate_trajectory(Position pos_begin, Position pos_end, 
 {
     //This is a quntic hermite spline implemented to allow the robot to have smooth and continuous motion with little jerks
     double turning_velocity = 0.06; //this is the velocity magnitude of the spline at its end points when its going to turn
-    double allowance = 0.05; //we use this to segment 2 splines into 5 chunks using this buffer allowance
+    double allowance = 0.05; //we use this to segemt a spline into 3 chunks using this buffer allowance
 
     double x_buffer = allowance * std::cos(robot_angle);
     double y_buffer = allowance * std::sin(robot_angle);
 
-    Position buffered_start(pos_begin.x + x_buffer , pos_begin.y + x_buffer); //our buffered start
+    Position buffered_start(pos_begin.x + x_buffer , pos_begin.y + y_buffer); //our buffered start
     double buffer_heading1 = limit_angle(heading(pos_begin , buffered_start));
     ROS_WARN_COND(fabs(buffer_heading1) > M_PI/2, "Buffer heading not constrained!");
 
@@ -102,7 +102,7 @@ std::vector<Position> generate_trajectory(Position pos_begin, Position pos_end, 
                 (7 / pow(duration, 3) * x_vel_f) + (-1 / pow(duration, 2) * x_acc);
     
     double a5 = (-6 / pow(duration, 5) * pos_begin.x) + (-3 / pow(duration, 4) * x_vel_i) + 
-                (-1 / 2 / pow(duration, 3) * x_acc) + (6 / pow(duration, 5) *buffered_start.x) + 
+                (-1 / 2 / pow(duration, 3) * x_acc) + (6 / pow(duration, 5) * buffered_start.x) + 
                 (-3 / pow(duration, 4) * x_vel_f) + (1 / 2 / pow(duration, 3) * x_acc);
 
     double b0 = pos_begin.y;
@@ -140,20 +140,21 @@ std::vector<Position> generate_trajectory(Position pos_begin, Position pos_end, 
     y_vel_f = turning_velocity * std::sin(buffer_heading2);
     Dx = buffered_end.x - buffered_start.x;
     Dy = buffered_end.y - buffered_start.y;
-    duration = std::sqrt((Dx*Dx) + (Dy*Dy));
+    duration = std::sqrt((Dx*Dx) + (Dy*Dy)) / average_speed;
 
     //generate an interpolation based trajectory for this chunk
     // double time = target_dt;
-    for (double time = target_dt;time<duration ; time+=target_dt)
+    for (double time = target_dt ; time<duration ; time+=target_dt)
     {
         double x = buffered_start.x + Dx * time / duration;
         double y = buffered_start.y + Dy * time / duration;
+        trajectory.emplace_back(x,y);
     }
     //###########################Second Chunk Done#####################################
 
     Dx = pos_end.x - buffered_end.x;
     Dy = pos_end.y - buffered_end.y;
-    duration = std::sqrt((Dx*Dx) + (Dy*Dy));
+    duration = std::sqrt((Dx*Dx) + (Dy*Dy)) / average_speed;
 
     //###########################Third Chunk#####################################
     a0 = buffered_end.x;
@@ -164,7 +165,7 @@ std::vector<Position> generate_trajectory(Position pos_begin, Position pos_end, 
          (-4 / pow(duration, 2) * x_vel_f) + ((1 / 2 * duration) * x_acc);
     a4 = (15 / pow(duration, 4) * buffered_end.x) + (8 / pow(duration, 3) * x_vel_i) + 
          (3 / 2 / pow(duration, 2) * x_acc) + (-15 / pow(duration, 4) * pos_end.x) + 
-         (7 / pow(duration, 3) * x_vel_i) + (-1 / pow(duration, 2) * x_acc);
+         (7 / pow(duration, 3) * x_vel_f) + (-1 / pow(duration, 2) * x_acc);
     a5 = (-6 / pow(duration, 5) * buffered_end.x) + (-3 / pow(duration, 4) * x_vel_i) + 
          (-1 / 2 / pow(duration, 3) * x_acc) + (6 / pow(duration, 5) * pos_end.x) + 
          (-3 / pow(duration, 4) * x_vel_f) + (1 / 2 / pow(duration, 3) * x_acc);
@@ -177,7 +178,7 @@ std::vector<Position> generate_trajectory(Position pos_begin, Position pos_end, 
          (-4 / pow(duration, 2) *y_vel_f) + ((1 / 2 * duration) * y_acc);
     b4 = (15 / pow(duration, 4) * buffered_end.y) + (8 / pow(duration, 3) * y_vel_i) + 
          (3 / 2 / pow(duration, 2) * y_acc) + (-15 / pow(duration, 4) * pos_end.y) + 
-         (7 / pow(duration, 3) * y_vel_i) + (-1 / pow(duration, 2) * y_acc);
+         (7 / pow(duration, 3) * y_vel_f) + (-1 / pow(duration, 2) * y_acc);
     b5 = (-6 / pow(duration, 5) * buffered_end.y) + (-3 / pow(duration, 4) * y_vel_i) + 
          (-1 / 2 / pow(duration, 3) * y_acc) + (6 / pow(duration, 5) * pos_end.y) + 
          (-3 / pow(duration, 4) * y_vel_f) + (1 / 2 / pow(duration, 3) * y_acc);
@@ -186,6 +187,7 @@ std::vector<Position> generate_trajectory(Position pos_begin, Position pos_end, 
     {
         double x = a0 + a1 * time + a2 * pow(time, 2) + a3 * pow(time, 3) + a4 * pow(time, 4) + a5 * pow(time, 5);
         double y = b0 + b1 * time + b2 * pow(time, 2) + b3 * pow(time, 3) + b4 * pow(time, 4) + b5 * pow(time, 5);
+        trajectory.emplace_back(x,y);
     }
     //###########################Third Chunk Done#####################################
     return trajectory;
