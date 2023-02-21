@@ -1,4 +1,4 @@
-.sh
+*.sh
 /build
 /devel
 /.catkin_tools
