@@ -27,5 +27,7 @@ double headingFromQuat(geometry_msgs::PoseStamped &pose);
 double dampingCos(double error_value);
 double dampingQuadratic(double error_value);
 //kill limit means that between |[0,kill_limit]|, damping follows cos, after which it returns 0, therefore killing cmd_lin_vel to 0
-double dampingPieceWise(double error_value , double kill_limit); 
+double dampingPieceWise(double error_value , double kill_limit);
+
+std::vector<Index> bresenham_los(Index& src, Index& tgt);
 #endif

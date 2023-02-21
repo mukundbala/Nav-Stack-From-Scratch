@@ -32,11 +32,32 @@ std::vector<Position> post_process(std::vector<Position> path, Grid &grid) // re
     turning_points.push_back(path.back());
 
     std::vector<Position> post_process_path;
-    
-    // (2) make it more any-angle
-    // done by students
-    
-    post_process_path = turning_points; // remove this line if (2) is done
+    post_process_path.push_back(turning_points.front()); //the front of the array is th end
+    int x = 0;
+    Index curr = grid.pos2idx(post_process_path.at(x));
+
+    for (int i = 1 ; i < turning_points.size()-1 ; ++i)
+    {
+        Index to_test = grid.pos2idx(turning_points.at(i+1));
+        std::vector<Index> ray = bresenham_los(curr , to_test);
+        bool los = true;
+
+        for (auto &id : ray)
+        {
+            if (!grid.get_cell(id))
+            {
+                los = false;
+                break;
+            }
+        }
+        if (!los)
+        {
+            x++;
+            post_process_path.push_back(turning_points.at(i));
+            curr = grid.pos2idx(post_process_path.at(x));
+        }
+    }
+    post_process_path.push_back(turning_points.back());
     return post_process_path;
 }
 
@@ -96,4 +117,13 @@ bool is_safe_trajectory(std::vector<Position> trajectory, Grid & grid)
         */
     }
     return true;
+}
+
+
+Index pos2idx(Position pos , Position &pos_min , double cell_size)
+{
+    return Index(
+        round((pos.x - pos_min.x) / cell_size), //i
+        round((pos.y - pos_min.y) / cell_size)  //j
+    );
 }
