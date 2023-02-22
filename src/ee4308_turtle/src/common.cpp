@@ -108,3 +108,60 @@ double dampingPieceWise(double error_value , double kill_limit)
         return coeff; // a value between less than 1 
     }
 }
+
+std::vector<Index> bresenham_los(Index& src, Index& tgt)
+{
+    int Di = tgt.i - src.i;
+    int Dj = tgt.j - src.j;
+    int Dl;
+    int Ds;
+    int l;
+    int s;
+    int lf;
+    int sf;
+    std::function<std::pair<int,int>(int l , int s)> func;
+    std::vector<Index> ray;
+    ray.emplace_back(src);
+
+    if (abs(Di) > abs(Dj))
+    {
+        Dl = Di;
+        Ds = Dj;
+        l = src.i;
+        s = src.j;
+        lf = tgt.i;
+        sf = tgt.j;
+        func = [=](int l , int s){return std::pair<int,int>(l,s);};
+    }
+    else
+    {
+        Dl = Dj;
+        Ds = Di;
+        l = src.j;
+        s = src.i;
+        lf = tgt.j;
+        sf = tgt.i;
+        func = [=](int l , int s){return std::pair<int,int>(s,l);};
+    }
+
+    int ds = sign(Ds);
+    int dl = sign(Dl);
+    int abs_Dl = std::abs(Dl);
+    int d_esl = std::abs(Dl) * ds;
+    int esl = 0;
+
+    while(l != lf || s != sf)
+    {
+        l += dl;
+        esl += Ds;
+        if (2 * std::abs(esl) >= abs_Dl)
+        {
+            esl -= d_esl;
+            s += ds;
+        }
+        auto [i,j] = func(l,s);
+        Index pt(i,j);
+        ray.emplace_back(pt);
+    }
+    return ray;
+}

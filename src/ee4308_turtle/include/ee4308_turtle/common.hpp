@@ -13,6 +13,40 @@ struct Position
     double x=0, y=0;
     Position();
     Position(double x, double y);
+
+    Position operator - (Position &rhs)const
+    {
+        Position val(this->x-rhs.x , this->y-rhs.y);
+        return val;
+    }
+
+    double mag()const
+    {
+        double mag = sqrt((this->x * this->x) + (this->y * this->y));
+        return mag;
+    }
+
+    Position unit_vec()const
+    {
+        double vec_mag = this->mag();
+        double unit_x = this->x / vec_mag;
+        double unit_y = this->y / vec_mag;
+        return Position(unit_x , unit_y);
+    }
+
+    Position operator * (double scalar)const
+    {
+        double x_scaled = this->x * scalar;
+        double y_scaled = this->y * scalar;
+        return Position(x_scaled , y_scaled);
+    }
+
+    Position avg(Position &rhs)const
+    {
+        Position sum(this->x + rhs.x , this->y + rhs.y);
+        Position avg = sum * 0.5;
+        return avg;
+    }
 };
 double sign(double value); // sign function not defined in cmath
 double dist_oct(Index src, Index tgt);
@@ -27,5 +61,7 @@ double headingFromQuat(geometry_msgs::PoseStamped &pose);
 double dampingCos(double error_value);
 double dampingQuadratic(double error_value);
 //kill limit means that between |[0,kill_limit]|, damping follows cos, after which it returns 0, therefore killing cmd_lin_vel to 0
-double dampingPieceWise(double error_value , double kill_limit); 
+double dampingPieceWise(double error_value , double kill_limit);
+
+std::vector<Index> bresenham_los(Index& src, Index& tgt);
 #endif
