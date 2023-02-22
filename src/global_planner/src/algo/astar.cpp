@@ -175,7 +175,6 @@ std::vector<bot_utils::Pos2D> Astar::path_smoothing(std::vector<bot_utils::Pos2D
 {
     if (path.size() <=2)
     {
-        std::reverse(path.begin(),path.end());
         return path;
     }
     std::vector<bot_utils::Pos2D> turning_points = {path.front()};
@@ -198,10 +197,12 @@ std::vector<bot_utils::Pos2D> Astar::path_smoothing(std::vector<bot_utils::Pos2D
         }
     }
     turning_points.push_back(path.back());
+
     if (turning_points.size() <= 2)
     {
         return turning_points;
     }
+    
     std::vector<bot_utils::Pos2D> smoother;
     smoother.push_back(turning_points.front()); //push in the first node
     
@@ -229,7 +230,6 @@ std::vector<bot_utils::Pos2D> Astar::path_smoothing(std::vector<bot_utils::Pos2D
     }
     x++;
     smoother.push_back(turning_points.back());
-    std::reverse(smoother.begin(),smoother.end());
     return smoother;
 }
 

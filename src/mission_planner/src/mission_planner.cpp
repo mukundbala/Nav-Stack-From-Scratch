@@ -18,9 +18,7 @@ MissionPlanner::MissionPlanner(ros::NodeHandle &nh)
             goals_.push_back(my_goal);
         }
     }
-    num_goals = goals_.size();
-    ROS_WARN_COND(num_goals <= 0 , "[MissionPlanner]: No goals given!");
-    current_goal_id = 0;
+    ROS_WARN_COND(goals_.size() <= 0 , "[MissionPlanner]: No goals given!");
 
     if (!nh_.param("mp_rate" , this->rate_ , 25.0))
     {
@@ -59,13 +57,13 @@ void MissionPlanner::poseCallback(const geometry_msgs::PoseStampedConstPtr &pose
 
 void MissionPlanner::updateGoalCallback(const tmsgs::Goal::ConstPtr &updated_goal)
 {
-    int idx_to_replace = updated_goal -> idx;
+    // int idx_to_replace = updated_goal -> idx;
     bot_utils::Pos2D new_goal(updated_goal->goal_position.x , updated_goal->goal_position.y);
-    ROS_INFO_STREAM("[MissionPlanner]: Goal " << idx_to_replace << "changed!");
-    ROS_INFO_STREAM("[MissionPlanner]: From: ("<< goals_.at(idx_to_replace).x << "," << goals_.at(idx_to_replace).y <<")");
-    ROS_INFO_STREAM("[MissionPlanner]: To: (" << new_goal.x << "," << new_goal.y<<")");
+    // ROS_INFO_STREAM("[MissionPlanner]: Goal " << idx_to_replace << "changed!");
+    // ROS_INFO_STREAM("[MissionPlanner]: From: ("<< goals_.at(idx_to_replace).x << "," << goals_.at(idx_to_replace).y <<")");
+    // ROS_INFO_STREAM("[MissionPlanner]: To: (" << new_goal.x << "," << new_goal.y<<")");
     
-    goals_.at(idx_to_replace) = new_goal;
+    // goals_.at(idx_to_replace) = new_goal;
 }
 
 void MissionPlanner::run()
@@ -84,24 +82,26 @@ void MissionPlanner::run()
     while(ros::ok() && nh_.param("trigger_nodes" , true))
     {
         ros::spinOnce();
-        if (current_goal_id == goals_.size())
+        if (goals_.empty())
         {
             ROS_INFO_STREAM("[MissionPlanner]: Final Goal Reached!");
             break;
         }
         else
         {
-            double dist_to_goal = bot_utils::dist_euc(robot_position_,goals_[current_goal_id]);
+            double dist_to_goal = bot_utils::dist_euc(robot_position_,goals_.front());
             if (dist_to_goal < goal_radius_)
             {
-                ROS_INFO_STREAM("[Mission Planner]: Goal " << current_goal_id << "Reached!");
-                current_goal_id ++ ;
+                ROS_INFO_STREAM("[Mission Planner]: Goal " << " Reached!");
+                ROS_INFO_STREAM("[Mission Planner]: Sending next goal!");
+                goals_.pop_front();
+
                 continue;
             }
             tmsgs::Goal goal;
-            goal.goal_position.x = goals_.at(current_goal_id).x;
-            goal.goal_position.y = goals_.at(current_goal_id).y;
-            goal.idx = current_goal_id;
+            goal.goal_position.x = goals_.front().x;
+            goal.goal_position.y = goals_.front().y;
+    
             goal_pub_.publish(goal);
         }
         spinrate.sleep();

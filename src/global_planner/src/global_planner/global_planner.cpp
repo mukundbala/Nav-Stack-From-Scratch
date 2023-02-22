@@ -15,6 +15,7 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     //initialise robot variables
     robot_position_.setCoords(-500,-500); //-500 is a very unlikely value
     robot_index_.setIdx(-500,-500); //-500 is a very unlikely value
+    robot_status_ = true; //robot is okay
 
     //set up grid arrays
     mapdata.grid_inflation_.resize(mapdata.total_cells_);
@@ -24,7 +25,7 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     current_goal_.setCoords(-1000 , -1000); //again some very unlikely value
     current_goal_idx_ = -1;
     prev_goal_idx_ = -1;
-    current_goal_state_ = GoalState::GOOD;
+    goal_status_ = true;
 
     //setup planning
     trigger_plan = true;
@@ -39,7 +40,7 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     goal_sub_ = nh_.subscribe("goal" , 1 , &GlobalPlanner::goalCallback , this);
     replan_sub_ = nh_.subscribe("trigger_replan" , 1 , &GlobalPlanner::replanCallback , this);
     
-    //setup subscribers
+    //setup publishers
     update_goal_pub_ = nh_.advertise<tmsgs::Goal>("update_goal" , 1 , true);
     path_pub_ = nh_.advertise<nav_msgs::Path>("path", 1 , true);
 
@@ -70,15 +71,18 @@ void GlobalPlanner::goalCallback(const tmsgs::GoalConstPtr &goal)
     //check if the arriving goal is the same as our current goal
     if (fabs(goal->goal_position.x - current_goal_.x) > EPS_ && fabs(goal->goal_position.y - current_goal_.y) > EPS_)
     {
-        current_goal_.setCoords(goal->goal_position.x , goal->goal_position.y);
-        current_goal_idx_ = goal->idx;
-        trigger_plan = true; //we trigger planning here for this goal
+        this->current_goal_.setCoords(goal->goal_position.x , goal->goal_position.y);
+        // this->current_goal_idx_ = goal->idx;
+        this->trigger_plan = true; //we trigger planning here for this goal
+
+        this->path_.clear();
+        this->path_msg_.poses.clear();
     }
 }
 
 void GlobalPlanner::replanCallback(const std_msgs::BoolConstPtr &replan) //do this shit after commander is done
 {
-    bool trigger = replan->data;
+    bool trigger = replan->data; //this is the trigger from the trajectory planner
     if (trigger)
     {
         this->trigger_plan = true;
@@ -104,76 +108,33 @@ void GlobalPlanner::run()
     }
 
     Astar main_planner(mapdata);
-    // Djikstra emergency_planner(mapdata); //TODO @karthi
+    Djikstra emergency_planner(mapdata);
 
     while(ros::ok() && nh_.param("trigger_nodes" , true))
     {
         ros::spinOnce(); //process a round of callbacks
-        bool goal_status = testGoal();
-        current_goal_state_ = goal_status ? GoalState::GOOD : GoalState::BAD;
-
-        if (current_goal_state_ == GoalState::GOOD)
+        if (!trigger_plan)
         {
-            if (!trigger_plan)
+            robot_status_ = testPos(robot_position_);
+            goal_status_ = testPos(current_goal_);
+            path_pub_.publish(path_msg_);
+        }
+        else
+        {
+            if (robot_status_ && goal_status_) //all good
             {
-                if (!path_.empty())
-                {
-                    //path_pub_.publish(path_msg_);
-                }
-                else
-                {
-                    trigger_plan = true;
-                }
-            }
-            else //trigger_plan is true
-            {
-                ROS_INFO("[GlobalPlanner]: Generating a path!");
-                ROS_INFO_STREAM("[GlobalPlanner]: From (" << robot_position_.x << "," << robot_position_.y <<") to (" << current_goal_.x << "," << current_goal_.y << ")");
-                ROS_INFO("[GlobalPlanner]:Using A*");
-
                 path_.clear();
-                path_ = main_planner.plan(robot_position_ , current_goal_, mapdata);
+                path_ = main_planner.plan(robot_position_ , current_goal_ , mapdata);
+                trigger_plan = false;
+            }
 
-                ROS_INFO("PRINTING PATH");
-                for (auto &p : path_)
-                {
-                    ROS_INFO_STREAM("(" << p.x << "," << p.y << ")");
-                }
-                ROS_INFO("PRINTING PATH DONE");
+            else if (!robot_status_)
+            {  
+                bot_utils::Pos2D backup = emergency_planner.plan(robot_position_);
 
-                if (path_.size() == 0) //we shall handle the case of path_size == 1 downstream in the trajectory planner
-                {
-                    //we might have moved into an obstacle area
-                    current_goal_state_ = GoalState::BAD;
-                    ROS_INFO("[GlobalPlanner]: Path not found. Bad goal");
-                    continue;
-                }
-                else
-                {
-                    path_msg_.poses.clear();
-                    for (bot_utils::Pos2D &pos : path_)
-                    {
-                        geometry_msgs::PoseStamped pse;
-                        pse.pose.position.x = pos.x;
-                        pse.pose.position.y = pos.y;
-                        path_msg_.poses.push_back(pse);
-                    }
-                    path_pub_.publish(path_msg_);
-                    trigger_plan = false; //finished planning, set the trigger to false
-                }
             }
         }
 
-        else if (current_goal_state_ == GoalState::BAD)
-        {
-            //TODO @Karthi
-            // trigger_plan = true;
-            // // geometry_msgs::Point new_goal = emergency_planner(current_goal_, robot_position_ , mapdata);
-            // tmsgs::Goal new_goal_msg;
-            // new_goal_msg.goal_position = new_goal;
-            // new_goal_msg.idx = current_goal_idx_;
-            // update_goal_pub_.publish(new_goal_msg);
-        }
         spinrate.sleep();
     }
 }
@@ -204,9 +165,9 @@ bot_utils::Pos2D GlobalPlanner::idx2pos(bot_utils::Index &idx)
     return bot_utils::Pos2D(x,y);
 }
 
-bool GlobalPlanner::testGoal()
+bool GlobalPlanner::testPos(bot_utils::Pos2D pos)
 {
-    bot_utils::Index idx = pos2idx(current_goal_);
+    bot_utils::Index idx = pos2idx(pos);
     int key = flatten(idx);
 
     if (oob(idx))
@@ -227,7 +188,6 @@ bool GlobalPlanner::testGoal()
         return true; //in map, not inflated not lo occupied
     }
 }
-
 
 bool GlobalPlanner::loadParams()
 {

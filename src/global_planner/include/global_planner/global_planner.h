@@ -25,11 +25,6 @@ GlobalPlanner class has the following roles:
 - Subscribe to incoming goal
 - Check status of goal
 */
-enum class GoalState : unsigned short
-{
-    GOOD,
-    BAD
-};
 
 class GlobalPlanner
 {
@@ -38,6 +33,7 @@ private:
     geometry_msgs::PoseStamped robot_pose_; //ok
     bot_utils::Pos2D robot_position_; //ok
     bot_utils::Index robot_index_; //ok
+    bool robot_status_;
 
     //All the map data and meta data. This to to make it easy to share with planner without copying so much stuff
     bot_utils::MapData mapdata;
@@ -45,8 +41,8 @@ private:
     //goals
     bot_utils::Pos2D current_goal_; //ok
     int current_goal_idx_; //ok
-    GoalState current_goal_state_;
     int prev_goal_idx_;
+    bool goal_status_;
 
     //planning related
     bool trigger_plan;
@@ -94,7 +90,7 @@ public:
 
     bool oob(bot_utils::Index &idx);
 
-    bool testGoal();
+    bool testPos(bot_utils::Pos2D idx);
 };
 
 #endif

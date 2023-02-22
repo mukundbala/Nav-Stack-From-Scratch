@@ -7,12 +7,12 @@
 #include "geometry_msgs/PoseStamped.h"
 #include "xmlrpcpp/XmlRpc.h"
 #include <vector>
+#include <deque>
 class MissionPlanner
 {
 private:
     int num_goals;
-    std::vector<bot_utils::Pos2D> goals_;
-    int current_goal_id; //stores the id of the current goal 
+    std::deque<bot_utils::Pos2D> goals_;
     double goal_radius_;
 
     geometry_msgs::PoseStamped robot_pose_;
