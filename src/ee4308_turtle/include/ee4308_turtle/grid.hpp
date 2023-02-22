@@ -11,9 +11,6 @@
 class Grid
 {
     private:
-        std::vector<int> grid_log_odds; // signed char is int but 4 times smaller in memory
-        int log_odds_thresh, log_odds_cap;
-        std::vector<int> grid_inflation;
         Position origin;
         double cell_size;
         std::vector<Index> mask_inflation;
@@ -24,6 +21,11 @@ class Grid
         void change_inflation(bool inflate, Index idx);
         void change_log_odds(bool occupy, Index idx);
     public:
+        std::vector<int> grid_log_odds;
+        int log_odds_thresh;
+        int log_odds_cap;
+        std::vector<int> grid_inflation;
+        
         Index size;
         LOS los;
 

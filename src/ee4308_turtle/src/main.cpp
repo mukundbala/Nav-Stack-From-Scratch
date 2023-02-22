@@ -169,14 +169,17 @@ int main(int argc, char **argv)
     ros::Rate rate(main_iter_rate);
 
     // Other variables
-    bool replan = true;
-    std::vector<Position> path, post_process_path, trajectory;
-    int g = 0;                    // goal num
-    Position pos_goal = goals[g]; // to trigger the reach goal
-    int t = 0;                    // target num
+    std::vector<Position> path;
+    std::vector<Position> post_process_path;
+    std::vector<Position> trajectory;
+    int g = 0;                   
+    int t = 0;
+    Position pos_goal = goals[g];
+    Position backup_goal = pos_rbt;            
     Position pos_target;
-    bool current_goal_state_ = true;    // Goal is accessible
-    bool current_robot_state_ = true;   // Robot is in accessible cell
+    bool replan = true;
+    bool bad_pos_rbt = false;
+    bool bad_pos_goal = false;
 
     // wait for other nodes to load
     ROS_INFO(" TMAIN : Waiting for topics");
@@ -193,7 +196,6 @@ int main(int argc, char **argv)
         // update all topics
         ros::spinOnce();
         // update the occ grid
-        std::cout<<mf_vel<<"\n";
         grid.update(pos_rbt, ang_rbt, ranges);
 
         // publish the map
@@ -216,30 +218,6 @@ int main(int argc, char **argv)
         else if (!is_safe_trajectory(trajectory, grid))
         { // request a new path if path intersects inaccessible areas, or if there is no path
             replan = true;
-            Index new_goal_idx_;
-            Position new_goal_pos_;
-
-            if (current_goal_state_ == false)
-            {
-                // Finds a updated goal from current bad goal position to nearest free space closest to robot
-                ROS_INFO(" TMAIN : Bad Goal Encounted!");
-                ROS_INFO(" TMAIN : Finding new goal using Djikstra.");
-            }
-            else if (current_robot_state_ ==  false)
-            {
-                ROS_INFO(" TMAIN : Bad Robot Position Encounted!");
-                ROS_INFO(" TMAIN : Finding nearest goal that robot can move to using Djikstra.");
-            }
-            new_goal_idx_ = djikstra.e_plan(grid.pos2idx(pos_rbt) , grid.pos2idx(pos_target)); 
-            new_goal_pos_ = grid.idx2pos(new_goal_idx_);
-
-            // Update the existing bad goal to new goal
-            pos_target = new_goal_pos_;
-            if (grid.get_cell(pos_target))
-            {
-                current_goal_state_ = true;
-                current_robot_state_ = true;
-            }
         } 
 
         // always try to publish the next target so it does not get stuck waiting for a new path.
@@ -261,13 +239,34 @@ int main(int argc, char **argv)
 
         if (replan)
         {
-            if (grid.get_cell(pos_rbt) && grid.get_cell(pos_goal))
+            if (grid.get_cell(pos_rbt) && grid.get_cell(pos_goal) || (bad_pos_goal || bad_pos_rbt))
             {
                 if (verbose)
                     ROS_INFO(" TMAIN : Request Path from [%.2f, %.2f] to Goal %d at [%.2f,%.2f]",
                              pos_rbt.x, pos_rbt.y, g, pos_goal.x, pos_goal.y);
-                // if the robot and goal are both on accessible cells of the grid
-                path = planner.get(pos_rbt, pos_goal); // original path
+                
+                if (!bad_pos_rbt && !bad_pos_goal)
+                {
+                    path = planner.get(pos_rbt , pos_goal);
+                }
+
+                else if (bad_pos_rbt)
+                {
+                    backup_goal = planner.djikstra_emergency_planner(pos_rbt);
+                    path = planner.get(backup_goal , pos_goal);
+                    if (dist_euc(pos_rbt , backup_goal) < close_enough)
+                    {
+                        bad_pos_rbt = false;
+                    }
+                }
+
+                else
+                {
+                    backup_goal = planner.djikstra_emergency_planner(pos_goal);
+                    path = planner.get(pos_rbt , backup_goal);
+                    bad_pos_goal = false;
+                }
+
                 if (path.empty())
                 { // path cannot be found
                     if (verbose)
@@ -343,16 +342,20 @@ int main(int argc, char **argv)
                 }
             }
             else
-            { // robot lies on inaccessible cell, or if goal lies on inaccessible cell
+            { 
                 if (!grid.get_cell(pos_rbt))
+                {
                     ROS_WARN(" TMAIN : Robot lies on inaccessible area. No path can be found");
-                    current_robot_state_ = false; // Trigger flag
+                    bad_pos_rbt = true;
+                }
+
                 if (!grid.get_cell(pos_goal))
+                {
                     ROS_WARN(" TMAIN : Goal lies on inaccessible area. No path can be found");
-                    current_goal_state_ = false;  // Trigger flag
+                    bad_pos_goal = true;
+                }   
             }
         }
-
         // sleep for rest of iteration
         rate.sleep();
     }
