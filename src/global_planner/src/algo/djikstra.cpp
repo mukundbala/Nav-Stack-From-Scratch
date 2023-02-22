@@ -24,7 +24,7 @@ Djikstra::Djikstra(bot_utils::MapData & map): start(-1,-1) , goal(-1,-1), map_(m
     }    
 }
 
-bot_utils::Index Djikstra::plan(bot_utils::Index idx_start)
+bot_utils::Index Djikstra::plan(bot_utils::Index idx_start,bot_utils::MapData& map_)
 {
     std::vector<bot_utils::Index> path;
     
@@ -122,9 +122,9 @@ bot_utils::Index Djikstra::plan(bot_utils::Index idx_start)
 }
 
 
-bot_utils::Pos2D Djikstra::plan(bot_utils::Pos2D pos_start)
+bot_utils::Pos2D Djikstra::plan(bot_utils::Pos2D pos_start,bot_utils::MapData& map_)
 {
-    bot_utils::Index path_idx = plan(pos2idx(pos_start));
+    bot_utils::Index path_idx = plan(pos2idx(pos_start),map_);
     return idx2pos(path_idx);
 }
 

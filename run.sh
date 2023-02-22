@@ -19,7 +19,7 @@ sleep 1s # allow gazebo to reset so as not to mess with the time.
 
 # bring up gazebo and build all models
 echo "Begin..."
-roslaunch ee4308_bringup run_`echo $EE4308_TASK`.launch
+roslaunch ee4308_bringup run_client.launch
 
 # try to stop. This will show an error if ./bringup.launch is not running
 echo "Stopping Turtlebot3 by publishing to /turtle/cmd_vel"

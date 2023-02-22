@@ -20,6 +20,10 @@
         <param name="max_x" value="$(env TURTLE_MAX_X)" type="double"/>
         <param name="max_y" value="$(env TURTLE_MAX_Y)" type="double"/>
         <param name="trigger_nodes" value="true" type="bool"/>
+        <param name="trigger_occ" value="false" type="bool"/>
+        <param name="trigger_mp" value="false" type="bool"/>
+        <param name="trigger_gp" value="false" type="bool"/>
+        <param name="trigger_comm" value="false" type="bool"/>
 
         <!-- Nodes -->
         <!-- <node pkg="ee4308_turtle" type="turtle_main" name="turtle_main" output="screen" /> -->
@@ -28,7 +32,7 @@
         <node pkg="loco_mapping" type="occupancy_grid_node" name="occupancy_grid" output="screen"/>
         <node pkg="mission_planner" type="mission_planner_node" name="mission_planner" output="screen"/>
         <node pkg="global_planner" type="global_planner_node" name="global_planner" output="screen"/>
-        <node pkg="commander" type="commander_node" name="commander" output="screen"/>
+        <!-- <node pkg="commander" type="commander_node" name="commander" output="screen"/> -->
         <!-- <node pkg="ee4308_turtle" type="turtle_move" name="turtle_move" output="screen" /> -->
     </group>
 </launch>

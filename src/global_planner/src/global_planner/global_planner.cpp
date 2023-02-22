@@ -28,7 +28,7 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     goal_status_ = true;
 
     //setup planning
-    trigger_plan = true;
+    trigger_plan = false;
     path_.clear();
     path_msg_.poses.clear();
     path_msg_.header.frame_id = "world";
@@ -73,22 +73,26 @@ void GlobalPlanner::goalCallback(const tmsgs::GoalConstPtr &goal)
     {
         this->current_goal_.setCoords(goal->goal_position.x , goal->goal_position.y);
         // this->current_goal_idx_ = goal->idx;
-        this->trigger_plan = true; //we trigger planning here for this goal
-
         this->path_.clear();
         this->path_msg_.poses.clear();
+        trigger_plan = true;
+        ROS_INFO("[GlobalPlanner]: New goal received!");
+    }
+    else
+    {
+        trigger_plan = false; //if we dont get a new goal, we always set trigger plan to false
     }
 }
 
 void GlobalPlanner::replanCallback(const std_msgs::BoolConstPtr &replan) //do this shit after commander is done
 {
-    bool trigger = replan->data; //this is the trigger from the trajectory planner
-    if (trigger)
-    {
-        this->trigger_plan = true;
-        this->path_.clear();
-        this->path_msg_.poses.clear();
-    }
+    // bool trigger = replan->data; //this is the trigger from the trajectory planner
+    // if (trigger)
+    // {
+    //     this->trigger_plan = true;
+    //     this->path_.clear();
+    //     this->path_msg_.poses.clear();
+    // }
 }
 
 void GlobalPlanner::run()
@@ -97,10 +101,11 @@ void GlobalPlanner::run()
 
     ROS_INFO("[GlobalPlanner]: Waiting for topics");
 
-    while(ros::ok() && nh_.param("trigger_nodes" , true) && (robot_position_.x == -500 
+    while(ros::ok() && nh_.param("trigger_nodes" , true) && nh_.param("trigger_mp",false) && (robot_position_.x == -500 
                                                             || mapdata.grid_inflation_.empty() 
                                                             || mapdata.grid_logodds_.empty() 
-                                                            || current_goal_.x == -1000)) //safeguard, make sure everythign that needs to load has loaded
+                                                            || current_goal_.x == -1000)
+                                                            || !trigger_plan) //safeguard, make sure everythign that needs to load has loaded
     {
         spinrate.sleep();
         ros::spinOnce();
@@ -109,32 +114,102 @@ void GlobalPlanner::run()
 
     Astar main_planner(mapdata);
     Djikstra emergency_planner(mapdata);
-
+    ROS_INFO("[GlobalPlanner]: Starting Global Planner!");
     while(ros::ok() && nh_.param("trigger_nodes" , true))
     {
         ros::spinOnce(); //process a round of callbacks
-        if (!trigger_plan)
+        robot_status_ = testPos(robot_position_);
+        goal_status_ = testPos(current_goal_);
+        ROS_INFO_STREAM("GOAL STATUS" << goal_status_);
+        ROS_INFO_STREAM("ROBOT_STATUS" << robot_status_);
+        if (trigger_plan) 
         {
-            robot_status_ = testPos(robot_position_);
-            goal_status_ = testPos(current_goal_);
-            path_pub_.publish(path_msg_);
-        }
-        else
-        {
-            if (robot_status_ && goal_status_) //all good
+            //A planning trigger will ALWAYS clear our path
+            //planning is triggered for a 3 key reasons
+            //1. Mission Planner has given us a new goal without any updates from Global Planner
+            //2. There was a bad goal and we updated the goal
+            //3. The trajectory was bad and we need a new trajectory
+            //4. Trajectory can be bad because the targets were perhaps lying on an inflated/occupied cell
+            if (path_.empty())
             {
-                path_.clear();
-                path_ = main_planner.plan(robot_position_ , current_goal_ , mapdata);
-                trigger_plan = false;
-            }
 
-            else if (!robot_status_)
-            {  
-                bot_utils::Pos2D backup = emergency_planner.plan(robot_position_);
+                if (robot_status_ && goal_status_) //if both are okay. This likely means that some part of the traj was bad
+                {
+                    path_ = main_planner.plan(robot_position_ , current_goal_,mapdata);
+                    ROS_INFO("[GlobalPlanner]: Robot and Goal Good. Path Planned!");
+                }
+                
+                else if (!robot_status_ && goal_status_) //this is the case where its a bad robot status, but the goal is still ok
+                {
+                    bot_utils::Pos2D backup_start = emergency_planner.plan(robot_position_ , mapdata); //find a new nearest start
+                    path_ = main_planner.plan(backup_start , current_goal_, mapdata); //plan from the backup to the goal
+                    ROS_INFO("[GlobalPlanner]: Robot in bad position. Planning path out now!");
+                }
 
+                else if (robot_status_ && !goal_status_) //this means that our goal is in an occupied area
+                {
+                    bot_utils::Pos2D backup_goal = emergency_planner.plan(current_goal_ , mapdata);
+                    //however, we cannot plan right away because only the mission planner has the right to update goals
+                    tmsgs::Goal new_goal;
+                    new_goal.action = 2;
+                    new_goal.goal_position.x = backup_goal.x;
+                    new_goal.goal_position.y = backup_goal.y;
+                    update_goal_pub_.publish(new_goal); //we wait for the new goal to come back to us
+                    ROS_INFO("[GlobalPlanner]: Bad goal given. Waiting for Mission planner");
+                    spinrate.sleep();
+                    continue;
+                }
+
+                else if (!robot_status_ && !goal_status_)
+                {
+                    bot_utils::Pos2D backup_start = emergency_planner.plan(robot_position_ , mapdata); //find a new nearest start
+                    path_ = main_planner.plan(backup_start , current_goal_, mapdata); //plan from the backup to the goal
+                    ROS_INFO("[GlobalPlanner]: Bad goal and Bad robot position. Getting robot out");
+                }
+                
+                ROS_INFO("[GlobalPlanner]: Printing New Path");
+                if (!path_.empty())
+                {
+                    for (auto &pos : path_)
+                    {
+                        ROS_INFO_STREAM("(" << pos.x << "," << pos.y <<")");
+                        geometry_msgs::PoseStamped pt;
+                        pt.pose.position.x = pos.x;
+                        pt.pose.position.y = pos.y;
+                        path_msg_.poses.push_back(pt); //write our path to goal
+                    }
+                    path_pub_.publish(path_msg_);
+                    trigger_plan = false; //we set this to false
+                }
+                else
+                {
+                    ROS_INFO("No path found after replanning!");
+                }
             }
+            else //path is not empty
+            {
+                path_pub_.publish(path_msg_);
+                trigger_plan = false; //we set this to false
+            }
+            
         }
 
+        else //no trigger_plan. Nothing is wrong, no changes received
+        {
+            if (path_.empty())
+            {
+                ROS_INFO("WHAT");
+            }
+            else
+            {
+                path_pub_.publish(path_msg_);
+            }
+
+        }
+        // if (!path_.empty())
+        // {
+        //     path_pub_.publish(path_msg_);
+        // }
         spinrate.sleep();
     }
 }

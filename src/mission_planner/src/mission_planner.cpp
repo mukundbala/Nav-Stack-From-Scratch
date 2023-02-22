@@ -59,10 +59,15 @@ void MissionPlanner::updateGoalCallback(const tmsgs::Goal::ConstPtr &updated_goa
 {
     // int idx_to_replace = updated_goal -> idx;
     bot_utils::Pos2D new_goal(updated_goal->goal_position.x , updated_goal->goal_position.y);
-    // ROS_INFO_STREAM("[MissionPlanner]: Goal " << idx_to_replace << "changed!");
-    // ROS_INFO_STREAM("[MissionPlanner]: From: ("<< goals_.at(idx_to_replace).x << "," << goals_.at(idx_to_replace).y <<")");
-    // ROS_INFO_STREAM("[MissionPlanner]: To: (" << new_goal.x << "," << new_goal.y<<")");
-    
+    if (updated_goal->action == 1)
+    {
+        //this is a temporary goal
+        goals_.push_front(new_goal);
+    }
+    else if (updated_goal->action == 2)
+    {
+        goals_.at(0) = new_goal; //this is a goal to replace the current goal
+    }
     // goals_.at(idx_to_replace) = new_goal;
 }
 
@@ -71,14 +76,13 @@ void MissionPlanner::run()
     ros::Rate spinrate(rate_);
     ROS_INFO("[Mission Planner]: Waiting for topics");
     
-    while (ros::ok() && goals_.empty() && nh_.param("trigger_nodes" , true) && robot_position_.x == -500);
+    while (ros::ok() && goals_.empty() && nh_.param("trigger_nodes" , true) && robot_position_.x == -500 && nh_.param("trigger_mp" , false));
     {
         spinrate.sleep();
         ros::spinOnce();
     }
 
     ROS_INFO("[Mission Planner]: Starting Mission Planner");
-
     while(ros::ok() && nh_.param("trigger_nodes" , true))
     {
         ros::spinOnce();
@@ -87,24 +91,26 @@ void MissionPlanner::run()
             ROS_INFO_STREAM("[MissionPlanner]: Final Goal Reached!");
             break;
         }
-        else
-        {
-            double dist_to_goal = bot_utils::dist_euc(robot_position_,goals_.front());
-            if (dist_to_goal < goal_radius_)
-            {
-                ROS_INFO_STREAM("[Mission Planner]: Goal " << " Reached!");
-                ROS_INFO_STREAM("[Mission Planner]: Sending next goal!");
-                goals_.pop_front();
 
-                continue;
+        double dist_to_goal = bot_utils::dist_euc(robot_position_,goals_.front());
+        if (dist_to_goal < goal_radius_)
+        {
+            ROS_INFO_STREAM("[Mission Planner]: Goal " << "Reached!");
+            goals_.pop_front();
+            if (goals_.empty())
+            {
+                ROS_INFO_STREAM("[MissionPlanner]: Final Goal Reached!");
+                break;
             }
-            tmsgs::Goal goal;
-            goal.goal_position.x = goals_.front().x;
-            goal.goal_position.y = goals_.front().y;
-    
-            goal_pub_.publish(goal);
         }
+        tmsgs::Goal goal;
+        goal.goal_position.x = goals_.front().x;
+        goal.goal_position.y = goals_.front().y;
+
+        goal_pub_.publish(goal);
+            
         spinrate.sleep();
+        nh_.setParam("trigger_gp" , true);
     }
     ROS_INFO("[Mission Planner]: Shutting down all nodes!");
     nh_.setParam("trigger_nodes" , false);

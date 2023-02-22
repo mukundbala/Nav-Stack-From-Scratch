@@ -30,9 +30,9 @@ public:
 
     bot_utils::MapData &map_;
 
-    bot_utils::Index plan(bot_utils::Index idx_start);
+    bot_utils::Index plan(bot_utils::Index idx_start , bot_utils::MapData& map_);
 
-    bot_utils::Pos2D plan(bot_utils::Pos2D pos_start);
+    bot_utils::Pos2D plan(bot_utils::Pos2D pos_start , bot_utils::MapData& map_);
 
 private:
 
