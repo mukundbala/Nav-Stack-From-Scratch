@@ -2,7 +2,6 @@
 #include "grid.hpp"
 #include "planner.hpp"
 #include "trajectory.hpp"
-#include "djikstra.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <cmath>
@@ -161,9 +160,6 @@ int main(int argc, char **argv)
 
     // Setup the planner class
     Planner planner(grid);
-
-    // Setup Djikstra class 
-    Djikstra djikstra(grid);
 
     // setup loop rates
     ros::Rate rate(main_iter_rate);
