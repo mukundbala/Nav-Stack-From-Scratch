@@ -13,12 +13,14 @@
 #include <geometry_msgs/PointStamped.h>
 #include <std_msgs/Float64.h>
 
+//global variables. Values are set to high values
 std::vector<float> ranges;
 Position pos_rbt(0, 0);
-double ang_rbt = 10; // set to 10, because ang_rbt is between -pi and pi, and integer for correct comparison while waiting for motion to load
+double ang_rbt = 10;
 double mf_vel = -1000;
 
-void cbScan(const sensor_msgs::LaserScan::ConstPtr &msg)
+//callbacks###########################################
+void cbScan(const sensor_msgs::LaserScan::ConstPtr &msg) //callback for scan
 {
     ranges = msg->ranges; // creates a copy
 }
@@ -29,7 +31,6 @@ void cbPose(const geometry_msgs::PoseStamped::ConstPtr &msg)
     pos_rbt.x = p.x;
     pos_rbt.y = p.y;
 
-    // euler yaw (ang_rbt) from quaternion <-- stolen from wikipedia
     auto &q = msg->pose.orientation; // reference is always faster than copying. but changing it means changing the referenced object.
     double siny_cosp = 2 * (q.w * q.z + q.x * q.y);
     double cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
@@ -40,13 +41,14 @@ void CbMfVel(const std_msgs::Float64::ConstPtr &msg)
 {
     mf_vel = msg->data;
 }
+//callbacks###########################################
+
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "turtle_main");
     ros::NodeHandle nh;
 
-    // Make sure motion and move can run (fail safe)
     nh.setParam("run", true); // turns off other nodes
 
     // Get ROS parameters
@@ -57,8 +59,10 @@ int main(int argc, char **argv)
         ROS_WARN(" TMAIN : Param initial_x not found, set to 0");
     if (!nh.param("initial_y", pos_rbt.y, 0.))
         ROS_WARN(" TMAIN : Param initial_x not found, set to 0");
+
     std::vector<Position> goals;
     std::string goal_str;
+
     if (nh.param("goals", goal_str, std::to_string(pos_rbt.x) + "," + std::to_string(pos_rbt.y)))
     {
         char goal_str_tok[goal_str.length() + 1];
@@ -82,6 +86,7 @@ int main(int argc, char **argv)
             return 1;
         }
     }
+    //get all other params
     else
         ROS_WARN(" TMAIN : Param goal not found, set to %s", goal_str.c_str());
     Position pos_min;
@@ -126,6 +131,7 @@ int main(int argc, char **argv)
     ros::Subscriber sub_scan = nh.subscribe("scan", 1, &cbScan);
     ros::Subscriber sub_pose = nh.subscribe("pose", 1, &cbPose);
     ros::Subscriber sub_mf_vel = nh.subscribe("mf_vel" ,1 , &CbMfVel);
+
     // Publishers
     ros::Publisher pub_path = nh.advertise<nav_msgs::Path>("path", 1, true);
     ros::Publisher pub_traj = nh.advertise<nav_msgs::Path>("trajectory", 1, true);
@@ -200,19 +206,17 @@ int main(int argc, char **argv)
         pub_grid_inf.publish(msg_grid_inf);
 
         if (dist_euc(pos_rbt, pos_goal) < close_enough)
-        { // reached the goal, get new goal
+        { 
             replan = true;
             if (++g >= goals.size())
             {
                 if (verbose)
                     ROS_INFO(" TMAIN : Last goal reached");
-                break;
             }
-            // there are goals remaining
             pos_goal = goals[g];
         }
         else if (!is_safe_trajectory(trajectory, grid))
-        { // request a new path if path intersects inaccessible areas, or if there is no path
+        { 
             replan = true;
         } 
 
@@ -225,7 +229,7 @@ int main(int argc, char **argv)
             pos_target = trajectory[t];
 
             if (verbose)
-                ROS_INFO(" TMAIN : Get next target (%f,%f)", pos_target.x, pos_target.y);
+                //ROS_INFO(" TMAIN : Get next target (%f,%f)", pos_target.x, pos_target.y);
 
             // publish to target topic
             msg_target.point.x = pos_target.x;
@@ -244,12 +248,15 @@ int main(int argc, char **argv)
                 if (!bad_pos_rbt && !bad_pos_goal)
                 {
                     path = planner.get(pos_rbt , pos_goal);
+                    ROS_INFO("[Tmove]: Path Planned using A*");
                 }
 
                 else if (bad_pos_rbt)
                 {
+                    ROS_WARN("[Tmove]: Finding nearest point using Djikstra");
                     backup_goal = planner.djikstra_emergency_planner(pos_rbt);
                     path = planner.get(backup_goal , pos_goal);
+                    ROS_WARN("[Tmove]: Using A* from backup goal");
                     if (dist_euc(pos_rbt , backup_goal) < close_enough)
                     {
                         bad_pos_rbt = false;
@@ -258,6 +265,7 @@ int main(int argc, char **argv)
 
                 else
                 {
+                    ROS_WARN("[Tmove]: Bad Goal! Planning to a safe point using Djikstra and A*");
                     backup_goal = planner.djikstra_emergency_planner(pos_goal);
                     path = planner.get(pos_rbt , backup_goal);
                     bad_pos_goal = false;
@@ -277,28 +285,31 @@ int main(int argc, char **argv)
 
                     if (verbose)
                         ROS_INFO(" TMAIN : Begin Post Process");
+
                     post_process_path = post_process(path, grid);
-                    for (auto & p : post_process_path)
-                    {
-                        ROS_INFO_STREAM("point:" << p.x << " " << p.y);
-                    }
+
                     if (verbose)
                         ROS_INFO(" TMAIN : Begin trajectory generation over all turning points");
+                        
                     // generate trajectory over all turning points
                     // doing the following manner results in the front of trajectory being the goal, and the back being close to the rbt position
                     trajectory.clear();
+
+                    std::vector<Position> velocities = generate_velocities(post_process_path , mf_vel , ang_rbt , average_speed);
                     for (int m = 1; m < post_process_path.size(); ++m)
                     {
                         Position &turn_pt_next = post_process_path[m - 1];
                         Position &turn_pt_cur = post_process_path[m];
-
-                        std::vector<Position> traj = generate_trajectory(turn_pt_next, turn_pt_cur, average_speed, target_dt, grid , ang_rbt , mf_vel);
+                        ROS_INFO_STREAM("MFVEL: " << mf_vel);
+                        Position &next_vel = velocities.at(m-1);
+                        Position &cur_vel = velocities.at(m);
+                        std::vector<Position> traj = generate_trajectory(turn_pt_next, turn_pt_cur, next_vel , cur_vel , average_speed , target_dt , grid);
                         for (Position &pos_tgt : traj)
                         {
                             trajectory.push_back(pos_tgt);
                         }
                     }
-
+                    ROS_INFO("#######");
                     if (verbose)
                         ROS_INFO(" TMAIN : Trajectory generation complete");
 

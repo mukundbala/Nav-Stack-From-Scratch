@@ -19,7 +19,7 @@ void cbTarget(const geometry_msgs::PointStamped::ConstPtr &msg)
 {
     target_position.x = msg->point.x;
     target_position.y = msg->point.y;
-    ROS_INFO_STREAM("TMOVE: Target Coordinates Received: (" << target_position.x << "," << target_position.y<<")");
+    //ROS_INFO_STREAM("TMOVE: Target Coordinates Received: (" << target_position.x << "," << target_position.y<<")");
 }
 
 void cbPose(const geometry_msgs::PoseStamped::ConstPtr &msg)
@@ -184,30 +184,32 @@ int main(int argc, char **argv)
     double dt = 0; //good practice to initalize variables and not leave them uninitialized
     double prev_time = ros::Time::now().toSec();
     double prev_linear_error = 0; //prevent derivative kick
-    double prev_angular_error = 0;
-    if (tune_mode)
+    double prev_angular_error = 0; 
+    prev_linear_error = dist_euc(robot_position , target_position);
+    prev_angular_error = limit_angle(atan2(target_position.y - robot_position.y , target_position.x - robot_position.x) - robot_angle);
+    if (fabs(prev_angular_error) > M_PI/2)
     {
-        prev_linear_error = target_position.x - robot_position.x;
-        prev_angular_error = limit_angle(atan2(target_position.y - robot_position.y , target_position.x - robot_position.x) - robot_angle);
+        prev_linear_error *= -1; //going to reverse to the target
+        prev_angular_error -= (sign(prev_angular_error) * M_PI);
     }
-    else
-    {   
-        prev_linear_error = dist_euc(robot_position , target_position);
-        prev_angular_error = limit_angle(atan2(target_position.y - robot_position.y , target_position.x - robot_position.x) - robot_angle);
-        if (fabs(prev_angular_error) > M_PI/2)
-        {
-            prev_linear_error *= -1; //going to reverse to the target
-            prev_angular_error -= (sign(prev_angular_error) * M_PI);
-        }
-    }
+    
     double cumulative_linear_error = 0.0;
     double cumulative_angular_error = 0.0;
 
-    ////////////////// DECLARE VARIABLES HERE //////////////////
+    if (tune_mode)
+    {
+        if (tune_lin && tune_ang)
+        {
+            ROS_WARN("[Tmove]: Params incorrectly set, turning off tune mode");
+            tune_mode = false;
+        }
+        else if (tune_lin && tune_ang)
+        {
+            ROS_WARN("[Tmove]: Params incorrectly set, turning off tune mode");
+            tune_mode = false;
+        }
+    }
 
-    ROS_INFO(" TMOVE : ===== BEGIN =====");
-
-    // main loop
     if (enable_move)
     {
         while (ros::ok() && nh.param("run", true))
@@ -222,114 +224,64 @@ int main(int argc, char **argv)
             }
             prev_time += dt;
 
-            ////////////////// MOTION CONTROLLER HERE //////////////////
+            //coupling --> velocity damping from coupling --> constrain linear vel --> constrain angular vel
+            //linear errors
+            double curr_linear_error = dist_euc(robot_position , target_position);
+            cumulative_linear_error += (curr_linear_error * dt);
+
+            //linear gains
+            double p_cmd_lin = Kp_lin * curr_linear_error;
+            double i_cmd_lin = Ki_lin * cumulative_linear_error;
+            double d_cmd_lin = Kd_lin * (curr_linear_error - prev_linear_error) / dt;
+            double raw_cmd_lin_vel = p_cmd_lin + i_cmd_lin + d_cmd_lin; //the raw signal based on euc error
+
+            //angular errors
+            double curr_angular_error = limit_angle(atan2(target_position.y - robot_position.y , target_position.x - robot_position.x) - robot_angle); // [-pi,pi)
+
+            //we want to check if the errors are greater than |pi/2| aka 90 degrees on either side
+            if (fabs(curr_angular_error) > M_PI/2)
+            {
+                raw_cmd_lin_vel *= -1; //going to reverse to the target
+                curr_angular_error -= (sign(curr_angular_error) * M_PI); //now, curr_angular error is constrained between (-pi/2 , pi/2)
+            } //at this point, we have the final curr_angular_error!
+
+            ROS_WARN_COND(fabs(curr_angular_error) > M_PI/2 , "Current angular error has not be constrained properly!");
+            cumulative_angular_error += (curr_angular_error * dt); //we can add in the cumulative angular error now
+            
+            double coupled_cmd_vel = raw_cmd_lin_vel * dampingPieceWise(curr_angular_error , M_PI/12); //apply the coefficient to raw cmd_vel to couple it to ang error
+
+            double p_cmd_ang = Kp_ang * curr_angular_error;
+            double i_cmd_ang = Ki_ang * cumulative_angular_error;
+            double d_cmd_ang = Kd_ang * (curr_angular_error - prev_angular_error) / dt ;
+            double coupled_cmd_ang = p_cmd_ang + i_cmd_ang + d_cmd_ang;
+
+            double curr_lin_acc = (coupled_cmd_vel - cmd_lin_vel) / dt;
+            double sat_lin_acc = fabs(curr_lin_acc) > max_lin_acc ? sign(curr_lin_acc) * max_lin_acc : curr_lin_acc;
+            double linvel_from_sat_lin_acc = cmd_lin_vel + (sat_lin_acc * dt);
+            double sat_lin_vel = fabs(linvel_from_sat_lin_acc) > max_lin_vel ? sign(linvel_from_sat_lin_acc) * max_lin_vel : linvel_from_sat_lin_acc;
+
+            double curr_ang_acc = (coupled_cmd_ang - cmd_ang_vel) / dt;
+            double sat_ang_acc = fabs(curr_ang_acc) > max_ang_acc ? sign(curr_ang_acc) * max_ang_acc : curr_ang_acc;
+            double angvel_from_sat_ang_acc = cmd_ang_vel + (sat_ang_acc * dt);
+            double sat_ang_vel = fabs(angvel_from_sat_ang_acc) > max_ang_vel ? sign(angvel_from_sat_ang_acc) * max_ang_vel : angvel_from_sat_ang_acc;
+
             if (tune_mode)
             {
-                ROS_INFO("[Move]: In Controller Tuning Mode");
-                ROS_INFO_STREAM("[Move]: Target Pos: (" << target_position.x << "," << target_position.y<<")");
-                ROS_INFO_STREAM("[Move]: Robot Position: (" << robot_position.x << "," << robot_position.y<<")");
-
-                //linear errors
-                double curr_linear_error = target_position.x - robot_position.x; //the current euclidean error between robot_pos and target_pos only in the x dir for tuning
-                cumulative_linear_error += (curr_linear_error * dt); //update cumulative error
-                
-                //linear gains
-                double p_cmd_lin = curr_linear_error * Kp_lin; //proportional gain
-                double i_cmd_lin = cumulative_linear_error * Ki_lin; //integral gain
-                double d_cmd_lin = Kd_lin * (curr_linear_error - prev_linear_error) / dt; //derivative gain
-                cmd_lin_vel = p_cmd_lin + i_cmd_lin + d_cmd_lin; //command vel for linear
-
-                ROS_INFO_STREAM("[Move]: Target heading wrt Robot position: " << atan2(target_position.y - robot_position.y , target_position.x - robot_position.x));
-                ROS_INFO_STREAM("[Move]: Robot Heading: " << robot_angle);
-                
-                //angular errors
-                double curr_angular_error = limit_angle(atan2(target_position.y - robot_position.y , target_position.x - robot_position.x) - robot_angle); //angular error
-                cumulative_angular_error += (curr_angular_error * dt); //update cumulative error
-
-                //angular gains
-                double p_cmd_ang = curr_angular_error * Kp_ang; //proportional gain
-                double i_cmd_ang = cumulative_angular_error * Ki_ang; //integral gain
-                double d_cmd_ang = Kd_ang * (curr_angular_error - prev_angular_error) / dt; //derivative gain
-                cmd_ang_vel = p_cmd_ang + i_cmd_ang + d_cmd_ang; //command vel for angular
-                
-                ROS_INFO_STREAM("[Move]: Linear Error: " << curr_linear_error << " " << "Angular Error: " << curr_angular_error);
                 if (tune_lin)
                 {
-                    cmd_ang_vel = 0; //we only tune linear velocity here
+                    sat_ang_vel = 0;
                 }
-
-                if (tune_ang)
+                else if (tune_ang)
                 {
-                    cmd_lin_vel = 0; //we only tune angular velocity here
+                    sat_lin_vel = 0;
                 }
-                ROS_INFO_STREAM("[Move:] Cmd Lin Vel:" << cmd_lin_vel);
-                ROS_INFO_STREAM("[Move:] Cmd Ang Vel:" << cmd_ang_vel);
-                
-                //update previous store
-                prev_linear_error = curr_linear_error;
-                prev_angular_error = curr_angular_error;
             }
-            //coupling --> velocity damping from coupling --> constrain linear vel --> constrain angular vel
-            else
-            {
-                ROS_INFO("[Move]: In Controller Run Mode");
-                ROS_INFO_STREAM("[Move]: Target Pos: (" << target_position.x << "," << target_position.y<<")");
-                ROS_INFO_STREAM("[Move]: Robot Position: (" << robot_position.x << "," << robot_position.y<<")");
-                
-                //linear errors
-                double curr_linear_error = dist_euc(robot_position , target_position);
-                cumulative_linear_error += (curr_linear_error * dt);
+            
+            cmd_lin_vel = sat_lin_vel;
+            cmd_ang_vel = sat_ang_vel;
+            prev_linear_error = curr_linear_error;
+            prev_angular_error = curr_angular_error;
 
-                //linear gains
-                double p_cmd_lin = Kp_lin * curr_linear_error;
-                double i_cmd_lin = Ki_lin * cumulative_linear_error;
-                double d_cmd_lin = Kd_lin * (curr_linear_error - prev_linear_error) / dt;
-                double raw_cmd_lin_vel = p_cmd_lin + i_cmd_lin + d_cmd_lin; //the raw signal based on euc error
-                ROS_INFO_STREAM("[Move]: Raw Cmd Lin: " << raw_cmd_lin_vel);
-                //angular errors
-                double curr_angular_error = limit_angle(atan2(target_position.y - robot_position.y , target_position.x - robot_position.x) - robot_angle); // [-pi,pi)
-                ROS_INFO_STREAM("[Move]: Final Linear Error: " << curr_linear_error);
-                ROS_INFO_STREAM("[Move]: Raw Angular Error: " << curr_angular_error);
-                //we want to check if the errors are greater than |pi/2| aka 90 degrees on either side
-                if (fabs(curr_angular_error) > M_PI/2)
-                {
-                    raw_cmd_lin_vel *= -1; //going to reverse to the target
-                    curr_angular_error -= (sign(curr_angular_error) * M_PI); //now, curr_angular error is constrained between (-pi/2 , pi/2)
-                } //at this point, we have the final curr_angular_error!
-                ROS_INFO_STREAM("[Move]: Final Angular Error: " << curr_angular_error);
-                ROS_WARN_COND(fabs(curr_angular_error) > M_PI/2 , "Current angular error has not be constrained properly!");
-                cumulative_angular_error += (curr_angular_error * dt); //we can add in the cumulative angular error now
-                
-                double coupled_cmd_vel = raw_cmd_lin_vel * dampingPieceWise(curr_angular_error , M_PI/12); //apply the coefficient to raw cmd_vel to couple it to ang error
-
-                double p_cmd_ang = Kp_ang * curr_angular_error;
-                double i_cmd_ang = Ki_ang * cumulative_angular_error;
-                double d_cmd_ang = Kd_ang * (curr_angular_error - prev_angular_error) / dt ;
-                double coupled_cmd_ang = p_cmd_ang + i_cmd_ang + d_cmd_ang;
-                ROS_INFO_STREAM("[Move]: Coupled Linear Command: " << coupled_cmd_vel);
-                ROS_INFO_STREAM("[Move]: Coupled Angular Command: " << coupled_cmd_ang);
-                double curr_lin_acc = (coupled_cmd_vel - cmd_lin_vel) / dt;
-                double sat_lin_acc = fabs(curr_lin_acc) > max_lin_acc ? sign(curr_lin_acc) * max_lin_acc : curr_lin_acc;
-                double linvel_from_sat_lin_acc = cmd_lin_vel + (sat_lin_acc * dt);
-                double sat_lin_vel = fabs(linvel_from_sat_lin_acc) > max_lin_vel ? sign(linvel_from_sat_lin_acc) * max_lin_vel : linvel_from_sat_lin_acc;
-                ROS_INFO_STREAM("[Move]: Current Linear Acceleration: " << curr_lin_acc);
-                ROS_INFO_STREAM("[Move]: Saturated Linear Acceleration: " << sat_lin_acc);
-                ROS_INFO_STREAM("[Move]: Linear Vel from Sat Linear Acceleration: " << linvel_from_sat_lin_acc);
-                ROS_INFO_STREAM("[Move]: Saturated Linear Velocity: " << sat_lin_vel);
-                double curr_ang_acc = (coupled_cmd_ang - cmd_ang_vel) / dt;
-                double sat_ang_acc = fabs(curr_ang_acc) > max_ang_acc ? sign(curr_ang_acc) * max_ang_acc : curr_ang_acc;
-                double angvel_from_sat_ang_acc = cmd_ang_vel + (sat_ang_acc * dt);
-                double sat_ang_vel = fabs(angvel_from_sat_ang_acc) > max_ang_vel ? sign(angvel_from_sat_ang_acc) * max_ang_vel : angvel_from_sat_ang_acc;
-                ROS_INFO_STREAM("[Move]: Current Angular Acceleration: " << curr_ang_acc);
-                ROS_INFO_STREAM("[Move]: Saturated Angualr Acceleration: " << sat_ang_acc);
-                ROS_INFO_STREAM("[Move]: Angular Vel from Sat Angular Acceleration: " << angvel_from_sat_ang_acc);
-                ROS_INFO_STREAM("[Move]: Saturated Angular Velocity: " << sat_ang_vel);
-                //update all values for publishing and previous store
-                cmd_lin_vel = sat_lin_vel;
-                cmd_ang_vel = sat_ang_vel;
-                prev_linear_error = curr_linear_error;
-                prev_angular_error = curr_angular_error;
-            }
             // publish speeds
             msg_cmd.linear.x = cmd_lin_vel;
             msg_cmd.angular.z = cmd_ang_vel;
@@ -338,8 +290,8 @@ int main(int argc, char **argv)
             // verbose
             if (verbose)
             {
-                ROS_INFO(" TMOVE :  FV(%6.3f) AV(%6.3f)", cmd_lin_vel, cmd_ang_vel);
-                ROS_INFO("#####################################################################");
+                //ROS_INFO(" TMOVE :  FV(%6.3f) AV(%6.3f)", cmd_lin_vel, cmd_ang_vel);
+                //ROS_INFO("#####################################################################");
             }
 
             // wait for rate

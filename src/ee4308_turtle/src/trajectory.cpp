@@ -2,6 +2,7 @@
 
 std::vector<Position> post_process(std::vector<Position> path, Grid &grid) // returns the turning points
 {
+    // LOS los;
     // (1) obtain turning points
     if (path.size() <= 2)
     { // path contains 0 to elements. Nothing to process
@@ -40,17 +41,17 @@ std::vector<Position> post_process(std::vector<Position> path, Grid &grid) // re
     {
         Index to_test = grid.pos2idx(turning_points.at(i+1));
         std::vector<Index> ray = bresenham_los(curr , to_test);
-        bool los = true;
+        bool islos = true;
 
         for (auto &id : ray)
         {
             if (!grid.get_cell(id))
             {
-                los = false;
+                islos = false;
                 break;
             }
         }
-        if (!los)
+        if (!islos)
         {
             x++;
             post_process_path.push_back(turning_points.at(i));
@@ -58,139 +59,102 @@ std::vector<Position> post_process(std::vector<Position> path, Grid &grid) // re
         }
     }
     post_process_path.push_back(turning_points.back());
+    // for (Position &p : post_process_path)
+    // {
+    //     if (grid.get_cell(p))
+    //     {
+    //         ROS_WARN("POST PROCESS PATH CUTS THROUGH OBSTACLES!");
+    //     }
+    // }
     return post_process_path;
 }
 
-std::vector<Position> generate_trajectory(Position pos_begin, Position pos_end, double average_speed, double target_dt, Grid & grid, double robot_angle , double initial_vel)
+std::vector<Position> generate_velocities(std::vector<Position>& path , double initial_vel , double initial_rbt_angle , double average_speed)
 {
-    //This is a quntic hermite spline implemented to allow the robot to have smooth and continuous motion with little jerks
-    double turning_velocity = 0.06; //this is the velocity magnitude of the spline at its end points when its going to turn
-    double allowance = 0.05; //we use this to segemt a spline into 3 chunks using this buffer allowance
+    //Index 0 is the goal , Last index is the start position. Left of the vector is later points, right of the vector is prev points
+    //Velocities must always point towards the next point. So , it must always be Next Point - Prev Point for the right direction
 
-    double x_buffer = allowance * std::cos(robot_angle);
-    double y_buffer = allowance * std::sin(robot_angle);
+    // std::vector<Position> velocities;
+    double initial_vel_x = initial_vel * std::cos(initial_rbt_angle);
+    double initial_vel_y = initial_vel * std::sin(initial_rbt_angle);
+    Position initial_vel_vec(initial_vel_x , initial_vel_y);
+    std::vector<Position> velocities = {initial_vel_vec};
+    // for (int m = 1 ; m < path.size() ; ++m) maybe not the best method to generate velocities...
+    // {
+    //     Position &turn_pt_next = path[m - 1];
+    //     Position &turn_pt_cur = path[m];
 
-    Position buffered_start(pos_begin.x + x_buffer , pos_begin.y + y_buffer); //our buffered start
-    double buffer_heading1 = limit_angle(heading(pos_begin , buffered_start));
-    ROS_WARN_COND(fabs(buffer_heading1) > M_PI/2, "Buffer heading not constrained!");
-
-    std::vector<Position> trajectory = {pos_begin};
-//###########################First Chunk#####################################
-    //velocities
-    double x_vel_i = initial_vel * std::cos(robot_angle);
-    double y_vel_i = initial_vel * std::sin(robot_angle);
-    double x_vel_f = turning_velocity * std::cos(buffer_heading1);
-    double y_vel_f = turning_velocity * std::sin(buffer_heading1);
-    double x_acc = 0;
-    double y_acc = 0;
-
-    //duration
-    double Dx = buffered_start.x - pos_begin.x;
-    double Dy = buffered_start.y - pos_begin.y;
-    double duration = std::sqrt((Dx*Dx) + (Dy*Dy)) / average_speed;
-    
-    //coefficients of x
-    double a0 = pos_begin.x;
-    double a1 = x_vel_i;
-    double a2 = 0.5 * x_acc;
-    double a3 = (pos_begin.x * -10 / pow(duration, 3)) + (x_vel_i * -6 / pow(duration, 2))+  
-                ((-3 / 2 * duration) * x_acc) + (10 / pow(duration, 3) * buffered_start.x)+ 
-                (-4 / pow(duration, 2) * x_vel_f) + ((1 / 2 * duration) * x_acc);
-    
-    double a4 = (15 / pow(duration, 4) * pos_begin.x) + (8 / pow(duration, 3) * x_vel_i) + 
-                (3 / 2 / pow(duration, 2) * x_acc) + (-15 / pow(duration, 4) * buffered_start.x) + 
-                (7 / pow(duration, 3) * x_vel_f) + (-1 / pow(duration, 2) * x_acc);
-    
-    double a5 = (-6 / pow(duration, 5) * pos_begin.x) + (-3 / pow(duration, 4) * x_vel_i) + 
-                (-1 / 2 / pow(duration, 3) * x_acc) + (6 / pow(duration, 5) * buffered_start.x) + 
-                (-3 / pow(duration, 4) * x_vel_f) + (1 / 2 / pow(duration, 3) * x_acc);
-
-    double b0 = pos_begin.y;
-    double b1 = y_vel_i;
-    double b2 = 0.5 * y_acc;
-    double b3 = (pos_begin.y * -10 / pow(duration, 3)) + (y_vel_i * -6 / pow(duration, 2))+  
-                ((-3 / 2 * duration) * y_acc) + (10 / pow(duration, 3) * buffered_start.y)+ 
-                (-4 / pow(duration, 2) * y_vel_f) + ((1 / 2 * duration) * y_acc);
-    
-    double b4 = (15 / pow(duration, 4) * pos_begin.y) + (8 / pow(duration, 3) * y_vel_i) + 
-                (3 / 2 / pow(duration, 2) * y_acc) + (-15 / pow(duration, 4) * buffered_start.y) + 
-                (7 / pow(duration, 3) * y_vel_f) + (-1 / pow(duration, 2) * y_acc);
-    
-    double b5 = (-6 / pow(duration, 5) * pos_begin.y) + (-3 / pow(duration, 4) * y_vel_i) + 
-                (-1 / 2 / pow(duration, 3) * y_acc) + (6 / pow(duration, 5) * buffered_start.y) + 
-                (-3 / pow(duration, 4) * y_vel_f) + (1 / 2 / pow(duration, 3) * y_acc);
-
-    for (double time = target_dt ; time < duration ; time += target_dt)
+    //     //ROS_INFO_STREAM("Next: (" << turn_pt_next.x << "," << turn_pt_next.y<<")");
+    //     //ROS_INFO_STREAM("Curr: (" << turn_pt_cur.x << "," << turn_pt_cur.y<<")");
+    //     Position dir_with_mag = turn_pt_cur - turn_pt_next;
+    //     //ROS_INFO_STREAM("Dir with mag: (" << dir_with_mag.x << "," << dir_with_mag.y << ")");
+    //     //ROS_INFO_STREAM("Magnitude: " << dir_with_mag.mag());
+    //     Position dir_unit = dir_with_mag.unit_vec();
+    //     //ROS_INFO_STREAM("Dir Unit: (" << dir_unit.x << "," << dir_unit.y << ")");
+    //     Position final_velocity = dir_unit * average_speed;
+    //     //ROS_INFO_STREAM("Final :" << final_velocity.x << "," << final_velocity.y <<")");
+    //     velocities.push_back(final_velocity);
+    // }
+    for (int i = 1 ; i < path.size() - 1 ; ++i)
     {
-        double x = a0 + a1 * time + a2 * pow(time, 2) + a3 * pow(time, 3) + a4 * pow(time, 4) + a5 * pow(time, 5);
-        double y = b0 + b1 * time + b2 * pow(time, 2) + b3 * pow(time, 3) + b4 * pow(time, 4) + b5 * pow(time, 5);
-        trajectory.emplace_back(x,y);
+        Position dir = path.at(i+1) - path.at(i-1);
+        double velocity_heading = atan2(dir.y , dir.x);
+        Position vel(average_speed * std::cos(velocity_heading), average_speed * std::sin(velocity_heading));
+        velocities.push_back(vel);
     }
-    //###########################First Chunk Done#####################################
+    velocities.push_back(Position(0,0)); //we place in an empty velocity at the end
+    // velocities.push_back(initial_vel_vec);
+    return velocities;
+}
+std::vector<Position> generate_trajectory(Position pos_begin, Position pos_end, Position vel_begin , Position vel_end , double average_speed, double target_dt ,  Grid & grid)
+{
+    double Dx = pos_end.x - pos_begin.x;
+    double Dy = pos_end.y - pos_begin.y;
+    double d = sqrt(Dx * Dx + Dy * Dy) / average_speed;
+    //maybe?
+    vel_end = vel_begin.avg(vel_end);
+    //maybe?
+    std::vector<Position> traj = {pos_begin};
 
-    double end_x = allowance * std::cos(buffer_heading1);
-    double end_y = allowance * std::sin(buffer_heading1);
-    Position buffered_end(pos_end.x - end_x , pos_end.y - end_y);
-    double buffer_heading2 = limit_angle(heading(buffered_end, pos_end));
-
-    //###########################Second Chunk#####################################
-    x_vel_i = initial_vel * std::cos(buffer_heading1);
-    y_vel_i = initial_vel * std::sin(buffer_heading1);
-    x_vel_f = turning_velocity * std::cos(buffer_heading2);
-    y_vel_f = turning_velocity * std::sin(buffer_heading2);
-    Dx = buffered_end.x - buffered_start.x;
-    Dy = buffered_end.y - buffered_start.y;
-    duration = std::sqrt((Dx*Dx) + (Dy*Dy)) / average_speed;
-
-    //generate an interpolation based trajectory for this chunk
-    // double time = target_dt;
-    for (double time = target_dt ; time<duration ; time+=target_dt)
-    {
-        double x = buffered_start.x + Dx * time / duration;
-        double y = buffered_start.y + Dy * time / duration;
-        trajectory.emplace_back(x,y);
-    }
-    //###########################Second Chunk Done#####################################
-
-    Dx = pos_end.x - buffered_end.x;
-    Dy = pos_end.y - buffered_end.y;
-    duration = std::sqrt((Dx*Dx) + (Dy*Dy)) / average_speed;
-
-    //###########################Third Chunk#####################################
-    a0 = buffered_end.x;
-    a1 = x_vel_i;
-    a2 = 0.5 * x_acc;
-    a3 = (-10 / pow(duration, 3) * buffered_end.x) + (-6 / pow(duration, 2) * x_vel_i) + 
-         ((-3 / 2 * duration) * x_acc) + (10 / pow(duration, 3) * pos_end.x) + 
-         (-4 / pow(duration, 2) * x_vel_f) + ((1 / 2 * duration) * x_acc);
-    a4 = (15 / pow(duration, 4) * buffered_end.x) + (8 / pow(duration, 3) * x_vel_i) + 
-         (3 / 2 / pow(duration, 2) * x_acc) + (-15 / pow(duration, 4) * pos_end.x) + 
-         (7 / pow(duration, 3) * x_vel_f) + (-1 / pow(duration, 2) * x_acc);
-    a5 = (-6 / pow(duration, 5) * buffered_end.x) + (-3 / pow(duration, 4) * x_vel_i) + 
-         (-1 / 2 / pow(duration, 3) * x_acc) + (6 / pow(duration, 5) * pos_end.x) + 
-         (-3 / pow(duration, 4) * x_vel_f) + (1 / 2 / pow(duration, 3) * x_acc);
-
-    b0 = buffered_end.y;
-    b1 = y_vel_i;
-    b2 = 0.5 * y_acc;
-    b3 = (-10 / pow(duration, 3) * buffered_end.y) + (-6 / pow(duration, 2) * y_vel_i) + 
-         ((-3 / 2 * duration) * y_acc) + (10 / pow(duration, 3) * pos_end.y) + 
-         (-4 / pow(duration, 2) *y_vel_f) + ((1 / 2 * duration) * y_acc);
-    b4 = (15 / pow(duration, 4) * buffered_end.y) + (8 / pow(duration, 3) * y_vel_i) + 
-         (3 / 2 / pow(duration, 2) * y_acc) + (-15 / pow(duration, 4) * pos_end.y) + 
-         (7 / pow(duration, 3) * y_vel_f) + (-1 / pow(duration, 2) * y_acc);
-    b5 = (-6 / pow(duration, 5) * buffered_end.y) + (-3 / pow(duration, 4) * y_vel_i) + 
-         (-1 / 2 / pow(duration, 3) * y_acc) + (6 / pow(duration, 5) * pos_end.y) + 
-         (-3 / pow(duration, 4) * y_vel_f) + (1 / 2 / pow(duration, 3) * y_acc);
+    double M[6][6] = { {1 , 0 , 0 , 0 , 0 , 0},
+                       {0 , 1 , 0 , 0 , 0 , 0},
+                       {0 , 0 , 0.5, 0 , 0 , 0},
+                       {-10.0 / (d*d*d) , -6.0 / (d*d) , -3.0 / (2.0 * d) , 10.0 / (d*d*d) , -4.0 / (d*d) , 1.0 / (2.0 * d)},
+                       {15.0 / (d*d*d*d) , 8.0 / (d*d*d) , 3.0 / (2.0 * (d*d)) , -15.0 / (d*d*d*d) , 7.0 / (d*d*d), -1.0 / (d*d)},
+                       {-6.0 / (d*d*d*d*d) , -3.0 / (d*d*d*d) , -1.0 / (2.0 * (d*d*d)) , 6.0 / (d*d*d*d*d) , -3.0 / (d*d*d*d), 1.0 / (2.0 * (d*d*d))}
+                     };
     
-    for (double time = target_dt ; time < duration ; time += target_dt)
+    std::array<double,6> in_x = {pos_begin.x , vel_begin.x , 0 , pos_end.x , vel_end.x , 0};
+    std::array<double,6> in_y = {pos_begin.y, vel_begin.y , 0 , pos_end.y , vel_end.y , 0};
+
+    std::array<double,6> ax = {0 , 0 , 0 , 0 , 0 , 0};
+    std::array<double,6> by = {0 , 0 , 0 , 0 , 0 , 0};
+
+    for (int i = 0 ; i < 6 ; ++i)
     {
-        double x = a0 + a1 * time + a2 * pow(time, 2) + a3 * pow(time, 3) + a4 * pow(time, 4) + a5 * pow(time, 5);
-        double y = b0 + b1 * time + b2 * pow(time, 2) + b3 * pow(time, 3) + b4 * pow(time, 4) + b5 * pow(time, 5);
-        trajectory.emplace_back(x,y);
+        for (int j = 0 ; j < 6; ++j)
+        {
+            ax[i] += (M[i][j] * in_x[j]);
+            by[i] += (M[i][j] * in_y[j]);
+        }
     }
-    //###########################Third Chunk Done#####################################
-    return trajectory;
+
+    for (double time = target_dt ; time < d ; time += target_dt)
+    {
+        double px = ax[0] + ax[1]*time + ax[2]*time*time + ax[3]*time*time*time + ax[4]*time*time*time*time + ax[5]*time*time*time*time*time;
+        double py = by[0] + by[1]*time + by[2]*time*time + by[3]*time*time*time + by[4]*time*time*time*time + by[5]*time*time*time*time*time;
+        // if (!grid.get_cell(Position(px,py))) maybe an optimization?
+        // {
+        //     break;
+        // }
+        traj.emplace_back(px,py);
+        // traj.emplace_back(
+        //     pos_begin.x + Dx*time / d,
+        //     pos_begin.y + Dy*time / d
+        // );
+        
+    }
+    return traj;
 }
 
 bool is_safe_trajectory(std::vector<Position> trajectory, Grid & grid)
