@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     bool tune_lin;
     bool tune_ang;
 
-    std::string function_name = "pw";
+    std::string function_name = "cos";
     std::function<double(double)> damping_function;
 
     if (!nh.param("enable_move", enable_move, true))
