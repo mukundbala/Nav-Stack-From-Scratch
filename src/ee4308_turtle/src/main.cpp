@@ -260,6 +260,7 @@ int main(int argc, char **argv)
                     if (dist_euc(pos_rbt , backup_goal) < close_enough)
                     {
                         bad_pos_rbt = false;
+                        ROS_INFO(" TMAIN : Backup goal reached");
                     }
                 }
 

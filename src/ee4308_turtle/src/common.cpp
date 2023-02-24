@@ -165,3 +165,22 @@ std::vector<Index> bresenham_los(Index& src, Index& tgt)
     }
     return ray;
 }
+
+timeLogger::timeLogger()
+{
+    count_ = 0;
+}
+
+void timeLogger::start()
+{
+    start_ = clock_.now();
+    count_++;
+}
+void timeLogger::stop()
+{
+    end_ = clock_.now();
+    elapsed_time_ = end_ - start_;
+    total_duration_ += elapsed_time_;
+    ROS_INFO_STREAM("Time taken this loop: " << elapsed_time_.count()<<"ms");
+    ROS_INFO_STREAM("Average loop time: " << total_duration_.count() / count_<<"ms");
+}

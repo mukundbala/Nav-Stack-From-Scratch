@@ -1,9 +1,9 @@
 # main
-close_enough: 0.1 ##0.1 default
+close_enough: 0.05 ##0.1 default
 target_dt: 0.04 # this (s) should be slower than or equals to main_iter_rate (Hz). Default 0.04
 average_speed: 0.2
 cell_size: 0.05
-inflation_radius: 0.15 #0.22
+inflation_radius: 0.2 #0.22
 log_odds_thresh: 10 # this should be smaller than log_odds_cap
 log_odds_cap: 20
 main_iter_rate: 25 
@@ -21,7 +21,7 @@ motion_iter_rate: 50
 # move
 enable_move: true
 verbose_move: true
-Kp_lin: 2.4
+Kp_lin: 2.5
 Ki_lin: 0.0
 Kd_lin: 0.2
 max_lin_vel: 0.15 # max is 0.22

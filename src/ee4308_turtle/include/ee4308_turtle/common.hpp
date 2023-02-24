@@ -64,4 +64,20 @@ double dampingQuadratic(double error_value);
 double dampingPieceWise(double error_value , double kill_limit);
 
 std::vector<Index> bresenham_los(Index& src, Index& tgt);
+
+class timeLogger
+{
+private:
+    std::chrono::high_resolution_clock clock_;
+    std::chrono::high_resolution_clock::time_point start_;
+    std::chrono::high_resolution_clock::time_point end_;
+    std::chrono::duration<double,std::milli> elapsed_time_;
+    std::chrono::duration<double,std::milli> total_duration_;
+    double count_;
+
+public:
+    timeLogger();
+    void start();
+    void stop();
+};
 #endif
