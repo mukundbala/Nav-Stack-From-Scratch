@@ -37,3 +37,7 @@ move_iter_rate: 25
 tune_mode: false
 tune_lin: false ##if tune_mode is true, ensure that only tune_lin OR tune_ang is true. This is because we tune the PIDs one at a time 
 tune_ang: false
+
+
+#damping function
+func_type: 'pw' ## 'exp' , 'quadratic' , 'cos' , 'pw'

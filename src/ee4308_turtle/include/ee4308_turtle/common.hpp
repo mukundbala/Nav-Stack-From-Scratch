@@ -1,6 +1,8 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 #include <geometry_msgs/PoseStamped.h>
+#include <cmath>
+#include <chrono>
 #include "ros/ros.h"
 struct Index
 {
@@ -58,10 +60,11 @@ double dist_euc(double src_x, double src_y, double tgt_x, double tgt_y);
 double heading(Position src, Position tgt); // overload
 double limit_angle(double angle);
 double headingFromQuat(geometry_msgs::PoseStamped &pose);
+
 double dampingCos(double error_value);
 double dampingQuadratic(double error_value);
-//kill limit means that between |[0,kill_limit]|, damping follows cos, after which it returns 0, therefore killing cmd_lin_vel to 0
-double dampingPieceWise(double error_value , double kill_limit);
+double dampingPieceWise(double error_value);
+double dampingExp(double error_value);
 
 std::vector<Index> bresenham_los(Index& src, Index& tgt);
 

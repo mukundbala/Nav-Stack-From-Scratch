@@ -86,17 +86,21 @@ double headingFromQuat(geometry_msgs::PoseStamped &pose)
 
 double dampingCos(double error_value)
 {
+    // ROS_INFO("USING COS");
     return cos(error_value);
 }
 
 double dampingQuadratic(double error_value)
 {
+    // ROS_INFO("USING QUADRATIC");
     double value = (-1 / (0.25 * M_PI * M_PI)) * (error_value - M_PI) * (error_value + M_PI);
     return value;
 }
 
-double dampingPieceWise(double error_value , double kill_limit)
+double dampingPieceWise(double error_value)
 {
+    // ROS_INFO("USING PIECEWISE");
+    double kill_limit = M_PI / 12; //we can change this accordingly
     if (fabs(error_value) > kill_limit)
     {
         return 0;
@@ -107,6 +111,24 @@ double dampingPieceWise(double error_value , double kill_limit)
         ROS_WARN_COND(coeff <= 0 , "Warning, Something wrong with the damping coeff");
         return coeff; // a value between less than 1 
     }
+}
+
+double dampingExp(double error_value)
+{
+    // ROS_INFO("USING INVERSE EXPONENTIAL");
+    double exp_arg = -((-std::fabs(error_value) + M_PI / 4.0));
+    double denom = 1.0 + std::pow(std::exp(exp_arg),8);
+
+    double coeff = 1.0 / denom;
+
+    //safeguard
+    if (coeff > 1 || coeff < 0)
+    {
+        ROS_WARN("[Tmove]: Exponential Coefficient out of bounds. Reverting to piecewise");
+        coeff = dampingPieceWise(error_value);
+    }
+    
+    return coeff;
 }
 
 std::vector<Index> bresenham_los(Index& src, Index& tgt)
