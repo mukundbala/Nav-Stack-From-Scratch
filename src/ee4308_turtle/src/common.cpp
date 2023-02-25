@@ -93,14 +93,14 @@ double dampingCos(double error_value)
 double dampingQuadratic(double error_value)
 {
     // ROS_INFO("USING QUADRATIC");
-    double value = (-1 / (0.25 * M_PI * M_PI)) * (error_value - M_PI) * (error_value + M_PI);
+    double value = (-1 / (0.25 * M_PI * M_PI)) * (error_value - M_PI / 2) * (error_value + M_PI / 2);
     return value;
 }
 
 double dampingPieceWise(double error_value)
 {
     // ROS_INFO("USING PIECEWISE");
-    double kill_limit = M_PI / 12; //we can change this accordingly
+    double kill_limit = M_PI / 3; //we can change this accordingly
     if (fabs(error_value) > kill_limit)
     {
         return 0;

@@ -3,7 +3,7 @@ close_enough: 0.05 ##0.1 default
 target_dt: 0.04 # this (s) should be slower than or equals to main_iter_rate (Hz). Default 0.04
 average_speed: 0.2
 cell_size: 0.05
-inflation_radius: 0.2 #0.22
+inflation_radius: 0.15 #0.22
 log_odds_thresh: 10 # this should be smaller than log_odds_cap
 log_odds_cap: 20
 main_iter_rate: 25 
@@ -13,8 +13,8 @@ verbose_motion: false
 use_internal_odom: false
 axle_track: 0.16
 wheel_radius: 0.033
-weight_odom_v: 0.97
-weight_odom_w: 0.03
+weight_odom_v: 0.99
+weight_odom_w: 0.01
 straight_thresh: 0.05
 motion_iter_rate: 50
 

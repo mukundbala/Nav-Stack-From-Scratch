@@ -31,7 +31,6 @@ std::vector<Position> post_process(std::vector<Position> path, Grid &grid) // re
     }
     // add path[path.size()-1] (start) to turning_points
     turning_points.push_back(path.back());
-
     std::vector<Position> post_process_path;
     post_process_path.push_back(turning_points.front()); //the front of the array is th end
     int x = 0;
@@ -59,42 +58,18 @@ std::vector<Position> post_process(std::vector<Position> path, Grid &grid) // re
         }
     }
     post_process_path.push_back(turning_points.back());
-    // for (Position &p : post_process_path)
-    // {
-    //     if (grid.get_cell(p))
-    //     {
-    //         ROS_WARN("POST PROCESS PATH CUTS THROUGH OBSTACLES!");
-    //     }
-    // }
     return post_process_path;
 }
 
 std::vector<Position> generate_velocities(std::vector<Position>& path , double initial_vel , double initial_rbt_angle , double average_speed)
 {
     //Index 0 is the goal , Last index is the start position. Left of the vector is later points, right of the vector is prev points
-    //Velocities must always point towards the next point. So , it must always be Next Point - Prev Point for the right direction
 
     // std::vector<Position> velocities;
     double initial_vel_x = initial_vel * std::cos(initial_rbt_angle);
     double initial_vel_y = initial_vel * std::sin(initial_rbt_angle);
     Position initial_vel_vec(initial_vel_x , initial_vel_y);
     std::vector<Position> velocities = {initial_vel_vec};
-    // for (int m = 1 ; m < path.size() ; ++m) maybe not the best method to generate velocities...
-    // {
-    //     Position &turn_pt_next = path[m - 1];
-    //     Position &turn_pt_cur = path[m];
-
-    //     //ROS_INFO_STREAM("Next: (" << turn_pt_next.x << "," << turn_pt_next.y<<")");
-    //     //ROS_INFO_STREAM("Curr: (" << turn_pt_cur.x << "," << turn_pt_cur.y<<")");
-    //     Position dir_with_mag = turn_pt_cur - turn_pt_next;
-    //     //ROS_INFO_STREAM("Dir with mag: (" << dir_with_mag.x << "," << dir_with_mag.y << ")");
-    //     //ROS_INFO_STREAM("Magnitude: " << dir_with_mag.mag());
-    //     Position dir_unit = dir_with_mag.unit_vec();
-    //     //ROS_INFO_STREAM("Dir Unit: (" << dir_unit.x << "," << dir_unit.y << ")");
-    //     Position final_velocity = dir_unit * average_speed;
-    //     //ROS_INFO_STREAM("Final :" << final_velocity.x << "," << final_velocity.y <<")");
-    //     velocities.push_back(final_velocity);
-    // }
     for (int i = 1 ; i < path.size() - 1 ; ++i)
     {
         Position dir = path.at(i+1) - path.at(i-1);
@@ -143,16 +118,7 @@ std::vector<Position> generate_trajectory(Position pos_begin, Position pos_end, 
     {
         double px = ax[0] + ax[1]*time + ax[2]*time*time + ax[3]*time*time*time + ax[4]*time*time*time*time + ax[5]*time*time*time*time*time;
         double py = by[0] + by[1]*time + by[2]*time*time + by[3]*time*time*time + by[4]*time*time*time*time + by[5]*time*time*time*time*time;
-        // if (!grid.get_cell(Position(px,py))) maybe an optimization?
-        // {
-        //     break;
-        // }
-        traj.emplace_back(px,py);
-        // traj.emplace_back(
-        //     pos_begin.x + Dx*time / d,
-        //     pos_begin.y + Dy*time / d
-        // );
-        
+        traj.emplace_back(px,py);   
     }
     return traj;
 }
@@ -173,21 +139,6 @@ bool is_safe_trajectory(std::vector<Position> trajectory, Grid & grid)
     {
         if (!grid.get_cell(trajectory[n]))
             return false;
-        /* // Use this if the trajectory points are not fine enough (distance > cell_size)
-        Index idx_src = grid.pos2idx(trajectory[n-1]);
-        Index idx_tgt = grid.pos2idx(trajectory[n]);
-        
-        grid.los.reset(idx_src, idx_tgt); // interpolate a straight line between points; can do away with los if points are fine enough.
-        Index idx = idx_src;
-        while (idx.i != idx_tgt.i || idx.j != idx_tgt.j)
-        {
-            if (!grid.get_cell(idx))
-            {
-                return false;
-            }
-            idx = grid.los.next();
-        }
-        */
     }
     return true;
 }

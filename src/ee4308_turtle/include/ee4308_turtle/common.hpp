@@ -16,9 +16,15 @@ struct Position
     Position();
     Position(double x, double y);
 
+    Position operator + (Position &rhs)const
+    {
+        Position val(this->x + rhs.x , this->y + rhs.y);
+        return val;
+    }
+
     Position operator - (Position &rhs)const
     {
-        Position val(this->x-rhs.x , this->y-rhs.y);
+        Position val(this->x - rhs.x , this->y - rhs.y);
         return val;
     }
 
