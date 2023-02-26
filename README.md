@@ -33,14 +33,14 @@ roscd ##this will bring you to the devel folder in your workspace
 
 ## Part 1: Differential Drive Robot
 
-- [ ] Motion Filter using odometry and joint states
-- [ ] Logs Odd Bayes Filter for Occupancy Grids
-- [ ] Mission Planner
+- [X] Motion Filter using odometry and joint states
+- [X] Logs Odd Bayes Filter for Occupancy Grids
+- [X] Mission Planner
 - [ ] Global Planner: Theta*
-- [ ] Global Planner: Djikstra
+- [X] Global Planner: Djikstra
 - [ ] Global Planner: BFS
-- [ ] Commander: Cubic Spline
-- [ ] Commander: PID Controller with Bidirectional Motion
+- [X] Commander: Quintic Spline
+- [X] Commander: PID Controller with Bidirectional Motion
 - [ ] Full code refactor
 - [ ] Improve param loading sequence using expeditious use of launch files
 
