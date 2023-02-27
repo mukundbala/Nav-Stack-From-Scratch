@@ -76,7 +76,7 @@ void MissionPlanner::run()
     ros::Rate spinrate(rate_);
     ROS_INFO("[Mission Planner]: Waiting for topics");
     
-    while (ros::ok() && goals_.empty() && nh_.param("trigger_nodes" , true) && robot_position_.x == -500 && nh_.param("trigger_mp" , false));
+    while (ros::ok() && nh_.param("trigger_nodes" , true) && goals_.empty() && robot_position_.x == -500);
     {
         spinrate.sleep();
         ros::spinOnce();
@@ -110,7 +110,6 @@ void MissionPlanner::run()
         goal_pub_.publish(goal);
             
         spinrate.sleep();
-        nh_.setParam("trigger_gp" , true);
     }
     ROS_INFO("[Mission Planner]: Shutting down all nodes!");
     nh_.setParam("trigger_nodes" , false);
