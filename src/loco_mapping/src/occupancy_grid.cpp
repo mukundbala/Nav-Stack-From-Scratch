@@ -16,7 +16,7 @@ OccupancyGrid::OccupancyGrid(ros::NodeHandle& nh)
 
     for (int i = 0; i < 360 ; ++i)
     {
-        DEG2RAD_[i] = M_PI * i /180;
+        DEG2RAD_[i] = M_PI * i /180.0;
     }
 
     //prepare maps
@@ -82,12 +82,10 @@ void OccupancyGrid::generateMask()
             double dist = i*i + j*j;
             if (dist <= furthest_away)
             {
-                bot_utils::Index pt(i,j);
-                inflation_mask_.emplace_back(pt);
+                inflation_mask_.emplace_back(i,j);
             }
         }
     }
-    ROS_INFO_STREAM("[OccupancyGrid]: Mask of size " << inflation_mask_.size()-1 << " created"); //we minus one because we exclude the origin grid
 }
 
 void OccupancyGrid::run()
@@ -99,7 +97,6 @@ void OccupancyGrid::run()
     {
         spinrate.sleep();
         ros::spinOnce();
-        ROS_INFO("[OccupancyGrid]: Waiting for topics");
     }
     ROS_INFO("[OccupancyGrid]: Starting Occupancy Grid!");
 
