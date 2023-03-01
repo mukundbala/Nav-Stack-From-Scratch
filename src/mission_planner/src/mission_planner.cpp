@@ -46,7 +46,7 @@ MissionPlanner::MissionPlanner(ros::NodeHandle &nh)
         cnt++;
     }
     ROS_INFO("###GOALS###");
-    ROS_INFO_STREAM("[Mission Planner]: Mission Planner ready!");
+    ROS_INFO_STREAM("[Mission Planner]: Mission Planner Prepared!");
 }
 
 void MissionPlanner::poseCallback(const geometry_msgs::PoseStampedConstPtr &pose_msg)

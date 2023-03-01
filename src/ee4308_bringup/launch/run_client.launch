@@ -9,9 +9,9 @@
         <rosparam command="load" file="$(find loco_mapping)/config/occupancy_grid.yaml"/>
         <rosparam command="load" file="$(find mission_planner)/config/mission_planner.yaml"/>
         <rosparam command="load" file="$(find global_planner)/config/global_planner.yaml"/>
-        <rosparam command="load" file="$(find commander)/config/commander.yaml"/>
-        <rosparam command="load" file="$(find commander)/config/pid.yaml"/>
-        <rosparam command="load" file="$(find commander)/config/trajectory.yaml"/>
+        <!-- <rosparam command="load" file="$(find commander)/config/commander.yaml"/>
+        <rosparam command="load" file="$(find commander)/config/pid.yaml"/> -->
+        <!-- <rosparam command="load" file="$(find commander)/config/trajectory.yaml"/> -->
 
         <param name="initial_x" value="$(env TURTLE_X)" type="double"/>
         <param name="initial_y" value="$(env TURTLE_Y)" type="double"/>
@@ -20,11 +20,7 @@
         <param name="max_x" value="$(env TURTLE_MAX_X)" type="double"/>
         <param name="max_y" value="$(env TURTLE_MAX_Y)" type="double"/>
         <param name="trigger_nodes" value="true" type="bool"/>
-        <param name="trigger_occ" value="false" type="bool"/>
-        <param name="trigger_mp" value="false" type="bool"/>
-        <param name="trigger_gp" value="false" type="bool"/>
-        <param name="trigger_comm" value="false" type="bool"/>
-
+        
         <!-- Nodes -->
         <!-- <node pkg="ee4308_turtle" type="turtle_main" name="turtle_main" output="screen" /> -->
         <!-- <node pkg="ee4308_turtle" type="turtle_motion" name="turtle_motion" output="screen" /> -->

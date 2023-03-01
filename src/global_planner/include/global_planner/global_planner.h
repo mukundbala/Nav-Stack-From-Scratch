@@ -40,8 +40,6 @@ private:
     
     //goals
     bot_utils::Pos2D current_goal_; //ok
-    int current_goal_idx_; //ok
-    int prev_goal_idx_;
     bool goal_status_;
 
     //planning related
@@ -73,9 +71,13 @@ public:
 
     //callbacks
     void poseCallback(const geometry_msgs::PoseStampedConstPtr &pose_msg);
+
     void inflationCallback(const std_msgs::Int32MultiArrayConstPtr &inflation);
+
     void logoddsCallback(const std_msgs::Int32MultiArrayConstPtr &inflation);
+
     void goalCallback(const tmsgs::GoalConstPtr &goal);
+
     void replanCallback(const std_msgs::BoolConstPtr &replan);
     
     //load params
@@ -91,6 +93,8 @@ public:
     bool oob(bot_utils::Index &idx);
 
     bool testPos(bot_utils::Pos2D idx);
+
+    void writeToPathMsg();
 };
 
 #endif

@@ -27,6 +27,10 @@ struct Pos2D
     {
         return !(fabs(this->x - rhs.x) < EPS_) && (fabs(this->y - rhs.y) < EPS_);
     }
+    void print()
+    {
+        ROS_INFO_STREAM("(" << x << "," << y << ")");
+    }
 };
 
 struct Pos3D

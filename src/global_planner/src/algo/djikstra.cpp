@@ -1,30 +1,61 @@
 #include "djikstra.h"
 
 Djikstra::Node::Node() 
-    : g(0), h(0), visited(false), idx(-1, -1), parent(-1, -1) {}
+    : g(0), h(0), visited(false), idx(-1, -1), parent(-1, -1) 
+    {}
 
-Djikstra::FOpen::FOpen() 
-    : f(0), idx(-1, -1) {}
+Djikstra::Open::Open() 
+    : f(0), idx(-1, -1) 
+    {}
 
-Djikstra::FOpen::FOpen(double f, bot_utils::Index idx) 
-    : f(f), idx(idx) {}
+Djikstra::Open::Open(double f, bot_utils::Index idx) 
+    : f(f), idx(idx) 
+    {}
 
-Djikstra::Djikstra(bot_utils::MapData & map): start(-1,-1) , goal(-1,-1), map_(map) , nodes(map.map_size_.i * map.map_size_.j), open_list()
-{
-    // write the nodes' indices
-    int k = 0;
-    for (int i = 0; i < map_.map_size_.i; ++i)
+Djikstra::Djikstra(bot_utils::MapData &map) // assumes the size of the grid is always the same
+    : start(-1, -1), goal(-1, -1), map_(map), nodes(map.map_size_.i * map.map_size_.j), open_list()
     {
-        for (int j = 0; j < map_.map_size_.j; ++j)
+        int k = 0;
+        for (int i = 0; i < map_.map_size_.i; ++i)
         {
-            nodes[k].idx.i = i;
-            nodes[k].idx.j = j;
-            ++k;
+            for (int j = 0; j < map_.map_size_.j; ++j)
+            {
+                nodes[k].idx.i = i;
+                nodes[k].idx.j = j;
+                ++k;
+            }
         }
-    }    
+    }
+
+void Djikstra::add_to_open(Node * node)
+{   // sort node into the open list
+    double node_f = node->g + node->h;
+
+    for (int n = 0; n < open_list.size(); ++n)
+    {
+        Open & open_node = open_list[n];
+        if (open_node.f > node_f + 1e-5)
+        {   // the current node in open is guaranteed to be more expensive than the node to be inserted ==> insert at current location            
+            open_list.emplace(open_list.begin() + n, node_f, node->idx);
+            return;
+        }
+    }
+    // at this point, either open_list is empty or node_f is more expensive that all open nodes in the open list
+    open_list.emplace_back(node_f, node->idx);
 }
 
-bot_utils::Index Djikstra::plan(bot_utils::Index idx_start,bot_utils::MapData& map_)
+Djikstra::Node * Djikstra::poll_from_open()
+{   
+    bot_utils::Index & idx = open_list.front().idx; //ref is faster than copy
+    int k = flatten(idx);
+    Node * node = &(nodes[k]);
+
+    open_list.pop_front();
+
+    return node;
+}
+
+bot_utils::Index Djikstra::plan(bot_utils::Index idx_start)
 {
     std::vector<bot_utils::Index> path;
     
@@ -38,7 +69,6 @@ bot_utils::Index Djikstra::plan(bot_utils::Index idx_start,bot_utils::MapData& m
     }
 
     int k = flatten(idx_start);
-    ROS_INFO("idx_start %d %d", idx_start.i, idx_start.j);
     Node * node = &(nodes[k]);
     node->g = 0;
 
@@ -58,10 +88,9 @@ bot_utils::Index Djikstra::plan(bot_utils::Index idx_start,bot_utils::MapData& m
 
 
         // (3) return path if node is a free cell
-        if (checkCell(node -> idx))
+        if (testPos(idx2pos(node -> idx)))
         {   // reached the goal, return the path
-            ROS_INFO("Replan next starting position");
-
+            ROS_INFO("[GlobalPlanner - Djikstra]: Generating new point");
             return node->idx;
         }
 
@@ -79,7 +108,7 @@ bot_utils::Index Djikstra::plan(bot_utils::Index idx_start,bot_utils::MapData& m
 
             double g_nb = node->g;
             // check if in map and accessible
-            if (!checkCell(idx_nb))
+            if (!testPos(idx2pos(idx_nb)))
             {   // if not, move to next nb
                 //continue;
                 int k = flatten(idx_nb);
@@ -118,14 +147,38 @@ bot_utils::Index Djikstra::plan(bot_utils::Index idx_start,bot_utils::MapData& m
     }
     // clear open list
     open_list.clear();
-    return node->idx;   
+    return node->idx;
 }
 
 
-bot_utils::Pos2D Djikstra::plan(bot_utils::Pos2D pos_start,bot_utils::MapData& map_)
+bot_utils::Pos2D Djikstra::plan(bot_utils::Pos2D pos_start)
 {
-    bot_utils::Index path_idx = plan(pos2idx(pos_start),map_);
-    return idx2pos(path_idx);
+    bot_utils::Index new_idx = plan(pos2idx(pos_start));
+    return idx2pos(new_idx);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int Djikstra::flatten(bot_utils::Index &idx)
+{
+    return idx.i * map_.map_size_.j + idx.j;
+}
+
+bool Djikstra::oob(bot_utils::Index &idx)
+{
+    return (idx.i <=0 || idx.i >= map_.map_size_.i || idx.j < 0 && idx.j >= map_.map_size_.j);
 }
 
 
@@ -140,86 +193,29 @@ bot_utils::Pos2D Djikstra::idx2pos(bot_utils::Index &idx)
 {
     double x = idx.i * map_.cell_size_ + map_.origin_.x;
     double y = idx.j * map_.cell_size_ + map_.origin_.y;
-    return bot_utils::Pos2D(x,y); 
+    return bot_utils::Pos2D(x,y);
 }
 
-bool Djikstra::oob(bot_utils::Index &idx)
-{
-    return (idx.i <=0 || idx.i >= map_.map_size_.i || idx.j < 0 && idx.j >= map_.map_size_.j);
-}
-
-bool Djikstra::oob(bot_utils::Pos2D &pos)
+bool Djikstra::testPos(bot_utils::Pos2D pos)
 {
     bot_utils::Index idx = pos2idx(pos);
-    return oob(idx);
-}
+    int key = flatten(idx);
 
-int Djikstra::flatten(bot_utils::Index &idx)
-{
-    int flat = idx.i * map_.map_size_.j + idx.j;
-    return flat;
-}
-
-bool Djikstra::checkCell(bot_utils::Index &idx)
-{
     if (oob(idx))
     {
-        return false;
+        return false; //test fail
     }
 
-    int k = flatten(idx);
-
-    if (map_.grid_inflation_.at(k) > 0)
+    if (map_.grid_inflation_.at(key) > 0)
     {
-        return false; //in map, inflated
+        return false; //in map, but on inflated
     }
-
-    else if (map_.grid_logodds_.at(k) > map_.lo_thresh_)
+    else if (map_.grid_logodds_.at(key) > map_.lo_thresh_)
     {
-        return false; //not inflated, lo occuped
+        return false; //in map, not inflated but log odds occupied
     }
-
     else
     {
-        return true;
+        return true; //in map, not inflated not lo occupied
     }
-}
-
-bool Djikstra::checkCell(bot_utils::Pos2D &pos)
-{
-    bot_utils::Index idx = pos2idx(pos);
-    return checkCell(idx);
-}
-
-
-void Djikstra::add_to_open(Node * node)
-{   // sort node into the open list
-    double node_f = node->g + node->h;
-
-    for (int n = 0; n < open_list.size(); ++n)
-    {
-        FOpen & open_node = open_list[n];
-        if (open_node.f > node_f + 1e-5)
-        {   // the current node in open is guaranteed to be more expensive than the node to be inserted ==> insert at current location            
-            open_list.emplace(open_list.begin() + n, node_f, node->idx);
-
-            // emplace is equivalent to the below but more efficient:
-            // Open new_open_node = Open(node_f, node->idx);
-            // open_list.insert(open_list.begin() + n, new_open_node);
-            return;
-        }
-    }
-    // at this point, either open_list is empty or node_f is more expensive that all open nodes in the open list
-    open_list.emplace_back(node_f, node->idx);
-}
-
-
-Djikstra::Node * Djikstra::poll_from_open()
-{   
-    bot_utils::Index &idx = open_list.front().idx; //ref is faster than copy
-    int k = flatten(idx);
-    Node *node = &(nodes[k]);
-    open_list.pop_front();
-
-    return node;
 }
