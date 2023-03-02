@@ -57,10 +57,8 @@ Djikstra::Node * Djikstra::poll_from_open()
 
 bot_utils::Index Djikstra::plan(bot_utils::Index idx_start)
 {
-    std::vector<bot_utils::Index> path;
-    
     //set up all our nodes
-
+    open_list.clear();
     for (Node & node : nodes)
     {
         node.h = 0;
@@ -116,7 +114,7 @@ bot_utils::Index Djikstra::plan(bot_utils::Index idx_start)
                 if (map_.grid_inflation_[k] > 0)
                     g_nb += 100;
                 else if (map_.grid_logodds_[k] > map_.lo_thresh_)
-                    g_nb += 1000; ; // in map, not inflated, and log odds occupied
+                    g_nb += 1000; // in map, not inflated, and log odds occupied
 
             }
             else {
@@ -147,6 +145,7 @@ bot_utils::Index Djikstra::plan(bot_utils::Index idx_start)
     }
     // clear open list
     open_list.clear();
+    ROS_INFO("AM I REALLY HERE?");
     return node->idx;
 }
 
