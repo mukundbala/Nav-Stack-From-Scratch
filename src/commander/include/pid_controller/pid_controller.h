@@ -42,11 +42,7 @@ private:
 
 public:
     Controller(PIDParams &params);
-    void prepareController(bot_utils::Pos2D &robot_position , double robot_heading , bot_utils::Pos2D &target,double now_time);
-    bool updateDT(double now_time);
-    std::pair<double,double> generateCmdSignal(bot_utils::Pos2D &robot_position , double robot_heading , bot_utils::Pos2D &target_position);
-    double getPrevTime();
-    double getDT();
+
 };
 
 
