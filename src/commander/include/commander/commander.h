@@ -14,41 +14,33 @@
 #include "geometry_msgs/Twist.h"
 #include "std_msgs/Bool.h"
 #include <std_msgs/Int32MultiArray.h>
-
+#include "tmsgs/TriggerPlannerReplan.h"
+#include "tmsgs/TurtlePath.h"
 #include <vector>
 #include <deque>
 #include <tuple>
-
-enum class TrajState : unsigned short
-{
-    GOOD,
-    BAD
-};
 
 class Commander
 {
 private:
     //robot information
-    geometry_msgs::PoseStamped robot_pose_;
+    geometry_msgs::PoseStamped robot_pose_; 
     bot_utils::Pos2D robot_position_;
     double robot_heading_;
 
     //map information
-    bot_utils::MapData mapdata;
+    bot_utils::MapData mapdata; //occupancy map data
     
     //path information
-    std::vector<bot_utils::Pos2D> path_; //an array containing the points 
+    std::vector<bot_utils::Pos2D> path_; //path array
+    int curr_path_id; //id of the path
 
     //trajectory and target
-    std::deque<bot_utils::Pos2D> trajectory_;
+    std::deque<bot_utils::Pos2D> trajectory_; 
     bot_utils::Pos2D current_target_;
-    TrajState current_traj_state_;
-    
-    //Local Planner (aka trajectory generator)
-    LocalPlanner local_planner;
-    
+    bool current_traj_state_;
+
     //triggers
-    bool trigger_replan_;
     bool generate_trajectory_;
 
     //PID Controller Params
@@ -69,12 +61,15 @@ private:
     ros::Subscriber inflation_sub_;
     ros::Subscriber lo_sub_;
     ros::Subscriber path_sub_;
+    ros::Subscriber speed_sub_;
 
     //publishers
     ros::Publisher target_pub_;
     ros::Publisher traj_pub_;
-    ros::Publisher replan_pub_;
     ros::Publisher cmd_vel_pub_;
+
+    //client
+    ros::ServiceClient replan_client_;
 
     //published messages
     geometry_msgs::PointStamped target_msg_;
@@ -95,7 +90,7 @@ public:
 
     void logoddsCallback(const std_msgs::Int32MultiArrayConstPtr &lo);
 
-    void pathCallback(const nav_msgs::PathConstPtr &path_msg);
+    void pathCallback(const tmsgs::TurtlePath &path);
 
     bool checkTrajectory();
 

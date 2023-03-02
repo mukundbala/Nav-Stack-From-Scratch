@@ -29,11 +29,11 @@ Commander::Commander(ros::NodeHandle &nh)
     mapdata.grid_logodds_.resize(mapdata.total_cells_);
     
     //setup triggers
-    trigger_replan_ = false;
     generate_trajectory_ = false;
 
+    //setup path
+    curr_path_id = -1;
     //prepare the local planner
-    local_planner.updateParams(target_dt_ , average_speed_ , traj_type_);
 
     //prepare messgaes
     traj_msg_.header.frame_id = "world";
@@ -43,12 +43,14 @@ Commander::Commander(ros::NodeHandle &nh)
     pose_sub_ = nh_.subscribe("pose" , 1 , &Commander::poseCallback , this);
     inflation_sub_ = nh_.subscribe("grid/mapinfo/inflation" , 1 , &Commander::inflationCallback , this);
     lo_sub_ = nh_.subscribe("grid/mapinfo/logodds" , 1 , &Commander::logoddsCallback , this);
-    path_sub_ = nh_.subscribe("path" , 1 , &Commander::pathCallback , this);
+    path_sub_ = nh_.subscribe("path_comm" , 1 , &Commander::pathCallback , this);
+
+    //setup client
+    replan_client_ = nh_.serviceClient<tmsgs::TriggerPlannerReplan>("trigger_replan");
 
     //setup publishers
     target_pub_ = nh_.advertise<geometry_msgs::PointStamped>("target" , 1 , true);
     traj_pub_ = nh_.advertise<nav_msgs::Path>("trajectory" , 1 , true);
-    replan_pub_ = nh_.advertise<std_msgs::Bool>("trigger_replan" , 1 ,true);
     cmd_vel_pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel" , 1 ,true);
 
     ROS_INFO("[Commander]: Commander prepared!");
@@ -72,54 +74,23 @@ void Commander::logoddsCallback(const std_msgs::Int32MultiArrayConstPtr &lo)
     mapdata.grid_logodds_ = lo->data;
 }
 
-void Commander::pathCallback(const nav_msgs::PathConstPtr &path)
+void Commander::pathCallback(const tmsgs::TurtlePath &path)
 {
-    
-    bool check_if_same = true; //returns true if our current path and received path are the same
-
-    int msg_size = path->poses.size();
-    int curr_size = path_.size();
-
-    if (msg_size != curr_size) //if the 2 messages have different sizes, they are definitely diff paths
+    int new_path_id = path.id;
+    if (new_path_id != curr_path_id)
     {
-        check_if_same = false;
-    }
-
-    else //there is a good chance that 2 paths with same sizes are different. Need to check for this
-    {   
-        for (int i = 0 ; i < msg_size ; ++i)
-        {
-            bot_utils::Pos2D msg_pos(path->poses.at(i).pose.position.x , path->poses.at(i).pose.position.y);
-
-            if (path_.at(i) != msg_pos)
-            {
-                check_if_same = false;
-                break; //We just need to show that atleast one element in the corr. index is diff for a diff path
-            }
-        }
-    }
-
-    if (!check_if_same) //if not the same, a new path has been received, EITHER from a new goal OR a replan request from Commander
-    {
-        ROS_INFO("[Commander]: New Path Received!");
         path_.clear();
-        for (auto &pos : path->poses)
+        
+        for (auto &p : path.path.poses)
         {
-            path_.emplace_back(pos.pose.position.x , pos.pose.position.y);
+            path_.emplace_back(p.pose.position.x , p.pose.position.y);
         }
         
-        if (current_traj_state_ == TrajState::GOOD)
-        {
-            ROS_INFO("[Commander]: Path Updated!");
-            trigger_replan_ = false;
-            generate_trajectory_ = true;
-        }
-        else if (current_traj_state_ == TrajState::BAD) //this is the case where replan request was sent.
-        {
-            ROS_INFO("[Commander]: Request for new path fulfilled. Path Updated!");
-            trigger_replan_ = false; //reset the replan. Only the main loop has the power to turn it on
-            generate_trajectory_ = true;
-        }
+        curr_path_id = new_path_id;
+        generate_trajectory_ = true;
+        trajectory_.clear();
+        traj_msg_.poses.clear();
+        ROS_INFO("[Commander]: New Path Received!");
     }
 }
 
@@ -127,117 +98,30 @@ void Commander::run()
 {
     ros::Rate spinrate(rate_);
 
+    LocalPlanner local_planner(target_dt_ , average_speed_ , traj_type_);
+    Controller pid(pid_params_);
+
     while (ros::ok() && nh_.param("trigger_nodes" , true) && (robot_position_.x == -500 
                                                               || mapdata.grid_inflation_.empty()
                                                               || mapdata.grid_logodds_.empty()
-                                                              || path_.empty()))
+                                                              || curr_path_id == -1))
     {
         spinrate.sleep();
         ros::spinOnce();
         ROS_INFO("[Commander]: Waiting for topics");
     }
 
-    
-    trajectory_ = local_planner.generateTrajectory(path_); //generate initial trajectory
-    current_target_ = trajectory_.front(); //extract the first point to go to
-
-    Controller pid(pid_params_);
-    double t = ros::Time::now().toSec();
-    pid.prepareController(robot_position_ , robot_heading_ , current_target_,t);
-
+    return;
     while (ros::ok() && nh_.param("trigger_nodes",true))
     {
         ros::spinOnce();//process a round of callbacks
-        double t_loop = ros::Time::now().toSec();
-        bool time_ok = pid.updateDT(t_loop);
-        if (!time_ok)
-        {
-            continue;
-        }
-
-        if (generate_trajectory_)
-        {
-            trajectory_.clear();
-            trajectory_ = local_planner.generateTrajectory(path_);
-            current_target_ = trajectory_.front();
-            generate_trajectory_ = false;
-            ROS_INFO("[Commander]: New Trajectory Generated");
-            writeTrajMsg();
-        }
-        current_traj_state_ = checkTrajectory() ? TrajState::GOOD : TrajState::BAD;
-
-        if (current_traj_state_ == TrajState::GOOD)
-        {
-            double lin_vel = 0;
-            double ang_vel = 0;
-
-            bool target_reached = checkDist();
-            if (target_reached)
-            {
-                if (trajectory_.size() <=1)
-                {
-                    trigger_replan_ = 1;
-                    std::tie(lin_vel,ang_vel) = pid.generateCmdSignal(robot_position_ , robot_heading_ , current_target_);
-                }
-                else
-                {
-                    trajectory_.pop_front();
-                    current_target_ = trajectory_.front();
-                    std::tie(lin_vel,ang_vel) = pid.generateCmdSignal(robot_position_ , robot_heading_ , current_target_);
-                }
-            }
-
-            else
-            {
-                std::tie(lin_vel,ang_vel) = pid.generateCmdSignal(robot_position_ , robot_heading_ , current_target_);
-            }
-            target_msg_.point.x = current_target_.x;
-            target_msg_.point.y = current_target_.y;
-            cmd_vel_msg_.linear.x = lin_vel;
-            cmd_vel_msg_.angular.z = ang_vel;
-            replan_msg_.data = trigger_replan_;
-
-            traj_pub_.publish(traj_msg_);
-            target_pub_.publish(target_msg_);
-            cmd_vel_pub_.publish(cmd_vel_msg_);
-            replan_pub_.publish(replan_msg_);
-        }
-        else
-        {
-            double lin_vel = 0;
-            double ang_vel = 0;
-            bool target_reached = checkDist();
-
-            if (target_reached)
-            {
-                if (trajectory_.size() > 1)
-                {
-                    trajectory_.pop_front();
-                    current_target_ = trajectory_.front();
-                    std::tie(lin_vel , ang_vel) = pid.generateCmdSignal(robot_position_ , robot_heading_ , current_target_);
-                }
-            }
-            else
-            {
-                std::tie(lin_vel , ang_vel) = pid.generateCmdSignal(robot_position_ , robot_heading_ , current_target_);
-            }
-            trigger_replan_ = 1;
-
-            target_msg_.point.x = current_target_.x;
-            target_msg_.point.y = current_target_.y;
-            cmd_vel_msg_.linear.x = lin_vel;
-            cmd_vel_msg_.angular.z = ang_vel;
-            replan_msg_.data = trigger_replan_;
-
-            traj_pub_.publish(traj_msg_);
-            target_pub_.publish(target_msg_);
-            cmd_vel_pub_.publish(cmd_vel_msg_);
-            replan_pub_.publish(replan_msg_);
-        }
 
         spinrate.sleep();
     }
 }
+
+
+
 
 bool Commander::checkDist()
 {
