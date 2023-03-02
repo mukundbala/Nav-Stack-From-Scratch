@@ -17,7 +17,7 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     robot_index_.setIdx(-500,-500); //-500 is a very unlikely value
     backup_robot_position_ = robot_position_;
     robot_status_ = true; //robot is okay
-    backup_robot_mode_ = false;
+    backup_mode = false;
 
     //set up grid arrays
     mapdata.grid_inflation_.resize(mapdata.total_cells_);
@@ -29,8 +29,11 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
 
     //setup planning
     trigger_plan = false;
+    trigger_replan = false;
     path_.clear();
     path_msg_.poses.clear();
+    path_comm_msg_.path.poses.clear();
+    path_id_ = 0;
     path_msg_.header.frame_id = "world";
 
     //setup subscribers
@@ -38,12 +41,16 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     inflation_sub_ = nh_.subscribe("grid/mapinfo/inflation" , 1 , &GlobalPlanner::inflationCallback , this);
     lo_sub_ = nh_.subscribe("grid/mapinfo/logodds" , 1 , &GlobalPlanner::logoddsCallback , this);
     goal_sub_ = nh_.subscribe("goal" , 1 , &GlobalPlanner::goalCallback , this);
-    replan_sub_ = nh_.subscribe("trigger_replan" , 1 , &GlobalPlanner::replanCallback , this);
+
+    //setup service server
+    replan_trigger_server_ = nh_.advertiseService("trigger_replan" , &GlobalPlanner::replanServiceServer , this);
     
-    //setup publishers
-    // update_goal_pub_ = nh_.advertise<tmsgs::Goal>("update_goal" , 1 , true);
+    //setup serivce client
     update_goal_client_ = nh_.serviceClient<tmsgs::UpdateTurtleGoal>("update_t_goal");
+
+    //setup publisher
     path_pub_ = nh_.advertise<nav_msgs::Path>("path", 1 , true);
+    path_comm_pub_ = nh_.advertise<tmsgs::TurtlePath>("path_comm" , 1 , true);
 
     ROS_INFO("[GlobalPlanner]: Global Planner prepared!");
 }
@@ -85,15 +92,11 @@ void GlobalPlanner::goalCallback(const tmsgs::GoalConstPtr &goal)
     // }
 }
 
-void GlobalPlanner::replanCallback(const std_msgs::BoolConstPtr &replan) //do this shit after commander is done
+bool GlobalPlanner::replanServiceServer(tmsgs::TriggerPlannerReplan::Request &req , tmsgs::TriggerPlannerReplan::Response &res)
 {
-    // bool trigger = replan->data; //this is the trigger from the trajectory planner
-    // if (trigger)
-    // {
-    //     this->trigger_plan = true;
-    //     this->path_.clear();
-    //     this->path_msg_.poses.clear();
-    // }
+    this->trigger_replan = true;
+    res.response = true;
+    ROS_WARN("[GlobalPlanner]: Trigger replan from Commander's Request");
 }
 
 void GlobalPlanner::run()
@@ -121,16 +124,14 @@ void GlobalPlanner::run()
 
         robot_status_ = testPos(robot_position_); //test robot position
         goal_status_ = testPos(current_goal_); //test goal position 
-        
-        if (trigger_plan)
+
+        if (trigger_plan || trigger_replan)
         {
             if (robot_status_ && goal_status_)
             {
                 ROS_INFO("[GlobalPlanner]: Main planner planning a path!");
                 path_.clear();
                 path_ = main_planner.plan(robot_position_ , current_goal_); //just plan a path. This will generate a new path
-                backup_robot_mode_ = false;
-                backup_robot_position_ = robot_position_;
                 writeToPathMsg();
             }
 
@@ -156,20 +157,20 @@ void GlobalPlanner::run()
                 current_goal_ = updated_goal;
                 path_.clear();
                 path_ = main_planner.plan(robot_position_ , current_goal_);
-                backup_robot_mode_ = false;
-                backup_robot_position_ = robot_position_;
                 writeToPathMsg();
             }
 
             else if (!robot_status_ && goal_status_) //we have a robot position
             {
                 ROS_WARN("[GlobalPlanner]: Robot on Non-Free Cell");
-                if (!backup_robot_mode_)
-                {
-                    ROS_WARN("[GlobalPlanner]: Finding better robot position!");
-                    backup_robot_position_ = backup_planner.plan(robot_position_);
-                    backup_robot_mode_ = true;
-                }
+                ROS_WARN("[GlobalPlanner]: Finding better robot position!");
+
+                ROS_INFO("ROBOT POSITION: ");
+                robot_position_.print();
+                backup_robot_position_ = backup_planner.plan(robot_position_);
+                ROS_INFO("BACKUP POSITION: ");
+                backup_robot_position_.print();
+                backup_mode = true;
                 path_.clear();
                 ROS_WARN("[GlobalPlanner]: Using backup robot position!");
                 path_ = main_planner.plan(backup_robot_position_ , current_goal_);
@@ -179,12 +180,11 @@ void GlobalPlanner::run()
             else if (!robot_status_ && !goal_status_) //both are bad, we find a goal first, then fix the robot's position
             {
                  ROS_WARN("[GlobalPlanner]: Goal is bad and robot on non-free. Finding backups for both!");
-                if (!backup_robot_mode_)
-                {
-                    backup_robot_position_ = backup_planner.plan(robot_position_);
-                    backup_robot_mode_ = true;
-                }
+                 ROS_WARN("[GlobalPlanner]: Finding better robot AND goal positions!");
+
+                backup_robot_position_ = backup_planner.plan(robot_position_);
                 bot_utils::Pos2D updated_goal = backup_planner.plan(current_goal_);
+                
                 tmsgs::Goal update_goal_msg;
                 update_goal_msg.action = 2;
                 update_goal_msg.goal_position.x = updated_goal.x;
@@ -200,6 +200,7 @@ void GlobalPlanner::run()
                 {
                     ROS_INFO("[GlobalPlanner]: Failed to update mission planner!");
                 }
+
                 current_goal_ = updated_goal;
                 path_.clear();
                 path_ = main_planner.plan(backup_robot_position_ , current_goal_);
@@ -209,13 +210,39 @@ void GlobalPlanner::run()
             if (path_.empty())
             {
                 ROS_WARN("[GlobalPlanner]: No path found!");
-                trigger_plan = true;
+                if (trigger_plan && !trigger_replan)
+                {
+                    trigger_plan = true;
+                }
+                else if (!trigger_plan && trigger_replan)
+                {
+                    trigger_replan = true;
+                }
+                else if (trigger_plan && trigger_replan)
+                {
+                    trigger_plan = true;
+                    trigger_replan = true;
+                }
             }
 
             else
             {
                 path_pub_.publish(path_msg_);
-                trigger_plan = false;
+                path_comm_pub_.publish(path_comm_msg_);
+
+                if (trigger_plan && !trigger_replan)
+                {
+                    trigger_plan = false;
+                }
+                else if (!trigger_plan && trigger_replan)
+                {
+                    trigger_replan = false;
+                }
+                else if (trigger_plan && trigger_replan)
+                {
+                    trigger_plan = false;
+                    trigger_replan = false;
+                }
             }
         }
 
@@ -228,25 +255,33 @@ void GlobalPlanner::run()
             }
             else
             {
-                if (robot_status_ && goal_status_)
-                {
-                    path_pub_.publish(path_msg_);
-                }
-
-                else if (!goal_status_)
+                
+                if (!goal_status_)
                 {
                     trigger_plan = true;
                 }
 
-                else if (!robot_status_ && backup_robot_mode_ && goal_status_)
+                else if (!robot_status_)
                 {
-                    path_pub_.publish(path_msg_);
+                    if (backup_mode)
+                    {
+                        path_pub_.publish(path_msg_);
+                        path_comm_pub_.publish(path_comm_msg_);
+                    }
+                    else
+                    {
+                        trigger_plan = true;
+                    }
+                    
                 }
 
-                else if (!robot_status_ && !backup_robot_mode_ && goal_status_)
+                else
                 {
-                    trigger_plan = true;
+                    path_pub_.publish(path_msg_);
+                    path_comm_pub_.publish(path_comm_msg_);
+                    backup_mode = false;
                 }
+
             }
         }
         
@@ -308,13 +343,17 @@ bool GlobalPlanner::testPos(bot_utils::Pos2D pos)
 void GlobalPlanner::writeToPathMsg()
 {
     path_msg_.poses.clear();
+    path_comm_msg_.path.poses.clear();
     for (auto &p : path_)
     {
         geometry_msgs::PoseStamped pt;
         pt.pose.position.x = p.x;
         pt.pose.position.y = p.y;
         path_msg_.poses.push_back(pt);
+        path_comm_msg_.path.poses.push_back(pt);
     }
+    path_comm_msg_.id = ++(this->path_id_); //everytime we write to message, we update the id
+    ROS_INFO_STREAM("[GlobalPlanner]: Current Path Id: " << path_id_);
 }
 
 bool GlobalPlanner::loadParams()
