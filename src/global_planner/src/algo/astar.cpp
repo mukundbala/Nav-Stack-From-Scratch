@@ -81,8 +81,6 @@ std::vector<bot_utils::Index> Astar::plan(bot_utils::Index idx_start, bot_utils:
 
     // set start node g cost as zero
     int k = flatten(idx_start);
-    ROS_INFO("idx_start %d %d", idx_start.i, idx_start.j);
-    ROS_INFO("idx_goal %d %d", idx_goal.i, idx_goal.j);
     Node * node = &(nodes[k]);
     node->g = 0;
 
@@ -106,7 +104,7 @@ std::vector<bot_utils::Index> Astar::plan(bot_utils::Index idx_start, bot_utils:
         // (3) return path if node is the goal
         if (node->idx.i == idx_goal.i && node->idx.j == idx_goal.j)
         {   // reached the goal, return the path
-            ROS_INFO("reach goal");
+            ROS_INFO("[Global Planner - Astar]: Goal found. Generating path!");
 
             path_idx.push_back(node->idx);
 

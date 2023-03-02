@@ -15,7 +15,9 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     //initialise robot variables
     robot_position_.setCoords(-500,-500); //-500 is a very unlikely value
     robot_index_.setIdx(-500,-500); //-500 is a very unlikely value
+    backup_robot_position_ = robot_position_;
     robot_status_ = true; //robot is okay
+    backup_robot_mode_ = false;
 
     //set up grid arrays
     mapdata.grid_inflation_.resize(mapdata.total_cells_);
@@ -39,7 +41,8 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     replan_sub_ = nh_.subscribe("trigger_replan" , 1 , &GlobalPlanner::replanCallback , this);
     
     //setup publishers
-    update_goal_pub_ = nh_.advertise<tmsgs::Goal>("update_goal" , 1 , true);
+    // update_goal_pub_ = nh_.advertise<tmsgs::Goal>("update_goal" , 1 , true);
+    update_goal_client_ = nh_.serviceClient<tmsgs::UpdateTurtleGoal>("update_t_goal");
     path_pub_ = nh_.advertise<nav_msgs::Path>("path", 1 , true);
 
     ROS_INFO("[GlobalPlanner]: Global Planner prepared!");
@@ -123,19 +126,84 @@ void GlobalPlanner::run()
         {
             if (robot_status_ && goal_status_)
             {
-                path_ = main_planner.plan(robot_position_ , current_goal_);
+                ROS_INFO("[GlobalPlanner]: Main planner planning a path!");
+                path_.clear();
+                path_ = main_planner.plan(robot_position_ , current_goal_); //just plan a path. This will generate a new path
+                backup_robot_mode_ = false;
+                backup_robot_position_ = robot_position_;
+                writeToPathMsg();
             }
 
-            else if (robot_status_ && !goal_status_)
+            else if (robot_status_ && !goal_status_) //if we have a bad goal. This must invalidate current paths as it is no longer safe
             {
+                ROS_WARN("[GlobalPlanner]: Bad goal received. Finding a new goal!");
                 bot_utils::Pos2D updated_goal = backup_planner.plan(current_goal_);
                 tmsgs::Goal update_goal_msg;
                 update_goal_msg.action = 2;
                 update_goal_msg.goal_position.x = updated_goal.x;
                 update_goal_msg.goal_position.y = updated_goal.y;
-                update_goal_pub_.publish(update_goal_msg);
+                tmsgs::UpdateTurtleGoal update_goal_srv;
+                update_goal_srv.request.to_update = update_goal_msg;
+                ROS_WARN("[GlobalPlanner]: New Goal Found. Updating Mission Planner!");
+                if (update_goal_client_.call(update_goal_srv))
+                {
+                    ROS_INFO("[GlobalPlanner]: Mission Planner updated!");
+                }
+                else
+                {
+                    ROS_INFO("[GlobalPlanner]: Failed to update mission planner!");
+                }
+                current_goal_ = updated_goal;
                 path_.clear();
-                path_msg_.poses.clear();
+                path_ = main_planner.plan(robot_position_ , current_goal_);
+                backup_robot_mode_ = false;
+                backup_robot_position_ = robot_position_;
+                writeToPathMsg();
+            }
+
+            else if (!robot_status_ && goal_status_) //we have a robot position
+            {
+                ROS_WARN("[GlobalPlanner]: Robot on Non-Free Cell");
+                if (!backup_robot_mode_)
+                {
+                    ROS_WARN("[GlobalPlanner]: Finding better robot position!");
+                    backup_robot_position_ = backup_planner.plan(robot_position_);
+                    backup_robot_mode_ = true;
+                }
+                path_.clear();
+                ROS_WARN("[GlobalPlanner]: Using backup robot position!");
+                path_ = main_planner.plan(backup_robot_position_ , current_goal_);
+                writeToPathMsg();
+            }
+
+            else if (!robot_status_ && !goal_status_) //both are bad, we find a goal first, then fix the robot's position
+            {
+                 ROS_WARN("[GlobalPlanner]: Goal is bad and robot on non-free. Finding backups for both!");
+                if (!backup_robot_mode_)
+                {
+                    backup_robot_position_ = backup_planner.plan(robot_position_);
+                    backup_robot_mode_ = true;
+                }
+                bot_utils::Pos2D updated_goal = backup_planner.plan(current_goal_);
+                tmsgs::Goal update_goal_msg;
+                update_goal_msg.action = 2;
+                update_goal_msg.goal_position.x = updated_goal.x;
+                update_goal_msg.goal_position.y = updated_goal.y;
+                tmsgs::UpdateTurtleGoal update_goal_srv;
+                update_goal_srv.request.to_update = update_goal_msg;
+                ROS_WARN("[GlobalPlanner]: New Goal Found. Updating Mission Planner!");
+                if (update_goal_client_.call(update_goal_srv))
+                {
+                    ROS_INFO("[GlobalPlanner]: Mission Planner updated!");
+                }
+                else
+                {
+                    ROS_INFO("[GlobalPlanner]: Failed to update mission planner!");
+                }
+                current_goal_ = updated_goal;
+                path_.clear();
+                path_ = main_planner.plan(backup_robot_position_ , current_goal_);
+                writeToPathMsg();
             }
 
             if (path_.empty())
@@ -146,7 +214,6 @@ void GlobalPlanner::run()
 
             else
             {
-                writeToPathMsg();
                 path_pub_.publish(path_msg_);
                 trigger_plan = false;
             }
@@ -154,22 +221,32 @@ void GlobalPlanner::run()
 
         else
         {
-            if (robot_status_ && goal_status_)
+            if (path_.empty())
             {
-                if (path_.empty())
+                trigger_plan = true;
+                ROS_WARN("[GlobalPlanner]: No path found!");
+            }
+            else
+            {
+                if (robot_status_ && goal_status_)
+                {
+                    path_pub_.publish(path_msg_);
+                }
+
+                else if (!goal_status_)
                 {
                     trigger_plan = true;
                 }
 
-                else
+                else if (!robot_status_ && backup_robot_mode_ && goal_status_)
                 {
                     path_pub_.publish(path_msg_);
                 }
-            }
 
-            else
-            {
-                trigger_plan = true;
+                else if (!robot_status_ && !backup_robot_mode_ && goal_status_)
+                {
+                    trigger_plan = true;
+                }
             }
         }
         

@@ -8,7 +8,7 @@
 #include "bot_utils/bot_utils.h"
 #include "bot_utils/map_data.h"
 #include "tmsgs/Goal.h"
-
+#include "tmsgs/UpdateTurtleGoal.h"
 #include <geometry_msgs/PoseStamped.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <std_msgs/Bool.h>
@@ -32,8 +32,10 @@ private:
     //pose from motion filter
     geometry_msgs::PoseStamped robot_pose_; //ok
     bot_utils::Pos2D robot_position_; //ok
+    bot_utils::Pos2D backup_robot_position_;
     bot_utils::Index robot_index_; //ok
     bool robot_status_;
+    bool backup_robot_mode_;
 
     //All the map data and meta data. This to to make it easy to share with planner without copying so much stuff
     bot_utils::MapData mapdata;
@@ -57,7 +59,7 @@ private:
     ros::Subscriber replan_sub_;
 
     //publishers
-    ros::Publisher update_goal_pub_;
+    ros::ServiceClient update_goal_client_;
     ros::Publisher path_pub_;
 
     //nodehandle
