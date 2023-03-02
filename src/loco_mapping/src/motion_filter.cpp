@@ -16,6 +16,7 @@ wheel_r_(10)
     //advertise topic
     pose_pub_ = nh_.advertise<geometry_msgs::PoseStamped>("pose" , 1);
     speed_pub_ = nh_.advertise<std_msgs::Float64>("motion_filter_vel" , 1);
+    
     robot_position_.setCoords(initial_x_ , initial_y_);
     weight_imu_v_ = 1 - weight_odom_v_;
     weight_imu_w_ = 1 - weight_odom_w_;
@@ -143,9 +144,9 @@ void MotionFilter::run()
             ROS_INFO_STREAM("Robot Position: " << robot_position_.x << "," << robot_position_.y<<")");
             ROS_INFO_STREAM("Robot Heading: " << robot_heading_);
         }
-        std_msgs::Float64 speed;
-        speed.data = linear_vel;
-        speed_pub_.publish(linear_vel);
+        std_msgs::Float64 speed_msg;
+        speed_msg.data = linear_vel;
+        speed_pub_.publish(speed_msg);
         spinrate.sleep();
     }
 
