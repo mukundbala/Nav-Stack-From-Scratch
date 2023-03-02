@@ -8,15 +8,14 @@
 #include "bot_utils/bot_utils.h"
 #include "bot_utils/map_data.h"
 #include "tmsgs/Goal.h"
+#include "tmsgs/TurtlePath.h"
 #include "tmsgs/UpdateTurtleGoal.h"
+#include "tmsgs/TriggerPlannerReplan.h"
 #include <geometry_msgs/PoseStamped.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <std_msgs/Bool.h>
 #include <nav_msgs/Path.h>
 #include <vector>
-
-
-
 /*
 GlobalPlanner class has the following roles:
 - Subscribe to pose
@@ -35,7 +34,7 @@ private:
     bot_utils::Pos2D backup_robot_position_;
     bot_utils::Index robot_index_; //ok
     bool robot_status_;
-    bool backup_robot_mode_;
+    bool backup_mode_;
 
     //All the map data and meta data. This to to make it easy to share with planner without copying so much stuff
     bot_utils::MapData mapdata;
@@ -46,10 +45,13 @@ private:
 
     //planning related
     bool trigger_plan;
+    bool trigger_replan; //this replan is purely done by the commander
 
     //path
+    tmsgs::TurtlePath path_comm_msg_;
     nav_msgs::Path path_msg_;
     std::vector<bot_utils::Pos2D> path_;
+    int path_id_;
 
     //subscribers
     ros::Subscriber pose_sub_;
@@ -58,9 +60,15 @@ private:
     ros::Subscriber goal_sub_;
     ros::Subscriber replan_sub_;
 
-    //publishers
+    //client
     ros::ServiceClient update_goal_client_;
+
+    //server
+    ros::ServiceServer replan_trigger_server_;
+
+    //publisher
     ros::Publisher path_pub_;
+    ros::Publisher path_comm_pub_;
 
     //nodehandle
     ros::NodeHandle nh_;
@@ -80,7 +88,7 @@ public:
 
     void goalCallback(const tmsgs::GoalConstPtr &goal);
 
-    void replanCallback(const std_msgs::BoolConstPtr &replan);
+    bool replanServiceServer(tmsgs::TriggerPlannerReplan::Request &req , tmsgs::TriggerPlannerReplan::Response &res);
     
     //load params
     bool loadParams();

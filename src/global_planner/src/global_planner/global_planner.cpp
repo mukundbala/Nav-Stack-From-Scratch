@@ -17,7 +17,7 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     robot_index_.setIdx(-500,-500); //-500 is a very unlikely value
     backup_robot_position_ = robot_position_;
     robot_status_ = true; //robot is okay
-    backup_mode = false;
+    backup_mode_ = false;
 
     //set up grid arrays
     mapdata.grid_inflation_.resize(mapdata.total_cells_);
@@ -170,7 +170,7 @@ void GlobalPlanner::run()
                 backup_robot_position_ = backup_planner.plan(robot_position_);
                 ROS_INFO("BACKUP POSITION: ");
                 backup_robot_position_.print();
-                backup_mode = true;
+                backup_mode_ = true;
                 path_.clear();
                 ROS_WARN("[GlobalPlanner]: Using backup robot position!");
                 path_ = main_planner.plan(backup_robot_position_ , current_goal_);
@@ -263,7 +263,7 @@ void GlobalPlanner::run()
 
                 else if (!robot_status_)
                 {
-                    if (backup_mode)
+                    if (backup_mode_)
                     {
                         path_pub_.publish(path_msg_);
                         path_comm_pub_.publish(path_comm_msg_);
@@ -279,7 +279,7 @@ void GlobalPlanner::run()
                 {
                     path_pub_.publish(path_msg_);
                     path_comm_pub_.publish(path_comm_msg_);
-                    backup_mode = false;
+                    backup_mode_ = false;
                 }
 
             }
