@@ -300,7 +300,7 @@ int main(int argc, char **argv)
                 ROS_WARN_COND(fabs(curr_angular_error) > M_PI/2 , "Current angular error has not be constrained properly!");
                 cumulative_angular_error += (curr_angular_error * dt); //we can add in the cumulative angular error now
                 
-                double coupled_cmd_vel = raw_cmd_lin_vel * dampingPieceWise(curr_angular_error , M_PI/12); //apply the coefficient to raw cmd_vel to couple it to ang error
+                double coupled_cmd_vel = raw_cmd_lin_vel * dampingPieceWise(curr_angular_error); //apply the coefficient to raw cmd_vel to couple it to ang error
 
                 double p_cmd_ang = Kp_ang * curr_angular_error;
                 double i_cmd_ang = Ki_ang * cumulative_angular_error;

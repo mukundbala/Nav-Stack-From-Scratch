@@ -27,5 +27,22 @@ double headingFromQuat(geometry_msgs::PoseStamped &pose);
 double dampingCos(double error_value);
 double dampingQuadratic(double error_value);
 //kill limit means that between |[0,kill_limit]|, damping follows cos, after which it returns 0, therefore killing cmd_lin_vel to 0
-double dampingPieceWise(double error_value , double kill_limit); 
+double dampingPieceWise(double error_value);
+
+class timeLogger
+{
+private:
+    std::chrono::high_resolution_clock clock_;
+    std::chrono::high_resolution_clock::time_point start_;
+    std::chrono::high_resolution_clock::time_point end_;
+    std::chrono::duration<double,std::milli> elapsed_time_;
+    std::chrono::duration<double,std::milli> total_duration_;
+    double count_;
+
+public:
+    timeLogger();
+    void start();
+    void stop();
+};
+
 #endif
