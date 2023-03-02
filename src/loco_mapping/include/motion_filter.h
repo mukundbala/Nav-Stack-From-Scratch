@@ -5,6 +5,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <sensor_msgs/JointState.h>
 #include <sensor_msgs/Imu.h>
+#include <std_msgs/Float64.h>
 #include <nav_msgs/Odometry.h>
 
 class MotionFilter
@@ -41,6 +42,7 @@ private:
 
     //publishers
     ros::Publisher pose_pub_;
+    ros::Publisher speed_pub_;//publish purely the magnitude
 
     //subscribers
     ros::Subscriber odom_sub_;
