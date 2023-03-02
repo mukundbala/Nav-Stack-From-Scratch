@@ -4,6 +4,8 @@
 #include "ros/ros.h"
 #include "bot_utils/bot_utils.h"
 #include "tmsgs/Goal.h"
+#include "tmsgs/UpdateTurtleGoal.h"
+
 #include "geometry_msgs/PoseStamped.h"
 #include "xmlrpcpp/XmlRpc.h"
 #include <vector>
@@ -21,8 +23,8 @@ private:
     ros::Publisher goal_pub_;
 
     ros::Subscriber pose_sub_;
-    ros::Subscriber update_goal_sub_;
-
+    // ros::Subscriber update_goal_sub_;
+    ros::ServiceServer update_goal_server_;
     ros::NodeHandle nh_;
 
     double rate_;
@@ -30,7 +32,7 @@ private:
 public:
     MissionPlanner(ros::NodeHandle &nh);
     void poseCallback(const geometry_msgs::PoseStampedConstPtr &pose_msg);
-    void updateGoalCallback(const tmsgs::Goal::ConstPtr &updated_goal);
+    bool updateGoalService(tmsgs::UpdateTurtleGoal::Request &req, tmsgs::UpdateTurtleGoal::Response &res);
     void run();
 };
 
