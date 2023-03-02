@@ -36,7 +36,8 @@ MissionPlanner::MissionPlanner(ros::NodeHandle &nh)
     goal_pub_ = nh_.advertise<tmsgs::Goal>("goal",1);
 
     pose_sub_ = nh_.subscribe("pose" , 1 , &MissionPlanner::poseCallback , this);
-    update_goal_sub_ = nh_.subscribe("update_goal" , 1 , &MissionPlanner::updateGoalCallback , this);
+    // update_goal_sub_ = nh_.subscribe("update_goal" , 1 , &MissionPlanner::updateGoalCallback , this);
+    update_goal_server_ = nh_.advertiseService("update_t_goal",&MissionPlanner::updateGoalService,this);
 
     ROS_INFO("###GOALS###");
     int cnt = 0;
@@ -55,20 +56,24 @@ void MissionPlanner::poseCallback(const geometry_msgs::PoseStampedConstPtr &pose
     robot_position_.setCoords(robot_pose_.pose.position.x , robot_pose_.pose.position.y);
 }
 
-void MissionPlanner::updateGoalCallback(const tmsgs::Goal::ConstPtr &updated_goal)
+bool MissionPlanner::updateGoalService(tmsgs::UpdateTurtleGoal::Request &req , tmsgs::UpdateTurtleGoal::Response &res)
 {
-    // int idx_to_replace = updated_goal -> idx;
-    bot_utils::Pos2D new_goal(updated_goal->goal_position.x , updated_goal->goal_position.y);
-    if (updated_goal->action == 1)
+    bot_utils::Pos2D updated_goal(req.to_update.goal_position.x , req.to_update.goal_position.y);
+    int action = req.to_update.action;
+    if (action == 1)
     {
+        ROS_INFO("[MissionPlanner]: Goal added to goals!");
         //this is a temporary goal
-        goals_.push_front(new_goal);
+        goals_.push_front(updated_goal);
     }
-    else if (updated_goal->action == 2)
+
+    else if (action == 2)
     {
-        goals_.at(0) = new_goal; //this is a goal to replace the current goal
+        ROS_INFO("[MissionPlanner]: Goal replaced!");
+        goals_.at(0) = updated_goal; //this is a goal to replace the current goal
     }
-    // goals_.at(idx_to_replace) = new_goal;
+    res.response = true;
+    return true;
 }
 
 void MissionPlanner::run()
