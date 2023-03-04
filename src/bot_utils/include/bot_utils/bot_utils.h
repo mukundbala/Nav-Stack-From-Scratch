@@ -14,19 +14,60 @@ namespace bot_utils
 struct Pos2D
 {
     double x;
+
     double y;
+
     Pos2D(double x_, double y_);
+
     Pos2D();
+
     double EPS_ = 1e-6;
+
     void setCoords(double x_, double y_);
+    
     bool operator == (Pos2D &rhs) const
     {
        return (fabs(this->x - rhs.x) < EPS_) && (fabs(this->y - rhs.y) < EPS_);
     }
+    
     bool operator != (Pos2D &rhs)const
     {
         return !(fabs(this->x - rhs.x) < EPS_) && (fabs(this->y - rhs.y) < EPS_);
     }
+
+    Pos2D operator + (Pos2D &rhs)const
+    {
+        Pos2D val(this->x + rhs.x , this->y + rhs.y);
+        return val;
+    }
+
+    Pos2D operator - (Pos2D &rhs)const
+    {
+        Pos2D val(this->x - rhs.x , this->y - rhs.y);
+        return val;
+    }
+
+    double mag()const
+    {
+        double mag = sqrt((this->x * this->x) + (this->y * this->y));
+        return mag;
+    }
+
+    Pos2D unit_vec()const
+    {
+        double vec_mag = this->mag();
+        double unit_x = this->x / vec_mag;
+        double unit_y = this->y / vec_mag;
+        return Pos2D(unit_x , unit_y);
+    }
+
+    Pos2D operator * (double scalar)const
+    {
+        double x_scaled = this->x * scalar;
+        double y_scaled = this->y * scalar;
+        return Pos2D(x_scaled , y_scaled);
+    }
+
     void print()
     {
         ROS_INFO_STREAM("(" << x << "," << y << ")");
