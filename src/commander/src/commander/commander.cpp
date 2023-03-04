@@ -17,7 +17,8 @@ Commander::Commander(ros::NodeHandle &nh)
     //initialise robot variables
     robot_position_.setCoords(-500,-500); //-500 is a very unlikely value
     robot_heading_ = -500;//-500 is an unlikely value
-
+    robot_speed_ = 0;
+    
     //setup map variables
     mapdata.origin_ = mapdata.pos_min_;
     mapdata.map_size_.i = std::round((mapdata.pos_max_.x - mapdata.pos_min_.x) / mapdata.cell_size_);
@@ -30,10 +31,13 @@ Commander::Commander(ros::NodeHandle &nh)
     
     //setup triggers
     generate_trajectory_ = false;
-
+    trigger_replan_ = false;
     //setup path
     curr_path_id = -1;
-    //prepare the local planner
+
+    //prepare velocities
+    cmd_lin_vel_ = 0;
+    cmd_ang_vel_ = 0;
 
     //prepare messgaes
     traj_msg_.header.frame_id = "world";
@@ -44,14 +48,13 @@ Commander::Commander(ros::NodeHandle &nh)
     inflation_sub_ = nh_.subscribe("grid/mapinfo/inflation" , 1 , &Commander::inflationCallback , this);
     lo_sub_ = nh_.subscribe("grid/mapinfo/logodds" , 1 , &Commander::logoddsCallback , this);
     path_sub_ = nh_.subscribe("path_comm" , 1 , &Commander::pathCallback , this);
-
-    //setup client
-    replan_client_ = nh_.serviceClient<tmsgs::TriggerPlannerReplan>("trigger_replan");
-
+    speed_sub_ = nh_.subscribe("motion_filter_vel" , 1 , &Commander::motionFilterCallback , this);
+    
     //setup publishers
     target_pub_ = nh_.advertise<geometry_msgs::PointStamped>("target" , 1 , true);
     traj_pub_ = nh_.advertise<nav_msgs::Path>("trajectory" , 1 , true);
     cmd_vel_pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel" , 1 ,true);
+    replan_pub_ = nh_.advertise<std_msgs::Bool>("trigger_replan" , 1 , true);
 
     ROS_INFO("[Commander]: Commander prepared!");
 }
@@ -88,10 +91,15 @@ void Commander::pathCallback(const tmsgs::TurtlePath &path)
         
         curr_path_id = new_path_id;
         generate_trajectory_ = true;
+        trigger_replan_ = false;
         trajectory_.clear();
-        traj_msg_.poses.clear();
         ROS_INFO("[Commander]: New Path Received!");
     }
+}
+
+void Commander::motionFilterCallback(const std_msgs::Float64ConstPtr &spd)
+{
+    robot_speed_ = spd->data;
 }
 
 void Commander::run()
@@ -100,6 +108,8 @@ void Commander::run()
 
     LocalPlanner local_planner(target_dt_ , average_speed_ , traj_type_);
     Controller pid(pid_params_);
+    
+    ROS_INFO("[Commander]: Waiting for topics");
 
     while (ros::ok() && nh_.param("trigger_nodes" , true) && (robot_position_.x == -500 
                                                               || mapdata.grid_inflation_.empty()
@@ -108,19 +118,142 @@ void Commander::run()
     {
         spinrate.sleep();
         ros::spinOnce();
-        ROS_INFO("[Commander]: Waiting for topics");
+        
     }
 
-    return;
+    current_target_ = robot_position_;
+
+    ROS_INFO("[Commander]: Starting Commander!");
+
+    double t_now = ros::Time::now().toSec();
+    pid.prepareController(robot_position_ , robot_heading_ , current_target_ , t_now);
+
     while (ros::ok() && nh_.param("trigger_nodes",true))
     {
         ros::spinOnce();//process a round of callbacks
+        double t_now = ros::Time::now().toSec();
+        bool time_status = pid.updateDT(t_now);
+        if (!time_status)
+        {
+            spinrate.sleep();
+            continue;
+        }
+        //ROS_INFO_STREAM("[Commander]: DT: " << pid.getDt());
+        if (generate_trajectory_)
+        {
+            if (traj_type_ == "Linear")
+            {
+                trajectory_ = local_planner.generate_trajectory(path_);
+            }
 
+            else
+            {
+                trajectory_ = local_planner.generate_trajectory(path_ , robot_speed_ , robot_heading_);
+            }
+
+            t_id = trajectory_.size() - 1;
+            if (t_id > 15)
+            {
+                t_id -= 15;  //choose a further trajectory
+            }
+        }
+
+        auto [safe , bad_idx] = checkTrajectorySafety();
+        current_target_ = trajectory_.at(t_id);
+        
+        if (!safe)
+        {
+            if (bad_idx == -2)
+            {
+                ROS_WARN("[Commander]: Trajectory is empty!");
+                current_target_ = robot_position_; //just write the robot position
+                cmd_lin_vel_ = 0;
+                cmd_ang_vel_ = 0;
+                trigger_replan_ = true;
+            }
+
+            else if (bad_idx == -1)
+            {
+                ROS_WARN("[Commander]: Only target in Trajectory is bad!");
+                current_target_ = robot_position_; //just write the robot position
+                //publish 0 velocity
+                cmd_lin_vel_ = 0;
+                cmd_ang_vel_ = 0;
+                trigger_replan_ = true;
+            }
+
+            else
+            {
+                if (t_id - bad_idx < danger_close_)
+                {
+                    ROS_WARN("[Commander]: Danger Close!");
+                    current_target_ = robot_position_;
+                    //publish 0 velocity
+                    cmd_lin_vel_ = 0;
+                    cmd_ang_vel_ = 0;
+                    trigger_replan_ = true;
+                }
+
+                else
+                {
+                    if (bot_utils::dist_euc(robot_position_ , current_target_) < close_enough_)
+                    {
+                        if (t_id == 0)
+                        {
+                            //this means we are in the last target
+                            //publish 0 velocity
+                            current_target_ = trajectory_.at(t_id);
+                            trigger_replan_ = true;
+                        }
+                        else
+                        {
+                            t_id --;
+                            current_target_ = trajectory_.at(t_id);
+                        }
+                    }
+                    //generate velocity using PID
+                    std::tie(cmd_lin_vel_,cmd_ang_vel_) = pid.generate_cmdvel(robot_position_ , robot_heading_ , current_target_);
+                }
+            }
+        }
+        else //safe trajectory
+        {
+            if (bot_utils::dist_euc(robot_position_ , current_target_) < close_enough_)
+            {
+                if (t_id == 0)
+                {
+                    current_target_ = trajectory_.at(t_id); 
+                }
+                else
+                {
+                    t_id--;
+                    current_target_ = trajectory_.at(t_id);
+                }
+                trigger_replan_ = false;
+            }
+
+            //generate velocity using PID
+            std::tie(cmd_lin_vel_,cmd_ang_vel_) = pid.generate_cmdvel(robot_position_ , robot_heading_ , current_target_);
+        }
+        if (generate_trajectory_)
+        {
+            writeTrajMsg();
+            generate_trajectory_ = false;
+        }
+        writeTargetMsg();
+        writeVelocityMsg();
+        writeReplanMsg();
+        traj_pub_.publish(traj_msg_);
+        target_pub_.publish(target_msg_);
+        cmd_vel_pub_.publish(cmd_vel_msg_);
+        replan_pub_.publish(replan_msg_);
         spinrate.sleep();
     }
+    cmd_vel_msg_.angular.z = 0;
+    cmd_vel_msg_.linear.x = 0;
+    cmd_vel_pub_.publish(cmd_vel_msg_);
+    ROS_INFO("[Commander]: Setting velocity to 0");
 }
-
-
 
 
 bool Commander::checkDist()
@@ -133,32 +266,49 @@ bool Commander::checkDist()
     return false;
 }
 
-bool Commander::checkTrajectory() //returns false if bad, true if okay
+std::pair<bool,int> Commander::checkTrajectorySafety() //returns false if bad, true if okay
 {
+    std::pair<bool,int> result; //pair returns bool:True(safe) , False(unsafe). Int is the unsafe index, else -1
+
     if (trajectory_.size() == 0)
     {
-        return false; //trajectory empty
+        result = {false , -2};
+        return result; //unsafe trajectory
     }
 
     else if (trajectory_.size() == 1)
     {
         bot_utils::Index to_check = pos2idx(trajectory_.at(0));
         bool status = checkCell(to_check);
-        return status;
+        if (status)
+        {
+            result = {true , -1};
+            return result;
+        }
+        else
+        {
+            result = {false , -1};
+            return result;
+        }
     }
     else
     {
-        
-        for (auto &tgt : trajectory_) //we only need to show that 1 point fails for the whole trajectory to fail
+        for (int i = t_id ; i>=0 ; --i)
         {
-            bot_utils::Index to_check = pos2idx(tgt);
-            if (!checkCell(to_check))
+            bot_utils::Pos2D cell_to_check = trajectory_.at(i);
+            bot_utils::Index idx_to_check = pos2idx(cell_to_check);
+
+            if (!checkCell(idx_to_check))
             {
-                return false;
+                result = {false , i}; //ith index is first occuring the bad index
+                return result;
             }
         }
-        return true;
     }
+
+    //nothing wrong with the traj
+    result = {true , -1};
+    return result;
 }
 
 bool Commander::checkCell(bot_utils::Index &idx)
@@ -216,6 +366,23 @@ void Commander::writeTrajMsg()
         traj_msg_.poses.push_back(tgt_pse);
     }
 
+}
+
+void Commander::writeTargetMsg()
+{
+    target_msg_ .point.x = current_target_.x;
+    target_msg_.point.y = current_target_.y;
+}
+
+void Commander::writeVelocityMsg()
+{
+    cmd_vel_msg_.linear.x = cmd_lin_vel_;
+    cmd_vel_msg_.angular.z = cmd_ang_vel_;
+}
+
+void Commander::writeReplanMsg()
+{
+    replan_msg_.data = this->trigger_replan_;
 }
 
 //Loading parameters
@@ -335,6 +502,11 @@ bool Commander::loadPIDParams()
         status = false;
     }
 
+    if (!nh_.param<std::string>("damping_function" , this->pid_params_.damping_function , "PieceWise"))
+    {
+        ROS_WARN("[Commander]: Param damping_function not found, defaulting to PieceWise");
+    }
+
     if (!nh_.param("reverse_limit" , this->pid_params_.reverse_limit , 90.0))
     {
         ROS_WARN("[Commander]: Param reverse_limit not found, defaulting to 90");
@@ -379,13 +551,19 @@ bool Commander::loadCommanderParams()
 
     if (!nh_.param("enable_commander" , enable_commander_, true))
     {
-        ROS_WARN("[Commander]: Param average_speed not found, defaulting to true");
+        ROS_WARN("[Commander]: Param enable_commander not found, defaulting to true");
         status = false;
     }
 
     if (!nh_.param("close_enough" , close_enough_ , 0.05))
     {
         ROS_WARN("[Commander]: Param close_enough not found, defaulting to 0.05");
+        status = false;
+    }
+
+    if (!nh_.param("danger_close" , danger_close_ , 10))
+    {
+        ROS_WARN("[Commander]: Param danger_close not found, defaulting to 10");
         status = false;
     }
 

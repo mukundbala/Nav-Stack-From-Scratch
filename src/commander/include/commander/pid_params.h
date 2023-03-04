@@ -29,6 +29,8 @@ struct PIDParams
     double dt;
 
     double damping_limit;
+    std::string damping_function;
+    
     double reverse_limit;
 };
 

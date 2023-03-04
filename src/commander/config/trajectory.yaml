@@ -1,3 +1,3 @@
 target_dt: 0.04 ##must be slower than or equal to com_rate
-average_speed: 0.18
-traj_type: linear ##linear, cubic, quintic
+average_speed: 0.20
+traj_type: Quintic ##Linear, Cubic, Quintic

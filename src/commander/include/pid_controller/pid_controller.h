@@ -4,8 +4,8 @@
 #include "ros/ros.h"
 #include "bot_utils/bot_utils.h"
 #include "pid_params.h"
-
 #include <cmath>
+
 class Controller
 {
 private:
@@ -35,14 +35,23 @@ private:
     double dt_;
 
     double damping_limit_;
+    std::string damping_function_name_;
+    std::function<double(double)> damping_function_;
+
     double reverse_limit_;
 
-    void prepareController();
-    double dampingCoefficient(double angular_error); //damping
+    double dampingCos(double error_value);
+    double dampingQuadratic(double error_value);
+    double dampingPieceWise(double error_value);
+    double dampingExp(double error_value);
 
 public:
     Controller(PIDParams &params);
+    void prepareController(bot_utils::Pos2D &robot_position , double robot_heading,  bot_utils::Pos2D &target_position , double time_now);
+    bool updateDT(double time_now);
+    std::pair<double,double> generate_cmdvel(bot_utils::Pos2D &robot_position , double robot_heading,  bot_utils::Pos2D &target_position);
 
+    double getDt();
 };
 
 
