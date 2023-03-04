@@ -12,9 +12,8 @@
 
     <!-- spawn turtle -->
     <group ns="turtle">
-        
         <!-- spawn the model-->
-        <param name = "robot_description" command="$(find xacro)/xacro $(find turtle_bringup)/urdf/turtlebot3_burger.urdf.xacro tf_prefix:=turtle" /><!-- yk: added tf_prefix into urdf-->
+        <param name = "robot_description" command="$(find xacro)/xacro $(find turtle_bringup)/urdf/turtlebot3_burger.urdf.xacro tf_prefix:=turtle"/>
         <node pkg="gazebo_ros" type="spawn_model" name="spawn_turtle"  
             args="-urdf -model turtlebot3_burger -x $(env TURTLE_X) -y $(env TURTLE_Y) -z 0.002 -param robot_description"
             respawn="false" output="screen" /> 

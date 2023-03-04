@@ -3,7 +3,7 @@
     <arg name="namespace" default="turtle"/>
     <group ns="$(arg namespace)">
         <!-- Params -->
-        <rosparam command="load" file="$(find ee4308_bringup)/worlds/$(env WORLD)/$(env WORLD)_goals.yaml"/>
+        <rosparam command="load" file="$(find turtle_bringup)/worlds/$(env WORLD)/$(env WORLD)_goals.yaml"/>
         <rosparam command="load" file="$(find loco_mapping)/config/motion_filter.yaml"/>
         <rosparam command="load" file="$(find loco_mapping)/config/occupancy_grid.yaml"/>
         <rosparam command="load" file="$(find mission_planner)/config/mission_planner.yaml"/>
