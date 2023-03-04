@@ -63,9 +63,6 @@ private:
     //client
     ros::ServiceClient update_goal_client_;
 
-    //server
-    ros::ServiceServer replan_trigger_server_;
-
     //publisher
     ros::Publisher path_pub_;
     ros::Publisher path_comm_pub_;
@@ -88,7 +85,7 @@ public:
 
     void goalCallback(const tmsgs::GoalConstPtr &goal);
 
-    bool replanServiceServer(tmsgs::TriggerPlannerReplan::Request &req , tmsgs::TriggerPlannerReplan::Response &res);
+    void replanCallback(const std_msgs::BoolConstPtr &trigger);
     
     //load params
     bool loadParams();

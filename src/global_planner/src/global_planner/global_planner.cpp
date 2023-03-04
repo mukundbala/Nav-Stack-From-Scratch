@@ -41,9 +41,7 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     inflation_sub_ = nh_.subscribe("grid/mapinfo/inflation" , 1 , &GlobalPlanner::inflationCallback , this);
     lo_sub_ = nh_.subscribe("grid/mapinfo/logodds" , 1 , &GlobalPlanner::logoddsCallback , this);
     goal_sub_ = nh_.subscribe("goal" , 1 , &GlobalPlanner::goalCallback , this);
-
-    //setup service server
-    replan_trigger_server_ = nh_.advertiseService("trigger_replan" , &GlobalPlanner::replanServiceServer , this);
+    replan_sub_ = nh_.subscribe("trigger_replan" , 1, &GlobalPlanner::replanCallback , this);
     
     //setup serivce client
     update_goal_client_ = nh_.serviceClient<tmsgs::UpdateTurtleGoal>("update_t_goal");
@@ -92,11 +90,13 @@ void GlobalPlanner::goalCallback(const tmsgs::GoalConstPtr &goal)
     // }
 }
 
-bool GlobalPlanner::replanServiceServer(tmsgs::TriggerPlannerReplan::Request &req , tmsgs::TriggerPlannerReplan::Response &res)
+void GlobalPlanner::replanCallback(const std_msgs::BoolConstPtr &trigger)
 {
-    this->trigger_replan = true;
-    res.response = true;
-    ROS_WARN("[GlobalPlanner]: Trigger replan from Commander's Request");
+    this -> trigger_replan = trigger->data;
+    if (trigger_replan)
+    {
+        ROS_WARN("[GlobalPlanner]: Trigger replan from Commander's Request");
+    }
 }
 
 void GlobalPlanner::run()
@@ -127,6 +127,9 @@ void GlobalPlanner::run()
 
         if (trigger_plan || trigger_replan)
         {
+            bool tp = trigger_plan; //local scope variables
+            bool trp = trigger_replan;
+
             if (robot_status_ && goal_status_)
             {
                 ROS_INFO("[GlobalPlanner]: Main planner planning a path!");
@@ -210,15 +213,15 @@ void GlobalPlanner::run()
             if (path_.empty())
             {
                 ROS_WARN("[GlobalPlanner]: No path found!");
-                if (trigger_plan && !trigger_replan)
+                if (tp && !trp)
                 {
                     trigger_plan = true;
                 }
-                else if (!trigger_plan && trigger_replan)
+                else if (!tp && trp)
                 {
                     trigger_replan = true;
                 }
-                else if (trigger_plan && trigger_replan)
+                else if (tp && trp)
                 {
                     trigger_plan = true;
                     trigger_replan = true;
@@ -230,15 +233,15 @@ void GlobalPlanner::run()
                 path_pub_.publish(path_msg_);
                 path_comm_pub_.publish(path_comm_msg_);
 
-                if (trigger_plan && !trigger_replan)
+                if (tp && !trp)
                 {
                     trigger_plan = false;
                 }
-                else if (!trigger_plan && trigger_replan)
+                else if (!tp && trp)
                 {
                     trigger_replan = false;
                 }
-                else if (trigger_plan && trigger_replan)
+                else if (tp && trp)
                 {
                     trigger_plan = false;
                     trigger_replan = false;
