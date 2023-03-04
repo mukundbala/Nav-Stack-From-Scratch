@@ -8,7 +8,7 @@ source params.sh
 source devel/setup.bash
 
 # get the world specific parameters as environment variables
-source `rospack find ee4308_bringup`/worlds/`echo $WORLD`/`echo $WORLD`.sh
+source `rospack find turtle_bringup`/worlds/`echo $WORLD`/`echo $WORLD`.sh
 
 # reset the gazebo
 echo "Resetting Gazebo. Wait 1s for Gazebo to complete reset."
@@ -19,7 +19,7 @@ sleep 1s # allow gazebo to reset so as not to mess with the time.
 
 # bring up gazebo and build all models
 echo "Begin..."
-roslaunch ee4308_bringup run_client.launch
+roslaunch turtle_bringup run_client.launch
 
 # try to stop. This will show an error if ./bringup.launch is not running
 echo "Stopping Turtlebot3 by publishing to /turtle/cmd_vel"

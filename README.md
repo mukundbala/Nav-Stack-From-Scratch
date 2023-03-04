@@ -38,10 +38,11 @@ roscd ##this will bring you to the devel folder in your workspace
 - [X] Mission Planner
 - [X] Global Planner: Any Angle A*
 - [ ] Global Planner: Theta*
-- [ ] Global Planner: Djikstra
-- [ ] Commander: Cubic Spline
-- [ ] Commander: PID Controller with Bidirectional Motion
-- [ ] Full code refactor
+- [X] Global Planner: Djikstra
+- [X] Commander: Cubic Spline
+- [X] Commander: Quintic Spline
+- [X] Commander: PID Controller with Bidirectional Motion
+- [X] Full code refactor
 - [X] Improve param loading sequence. Specifically, load goals using XmlRpcTypeArray instead of parsing string
 - [X] Time profiler for measuring loop execution speed. Used to optimize ros rates 
 ## Part 2: Quadrotor

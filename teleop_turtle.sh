@@ -4,4 +4,4 @@
 # source the workspace
 source devel/setup.bash
 
-rosrun ee4308_bringup teleop_turtle.py
+rosrun turtle_bringup teleop_turtle.py

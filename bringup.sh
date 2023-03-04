@@ -8,7 +8,7 @@ source params.sh
 source devel/setup.bash
 
 # get the world specific parameters as environment variables
-source `rospack find ee4308_bringup`/worlds/`echo $WORLD`/`echo $WORLD`.sh
+source `rospack find turtle_bringup`/worlds/`echo $WORLD`/`echo $WORLD`.sh
 
 # bring up gazebo and build all models
-roslaunch ee4308_bringup bringup_`echo $EE4308_TASK`.launch
+roslaunch turtle_bringup bringup_`echo $TASK`.launch
