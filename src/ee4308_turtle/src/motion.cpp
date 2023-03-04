@@ -239,8 +239,8 @@ int main(int argc, char **argv)
             
             double delta_heading = weighted_angular_velocity * dt; //using the weighted angular velocity * dt to compute the change in heading
             double current_robot_ang = robot_angle + delta_heading; //adding the change in heading to the current robot angle (*UPDATE*)
+            double limited_robot_ang = limit_angle(current_robot_ang);
             double turn_radius = weighted_linear_velocity / weighted_angular_velocity; //turn radius computation using the ratio of weighted linear and angular velocities
-
             double current_position_x = 0; //(*UPDATE*)
             double current_position_y = 0; //(*UPDATE*)
             //note that the robot_position variable stores the previous position at this point in the program (xt-1,yt-1)

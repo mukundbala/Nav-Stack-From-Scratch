@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<launch>
+    <arg name="config_dir" default="$(find loco_mapping)/config"/>
+    <rosparam command="load" default="$(arg config_dir)/occupancy_grid.yaml"/>
+    <node pkg="loco_mapping" type="occupancy_grid" name="occupancy_grid" output="screen"/>
+</launch>

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>mission_planner</name>
+  <version>0.0.0</version>
+  <description>The mission_planner package</description>
+
+  <maintainer email="mukund199823@gmail.com">mukund</maintainer>
+  <license>TODO</license>
+  <author email="mukund199823@gmail.comm">mukund</author> -->
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>bot_utils</build_depend>
+  <build_depend>tmsgs</build_depend>
+
+  <build_export_depend>geometry_msgs</build_export_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>rospy</build_export_depend>
+  <build_export_depend>bot_utils</build_export_depend>
+  <build_export_depend>tmsgs</build_export_depend>
+
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>bot_utils</exec_depend>
+  <exec_depend>tmsgs</exec_depend>
+  
+  <!-- The export tag contains other, unspecified, tags -->
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+
+  </export>
+</package>

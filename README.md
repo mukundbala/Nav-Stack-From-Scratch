@@ -2,7 +2,7 @@
 [![ROS Build](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml)
 
 This repository contains from scratch implementation of planning and control techniques for differential drive robots (part 1) and quadrotors (part 2)
-Tested on Ubuntu 20.04 for ROS Noetic.
+Tested on Ubuntu 20.04 for ROS Noetic and compiled with C++17.
 (Note for teammates: Please copy hector into your source directory. When you push, hector will not be pushed to git)
 ## How to build
 
@@ -36,14 +36,15 @@ roscd ##this will bring you to the devel folder in your workspace
 - [X] Motion Filter using odometry and joint states
 - [X] Logs Odd Bayes Filter for Occupancy Grids
 - [X] Mission Planner
+- [X] Global Planner: Any Angle A*
 - [ ] Global Planner: Theta*
 - [X] Global Planner: Djikstra
-- [ ] Global Planner: BFS
+- [X] Commander: Cubic Spline
 - [X] Commander: Quintic Spline
 - [X] Commander: PID Controller with Bidirectional Motion
-- [ ] Full code refactor
-- [ ] Improve param loading sequence using expeditious use of launch files
-
+- [X] Full code refactor
+- [X] Improve param loading sequence. Specifically, load goals using XmlRpcTypeArray instead of parsing string
+- [X] Time profiler for measuring loop execution speed. Used to optimize ros rates 
 ## Part 2: Quadrotor
 
 

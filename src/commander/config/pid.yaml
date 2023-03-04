@@ -1,0 +1,18 @@
+Kp_lin: 2.5
+Ki_lin: 0.0
+Kd_lin: 0.2
+max_lin_vel: 0.17 # max is 0.22
+max_lin_acc: 1.0 ##default 1
+
+Kp_ang: 1.3
+Ki_ang: 0.0
+Kd_ang: 0.3
+max_ang_vel: 2.50 # max is 2.84
+max_ang_acc: 4.0 ##default 2
+
+
+damping_limit: 20 ##in degrees
+damping_function: "PieceWise" ## Cos, Quad , PieceWise , Exp
+##note that changing this will break Controller::dampingCoefficient. A better function needs to be designed 
+reverse_limit: 90 ##this means that any heading STRICTLY more than 90 will trigger reverse movement. ##in degrees
+

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>tmsgs</name>
+  <version>0.0.0</version>
+  <description>The tmsgs package</description>
+
+  <maintainer email="mukund199823@gmail.com">mukund</maintainer>
+  <license>TODO</license>
+  <author email="mukund199823@gmail.comm">mukund</author> -->
+
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>std_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <build_depend>message_generation</build_depend>
+  <exec_depend>message_runtime</exec_depend>
+  
+</package>

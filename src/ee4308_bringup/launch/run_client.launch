@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="namespace" default="turtle"/>
+    <group ns="$(arg namespace)">
+        <!-- Params -->
+        <rosparam command="load" file="$(find ee4308_bringup)/worlds/$(env WORLD)/$(env WORLD)_goals.yaml"/>
+        <rosparam command="load" file="$(find loco_mapping)/config/motion_filter.yaml"/>
+        <rosparam command="load" file="$(find loco_mapping)/config/occupancy_grid.yaml"/>
+        <rosparam command="load" file="$(find mission_planner)/config/mission_planner.yaml"/>
+        <rosparam command="load" file="$(find global_planner)/config/global_planner.yaml"/>
+        <rosparam command="load" file="$(find commander)/config/commander.yaml"/>
+        <rosparam command="load" file="$(find commander)/config/pid.yaml"/>
+        <rosparam command="load" file="$(find commander)/config/trajectory.yaml"/>
+
+        <param name="initial_x" value="$(env TURTLE_X)" type="double"/>
+        <param name="initial_y" value="$(env TURTLE_Y)" type="double"/>
+        <param name="min_x" value="$(env TURTLE_MIN_X)" type="double"/>
+        <param name="min_y" value="$(env TURTLE_MIN_Y)" type="double"/>
+        <param name="max_x" value="$(env TURTLE_MAX_X)" type="double"/>
+        <param name="max_y" value="$(env TURTLE_MAX_Y)" type="double"/>
+        <param name="trigger_nodes" value="true" type="bool"/>
+        
+        <!-- Nodes -->
+        <node pkg="loco_mapping" type="motion_filter_node" name="motion_filter" output="screen"/>
+        <node pkg="loco_mapping" type="occupancy_grid_node" name="occupancy_grid" output="screen"/>
+        <node pkg="mission_planner" type="mission_planner_node" name="mission_planner" output="screen"/>
+        <node pkg="global_planner" type="global_planner_node" name="global_planner" output="screen"/>
+        <node pkg="commander" type="commander_node" name="commander" output="screen"/>
+    </group>
+</launch>

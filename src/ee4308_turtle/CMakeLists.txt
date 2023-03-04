@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
     geometry_msgs
     roscpp
     rospy
+    bot_utils
 )
 
 
@@ -23,6 +24,7 @@ catkin_package(
         nav_msgs 
         roscpp 
         rospy 
+        bot_utils
 )
 
 include_directories(

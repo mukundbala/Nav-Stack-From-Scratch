@@ -1,0 +1,2 @@
+geometry_msgs/Point goal_position
+uint8 action

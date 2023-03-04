@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<launch>
+    <group ns="turtle">
+        <arg name="config_dir" default="$(find loco_mapping)/config"/>
+        <rosparam command="load" default="$(arg config_dir)/motion_filter.yaml"/>
+        <node pkg="loco_mapping" type="motion_filter_node" name="motion_filter" output="screen"/>
+    </group>
+</launch>

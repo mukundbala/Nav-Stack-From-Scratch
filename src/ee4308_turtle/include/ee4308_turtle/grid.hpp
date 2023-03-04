@@ -5,7 +5,7 @@
 #include "los.hpp"
 #include "common.hpp"
 #include <nav_msgs/OccupancyGrid.h>
-
+#include "bot_utils/bot_utils.h"
 #ifndef GRID_HPP
 #define GRID_HPP
 class Grid
