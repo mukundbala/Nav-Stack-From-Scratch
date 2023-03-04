@@ -1,3 +1,4 @@
+#!/bin/bash
 export EE4308WS=`echo "$( cd "$( dirname "$0" )" && pwd )"`
 cd `echo $EE4308WS`
 

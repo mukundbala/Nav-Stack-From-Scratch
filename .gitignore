@@ -4,3 +4,4 @@
 /logs
 hector/
 *vscode
+.catkin_workspace

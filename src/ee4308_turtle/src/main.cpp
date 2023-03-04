@@ -11,33 +11,44 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/PointStamped.h>
+#include <std_msgs/Float64.h>
 
+//global variables. Values are set to high values
 std::vector<float> ranges;
-void cbScan(const sensor_msgs::LaserScan::ConstPtr &msg)
+Position pos_rbt(0, 0);
+double ang_rbt = 10;
+double mf_vel = -1000;
+
+//callbacks###########################################
+void cbScan(const sensor_msgs::LaserScan::ConstPtr &msg) //callback for scan
 {
     ranges = msg->ranges; // creates a copy
 }
-Position pos_rbt(0, 0);
-double ang_rbt = 10; // set to 10, because ang_rbt is between -pi and pi, and integer for correct comparison while waiting for motion to load
+
 void cbPose(const geometry_msgs::PoseStamped::ConstPtr &msg)
 {
     auto &p = msg->pose.position;
     pos_rbt.x = p.x;
     pos_rbt.y = p.y;
 
-    // euler yaw (ang_rbt) from quaternion <-- stolen from wikipedia
     auto &q = msg->pose.orientation; // reference is always faster than copying. but changing it means changing the referenced object.
     double siny_cosp = 2 * (q.w * q.z + q.x * q.y);
     double cosy_cosp = 1 - 2 * (q.y * q.y + q.z * q.z);
     ang_rbt = atan2(siny_cosp, cosy_cosp);
 }
 
+void CbMfVel(const std_msgs::Float64::ConstPtr &msg)
+{
+    mf_vel = msg->data;
+}
+//callbacks###########################################
+
+
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "turtle_main");
     ros::NodeHandle nh;
 
-    // Make sure motion and move can run (fail safe)
     nh.setParam("run", true); // turns off other nodes
 
     // Get ROS parameters
@@ -48,8 +59,10 @@ int main(int argc, char **argv)
         ROS_WARN(" TMAIN : Param initial_x not found, set to 0");
     if (!nh.param("initial_y", pos_rbt.y, 0.))
         ROS_WARN(" TMAIN : Param initial_x not found, set to 0");
+
     std::vector<Position> goals;
     std::string goal_str;
+
     if (nh.param("goals", goal_str, std::to_string(pos_rbt.x) + "," + std::to_string(pos_rbt.y)))
     {
         char goal_str_tok[goal_str.length() + 1];
@@ -73,6 +86,7 @@ int main(int argc, char **argv)
             return 1;
         }
     }
+    //get all other params
     else
         ROS_WARN(" TMAIN : Param goal not found, set to %s", goal_str.c_str());
     Position pos_min;
@@ -116,6 +130,7 @@ int main(int argc, char **argv)
     // subscribers
     ros::Subscriber sub_scan = nh.subscribe("scan", 1, &cbScan);
     ros::Subscriber sub_pose = nh.subscribe("pose", 1, &cbPose);
+    ros::Subscriber sub_mf_vel = nh.subscribe("mf_vel" ,1 , &CbMfVel);
 
     // Publishers
     ros::Publisher pub_path = nh.advertise<nav_msgs::Path>("path", 1, true);
@@ -156,12 +171,17 @@ int main(int argc, char **argv)
     ros::Rate rate(main_iter_rate);
 
     // Other variables
-    bool replan = true;
-    std::vector<Position> path, post_process_path, trajectory;
-    int g = 0;                    // goal num
-    Position pos_goal = goals[g]; // to trigger the reach goal
-    int t = 0;                    // target num
+    std::vector<Position> path;
+    std::vector<Position> post_process_path;
+    std::vector<Position> trajectory;
+    int g = 0;                   
+    int t = 0;
+    Position pos_goal = goals[g];
+    Position backup_goal = pos_rbt;            
     Position pos_target;
+    bool replan = true;
+    bool bad_pos_rbt = false;
+    bool bad_pos_goal = false;
 
     // wait for other nodes to load
     ROS_INFO(" TMAIN : Waiting for topics");
@@ -177,7 +197,6 @@ int main(int argc, char **argv)
     {
         // update all topics
         ros::spinOnce();
-
         // update the occ grid
         grid.update(pos_rbt, ang_rbt, ranges);
 
@@ -187,21 +206,19 @@ int main(int argc, char **argv)
         pub_grid_inf.publish(msg_grid_inf);
 
         if (dist_euc(pos_rbt, pos_goal) < close_enough)
-        { // reached the goal, get new goal
+        { 
             replan = true;
             if (++g >= goals.size())
             {
                 if (verbose)
                     ROS_INFO(" TMAIN : Last goal reached");
-                break;
             }
-            // there are goals remaining
             pos_goal = goals[g];
         }
         else if (!is_safe_trajectory(trajectory, grid))
-        { // request a new path if path intersects inaccessible areas, or if there is no path
+        { 
             replan = true;
-        }
+        } 
 
         // always try to publish the next target so it does not get stuck waiting for a new path.
         if (!trajectory.empty() && dist_euc(pos_rbt, pos_target) < close_enough)
@@ -212,7 +229,7 @@ int main(int argc, char **argv)
             pos_target = trajectory[t];
 
             if (verbose)
-                ROS_INFO(" TMAIN : Get next target (%f,%f)", pos_target.x, pos_target.y);
+                //ROS_INFO(" TMAIN : Get next target (%f,%f)", pos_target.x, pos_target.y);
 
             // publish to target topic
             msg_target.point.x = pos_target.x;
@@ -222,13 +239,39 @@ int main(int argc, char **argv)
 
         if (replan)
         {
-            if (grid.get_cell(pos_rbt) && grid.get_cell(pos_goal))
+            if (grid.get_cell(pos_rbt) && grid.get_cell(pos_goal) || (bad_pos_goal || bad_pos_rbt))
             {
                 if (verbose)
                     ROS_INFO(" TMAIN : Request Path from [%.2f, %.2f] to Goal %d at [%.2f,%.2f]",
                              pos_rbt.x, pos_rbt.y, g, pos_goal.x, pos_goal.y);
-                // if the robot and goal are both on accessible cells of the grid
-                path = planner.get(pos_rbt, pos_goal); // original path
+                
+                if (!bad_pos_rbt && !bad_pos_goal)
+                {
+                    path = planner.get(pos_rbt , pos_goal);
+                    ROS_INFO("[Tmove]: Path Planned using A*");
+                }
+
+                else if (bad_pos_rbt)
+                {
+                    ROS_WARN("[Tmove]: Finding nearest point using Djikstra");
+                    backup_goal = planner.djikstra_emergency_planner(pos_rbt);
+                    path = planner.get(backup_goal , pos_goal);
+                    ROS_WARN("[Tmove]: Using A* from backup goal");
+                    if (dist_euc(pos_rbt , backup_goal) < close_enough)
+                    {
+                        bad_pos_rbt = false;
+                        ROS_INFO(" TMAIN : Backup goal reached");
+                    }
+                }
+
+                else
+                {
+                    ROS_WARN("[Tmove]: Bad Goal! Planning to a safe point using Djikstra and A*");
+                    backup_goal = planner.djikstra_emergency_planner(pos_goal);
+                    path = planner.get(pos_rbt , backup_goal);
+                    bad_pos_goal = false;
+                }
+
                 if (path.empty())
                 { // path cannot be found
                     if (verbose)
@@ -243,25 +286,31 @@ int main(int argc, char **argv)
 
                     if (verbose)
                         ROS_INFO(" TMAIN : Begin Post Process");
+
                     post_process_path = post_process(path, grid);
 
                     if (verbose)
                         ROS_INFO(" TMAIN : Begin trajectory generation over all turning points");
+                        
                     // generate trajectory over all turning points
                     // doing the following manner results in the front of trajectory being the goal, and the back being close to the rbt position
                     trajectory.clear();
+
+                    std::vector<Position> velocities = generate_velocities(post_process_path , mf_vel , ang_rbt , average_speed);
                     for (int m = 1; m < post_process_path.size(); ++m)
                     {
                         Position &turn_pt_next = post_process_path[m - 1];
                         Position &turn_pt_cur = post_process_path[m];
-
-                        std::vector<Position> traj = generate_trajectory(turn_pt_next, turn_pt_cur, average_speed, target_dt, grid);
+                        ROS_INFO_STREAM("MFVEL: " << mf_vel);
+                        Position &next_vel = velocities.at(m-1);
+                        Position &cur_vel = velocities.at(m);
+                        std::vector<Position> traj = generate_trajectory(turn_pt_next, turn_pt_cur, next_vel , cur_vel , average_speed , target_dt , grid);
                         for (Position &pos_tgt : traj)
                         {
                             trajectory.push_back(pos_tgt);
                         }
                     }
-
+                    ROS_INFO("#######");
                     if (verbose)
                         ROS_INFO(" TMAIN : Trajectory generation complete");
 
@@ -301,14 +350,20 @@ int main(int argc, char **argv)
                 }
             }
             else
-            { // robot lies on inaccessible cell, or if goal lies on inaccessible cell
+            { 
                 if (!grid.get_cell(pos_rbt))
+                {
                     ROS_WARN(" TMAIN : Robot lies on inaccessible area. No path can be found");
+                    bad_pos_rbt = true;
+                }
+
                 if (!grid.get_cell(pos_goal))
+                {
                     ROS_WARN(" TMAIN : Goal lies on inaccessible area. No path can be found");
+                    bad_pos_goal = true;
+                }   
             }
         }
-
         // sleep for rest of iteration
         rate.sleep();
     }
