@@ -1,5 +1,5 @@
 com_rate: 25
 enable_commander: true ##set this to false so that we can teleoperate
 close_enough: 0.05 ##this is closer than goal radius so that we going
-danger_closer: 40  ##as long as the first occuring bad cell is more than danger_close cells away, we can just keep navigating towards that
+danger_closer: 60  ##as long as the first occuring bad cell is more than danger_close cells away, we can just keep navigating towards that
 verbose_commander: false

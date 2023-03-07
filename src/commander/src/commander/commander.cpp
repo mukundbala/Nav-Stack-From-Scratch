@@ -32,9 +32,16 @@ Commander::Commander(ros::NodeHandle &nh)
     //setup triggers
     generate_trajectory_ = false;
     trigger_replan_ = false;
+
     //setup path
     curr_path_id = -1;
 
+    //spline stuff
+    spline_id_ = 0;
+    spline_msg_.spline_id = -1;
+    spline_msg_.average_speed = average_speed_;
+    spline_msg_.target_dt = target_dt_;
+    
     //prepare velocities
     cmd_lin_vel_ = 0;
     cmd_ang_vel_ = 0;
@@ -55,6 +62,7 @@ Commander::Commander(ros::NodeHandle &nh)
     traj_pub_ = nh_.advertise<nav_msgs::Path>("trajectory" , 1 , true);
     cmd_vel_pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel" , 1 ,true);
     replan_pub_ = nh_.advertise<std_msgs::Bool>("trigger_replan" , 1 , true);
+    spline_pub_ = nh_.advertise<tmsgs::TurtleSpline>("spline" , 1 , true);
 
     ROS_INFO("[Commander]: Commander prepared!");
 }
@@ -156,6 +164,17 @@ void Commander::run()
             {
                 t_id -= 15;  //choose a further trajectory
             }
+
+            spline_msg_.spline.poses.clear();
+            for (int i = t_id ; i>=0 ; i--)
+            {
+                geometry_msgs::PoseStamped p;
+                p.pose.position.x = trajectory_.at(i).x;
+                p.pose.position.y = trajectory_.at(i).y;
+                spline_msg_.spline.poses.push_back(p);
+            }
+            spline_msg_.spline_id = spline_id_;
+            spline_id_ ++;
         }
 
         auto [safe , bad_idx] = checkTrajectorySafety();
@@ -187,10 +206,21 @@ void Commander::run()
                 if (t_id - bad_idx < danger_close_)
                 {
                     if (verbose_){ROS_WARN("[Commander]: Danger Close!");};
-                    current_target_ = robot_position_;
-                    //publish 0 velocity
-                    cmd_lin_vel_ = 0;
-                    cmd_ang_vel_ = 0;
+
+                    if (bot_utils::dist_euc(robot_position_,current_target_) < close_enough_)
+                    {
+                        if (t_id == 0)
+                        {
+                            current_target_ = trajectory_.at(t_id);
+                            
+                        }
+                        else
+                        {
+                            t_id --;
+                            current_target_ = trajectory_.at(t_id);
+                        }
+                    }
+                    std::tie(cmd_lin_vel_,cmd_ang_vel_) = pid.generate_cmdvel(robot_position_ , robot_heading_ , current_target_);
                     trigger_replan_ = true;
                 }
 
@@ -247,6 +277,10 @@ void Commander::run()
         target_pub_.publish(target_msg_);
         cmd_vel_pub_.publish(cmd_vel_msg_);
         replan_pub_.publish(replan_msg_);
+        if (spline_msg_.spline_id != -1)
+        {
+            spline_pub_.publish(spline_msg_);
+        }
         spinrate.sleep();
     }
     cmd_vel_msg_.angular.z = 0;

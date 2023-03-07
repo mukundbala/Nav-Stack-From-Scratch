@@ -17,6 +17,7 @@
 #include "std_msgs/Float64.h"
 #include "tmsgs/TriggerPlannerReplan.h"
 #include "tmsgs/TurtlePath.h"
+#include "tmsgs/TurtleSpline.h"
 #include <vector>
 #include <deque>
 #include <tuple>
@@ -56,6 +57,7 @@ private:
     double target_dt_;
     double average_speed_;
     std::string traj_type_;
+    int spline_id_;
 
     //Commander Params
     double rate_;
@@ -75,12 +77,14 @@ private:
     ros::Publisher traj_pub_;
     ros::Publisher cmd_vel_pub_;
     ros::Publisher replan_pub_;
+    ros::Publisher spline_pub_;
 
     //published messages
     geometry_msgs::PointStamped target_msg_;
     nav_msgs::Path traj_msg_;
     geometry_msgs::Twist cmd_vel_msg_;
     std_msgs::Bool replan_msg_;
+    tmsgs::TurtleSpline spline_msg_;
 
     //nodehandle
     ros::NodeHandle nh_;
