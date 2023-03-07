@@ -85,6 +85,9 @@ private:
     //nodehandle
     ros::NodeHandle nh_;
 
+    //logging
+    bool verbose_;
+
 public:
     Commander(ros::NodeHandle &nh);
 

@@ -165,7 +165,7 @@ void Commander::run()
         {
             if (bad_idx == -2)
             {
-                ROS_WARN("[Commander]: Trajectory is empty!");
+                if (verbose_){ROS_WARN("[Commander]: Trajectory is empty!");};
                 current_target_ = robot_position_; //just write the robot position
                 cmd_lin_vel_ = 0;
                 cmd_ang_vel_ = 0;
@@ -174,7 +174,7 @@ void Commander::run()
 
             else if (bad_idx == -1)
             {
-                ROS_WARN("[Commander]: Only target in Trajectory is bad!");
+                if (verbose_){ROS_WARN("[Commander]: Only target in Trajectory is bad!");};
                 current_target_ = robot_position_; //just write the robot position
                 //publish 0 velocity
                 cmd_lin_vel_ = 0;
@@ -186,7 +186,7 @@ void Commander::run()
             {
                 if (t_id - bad_idx < danger_close_)
                 {
-                    ROS_WARN("[Commander]: Danger Close!");
+                    if (verbose_){ROS_WARN("[Commander]: Danger Close!");};
                     current_target_ = robot_position_;
                     //publish 0 velocity
                     cmd_lin_vel_ = 0;
@@ -252,7 +252,8 @@ void Commander::run()
     cmd_vel_msg_.angular.z = 0;
     cmd_vel_msg_.linear.x = 0;
     cmd_vel_pub_.publish(cmd_vel_msg_);
-    ROS_INFO("[Commander]: Setting velocity to 0");
+    
+    if (verbose_){ROS_INFO("[Commander]: Setting velocity to 0");};
 }
 
 
@@ -567,6 +568,11 @@ bool Commander::loadCommanderParams()
         status = false;
     }
 
+    if (!nh_.param("verbose_commander" , verbose_ , false))
+    {
+        ROS_WARN("[Commander]: Param verbose_commander not found, defaulting to false");
+        status = false;
+    }
     return status;
 }
 

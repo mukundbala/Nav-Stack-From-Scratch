@@ -71,6 +71,9 @@ private:
     ros::NodeHandle nh_;
     double rate_;
     const double EPS_ = 1e-6; //for float comparisons
+
+    //verbosity
+    bool verbose_;
 public:
     //Class constructor for global planner
     GlobalPlanner(ros::NodeHandle &nh);

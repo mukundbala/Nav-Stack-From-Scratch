@@ -132,7 +132,7 @@ void GlobalPlanner::run()
 
             if (robot_status_ && goal_status_)
             {
-                ROS_INFO("[GlobalPlanner]: Main planner planning a path!");
+                if (verbose_){ROS_INFO("[GlobalPlanner]: Main planner planning a path!");};
                 path_.clear();
                 path_ = main_planner.plan(robot_position_ , current_goal_); //just plan a path. This will generate a new path
                 writeToPathMsg();
@@ -140,7 +140,7 @@ void GlobalPlanner::run()
 
             else if (robot_status_ && !goal_status_) //if we have a bad goal. This must invalidate current paths as it is no longer safe
             {
-                ROS_WARN("[GlobalPlanner]: Bad goal received. Finding a new goal!");
+                if (verbose_){ROS_WARN("[GlobalPlanner]: Bad goal received. Finding a new goal!");};
                 bot_utils::Pos2D updated_goal = backup_planner.plan(current_goal_);
                 tmsgs::Goal update_goal_msg;
                 update_goal_msg.action = 2;
@@ -148,14 +148,14 @@ void GlobalPlanner::run()
                 update_goal_msg.goal_position.y = updated_goal.y;
                 tmsgs::UpdateTurtleGoal update_goal_srv;
                 update_goal_srv.request.to_update = update_goal_msg;
-                ROS_WARN("[GlobalPlanner]: New Goal Found. Updating Mission Planner!");
+                if (verbose_){ROS_WARN("[GlobalPlanner]: New Goal Found. Updating Mission Planner!");};
                 if (update_goal_client_.call(update_goal_srv))
                 {
-                    ROS_INFO("[GlobalPlanner]: Mission Planner updated!");
+                    if (verbose_){ROS_INFO("[GlobalPlanner]: Mission Planner updated!");};
                 }
                 else
                 {
-                    ROS_INFO("[GlobalPlanner]: Failed to update mission planner!");
+                    if (verbose_){ROS_INFO("[GlobalPlanner]: Failed to update mission planner!");};
                 }
                 current_goal_ = updated_goal;
                 path_.clear();
@@ -165,25 +165,37 @@ void GlobalPlanner::run()
 
             else if (!robot_status_ && goal_status_) //we have a robot position
             {
-                ROS_WARN("[GlobalPlanner]: Robot on Non-Free Cell");
-                ROS_WARN("[GlobalPlanner]: Finding better robot position!");
+                if (verbose_)
+                {
+                    ROS_WARN("[GlobalPlanner]: Robot on Non-Free Cell");
+                    ROS_WARN("[GlobalPlanner]: Finding better robot position!");
 
-                ROS_INFO("ROBOT POSITION: ");
-                robot_position_.print();
+                    ROS_INFO("ROBOT POSITION: ");
+                    robot_position_.print();
+                }
+                
                 backup_robot_position_ = backup_planner.plan(robot_position_);
-                ROS_INFO("BACKUP POSITION: ");
-                backup_robot_position_.print();
+                
+                if(verbose_)
+                {
+                    ROS_INFO("BACKUP POSITION: ");
+                    backup_robot_position_.print();
+                    ROS_WARN("[GlobalPlanner]: Using backup robot position!");
+                }
+
                 backup_mode_ = true;
                 path_.clear();
-                ROS_WARN("[GlobalPlanner]: Using backup robot position!");
                 path_ = main_planner.plan(backup_robot_position_ , current_goal_);
                 writeToPathMsg();
             }
 
             else if (!robot_status_ && !goal_status_) //both are bad, we find a goal first, then fix the robot's position
             {
-                 ROS_WARN("[GlobalPlanner]: Goal is bad and robot on non-free. Finding backups for both!");
-                 ROS_WARN("[GlobalPlanner]: Finding better robot AND goal positions!");
+                if (verbose_)
+                {
+                    ROS_WARN("[GlobalPlanner]: Goal is bad and robot on non-free. Finding backups for both!");
+                    ROS_WARN("[GlobalPlanner]: Finding better robot AND goal positions!");
+                }
 
                 backup_robot_position_ = backup_planner.plan(robot_position_);
                 bot_utils::Pos2D updated_goal = backup_planner.plan(current_goal_);
@@ -194,14 +206,19 @@ void GlobalPlanner::run()
                 update_goal_msg.goal_position.y = updated_goal.y;
                 tmsgs::UpdateTurtleGoal update_goal_srv;
                 update_goal_srv.request.to_update = update_goal_msg;
-                ROS_WARN("[GlobalPlanner]: New Goal Found. Updating Mission Planner!");
+
+                if (verbose_)
+                {
+                    ROS_WARN("[GlobalPlanner]: New Goal Found. Updating Mission Planner!");
+                }
+
                 if (update_goal_client_.call(update_goal_srv))
                 {
-                    ROS_INFO("[GlobalPlanner]: Mission Planner updated!");
+                    if (verbose_){ROS_INFO("[GlobalPlanner]: Mission Planner updated!");};
                 }
                 else
                 {
-                    ROS_INFO("[GlobalPlanner]: Failed to update mission planner!");
+                    if (verbose_){ROS_INFO("[GlobalPlanner]: Failed to update mission planner!");};
                 }
 
                 current_goal_ = updated_goal;
@@ -212,7 +229,8 @@ void GlobalPlanner::run()
 
             if (path_.empty())
             {
-                ROS_WARN("[GlobalPlanner]: No path found!");
+                if (verbose_){ROS_WARN("[GlobalPlanner]: No path found!");};
+
                 if (tp && !trp)
                 {
                     trigger_plan = true;
@@ -254,7 +272,7 @@ void GlobalPlanner::run()
             if (path_.empty())
             {
                 trigger_plan = true;
-                ROS_WARN("[GlobalPlanner]: No path found!");
+                if (verbose_){ROS_WARN("[GlobalPlanner]: No path found!");};
             }
             else
             {
@@ -407,6 +425,12 @@ bool GlobalPlanner::loadParams()
     if (!nh_.param("max_y" , this->mapdata.pos_max_.y , 10.0))
     {
         ROS_WARN("[GlobalPlanner]: Param max_y not found, defaulting to 10");
+        status = false;
+    }
+
+    if (!nh_.param("verbose_planner" , this->verbose_ , false))
+    {
+        ROS_WARN("[GlobalPlanner]: Param verbose_planner not found, defaulting to false");
         status = false;
     }
     return status;
