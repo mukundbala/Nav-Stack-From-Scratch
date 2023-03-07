@@ -1,0 +1,42 @@
+# main
+verbose_main: false
+main_iter_rate: 40
+height: 2
+look_ahead: 1
+close_enough: 0.2
+average_speed: 2.0
+
+# motion
+verbose_motion: true
+use_ground_truth: true
+qa: 1
+qx: 1
+qy: 1
+qz: 1
+enable_gps: true
+r_gps_x: 1
+r_gps_y: 1
+r_gps_z: 1
+enable_magnet: true
+r_mgn_a: 1.0e-1
+enable_baro: true
+r_bar_z: 1.0e-1
+enable_sonar: true
+r_snr_z: 1.0e-1
+motion_iter_rate: 20
+
+# move
+enable_move: true
+verbose_move: false
+Kp_lin: 1
+Ki_lin: 0.0
+Kd_lin: 0
+Kp_z: 1
+Ki_z: 0.0
+Kd_z: 0
+yaw_rate: 0.5
+max_lin_vel: 2
+max_z_vel: 0.5
+move_iter_rate: 40
+
+# run param used automatically and should not be written

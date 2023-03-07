@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+    <!-- Params -->
+    <rosparam file="$(find ee4308_hector)/config/hector.yaml" />
+    <param name="initial_x" value="$(env HECTOR_X)" type="double"/>
+    <param name="initial_y" value="$(env HECTOR_Y)" type="double"/>
+    <param name="initial_z" value="$(env HECTOR_Z)" type="double"/>
+    <param name="run" value="true" type="bool"/>
+
+    <!-- Nodes -->
+    <node pkg="ee4308_hector" type="hector_main" name="hector_main" output="screen" />
+    <node pkg="ee4308_hector" type="hector_motion" name="hector_motion" output="screen" />
+    <node pkg="ee4308_hector" type="hector_move" name="hector_move" output="screen" />
+</launch>
