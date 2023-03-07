@@ -107,7 +107,7 @@ void GlobalPlanner::run()
 
     ROS_INFO("[GlobalPlanner]: Waiting for topics");
 
-    while(ros::ok() && nh_.param("trigger_nodes" , true) && nh_.param("trigger_mp",false) && (robot_position_.x == -500 
+    while(ros::ok() && nh_.param("trigger_nodes" , true) && (robot_position_.x == -500 
                                                             || mapdata.grid_inflation_.empty() 
                                                             || mapdata.grid_logodds_.empty() 
                                                             || current_goal_.x == -1000)
