@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 <launch>
-    <arg name="namespace" default="turtle"/>
-    <group ns="$(arg namespace)">
+    <arg name="turtle_namespace" default="turtle"/>
+    <arg name="drone_namespace"  default="hector"/>
+    <arg name="project" default="$(env TASK)"/>
+
+    <group ns="$(arg turtle_namespace)">
         <!-- Params -->
         <rosparam command="load" file="$(find turtle_bringup)/worlds/$(env WORLD)/$(env WORLD)_goals.yaml"/>
         <rosparam command="load" file="$(find loco_mapping)/config/motion_filter.yaml"/>
@@ -27,4 +30,9 @@
         <node pkg="global_planner" type="global_planner_node" name="global_planner" output="screen"/>
         <node pkg="commander" type="commander_node" name="commander" output="screen"/>
     </group>
+
+    <group if="$(eval project == 'proj2')">
+        <include file="$(find ee4308_hector)/launch/run.launch" ns="$(arg drone_namespace)"/>
+    </group>
+        
 </launch>
