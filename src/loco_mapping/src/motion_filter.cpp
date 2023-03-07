@@ -48,108 +48,133 @@ void MotionFilter::callbackOdom(const nav_msgs::Odometry::ConstPtr &msg)
 
 void MotionFilter::run()
 {
-    ros::Rate spinrate(rate_);
-    ROS_INFO("[Motion Filter]: Waiting for topics");
+    if (use_internal_odom_)
+    {   
+        ros::Rate spinrate(25.0);
+        ROS_INFO("[Motion Filter]: Using Internal Odometry. Ground Truth will be used if Simulation");
+        ROS_INFO("[Motion Filter]: Waiting for topics");
 
-    while (ros::ok() && odom_msg_.header.seq == 0 && nh_.param("trigger_nodes", true)) // ros::ok() && nh_.param("run", true) && msg_odom.header.seq == 0
-    {
-        spinrate.sleep();
-        ros::spinOnce(); //update the topics
-    }
-    ROS_INFO("[Motion Filter]: Starting Motion Filter");
-    
-    //time at previous time step
-    double prev_time = ros::Time::now().toSec();
-    //size of time step
-    double dt = 0;
-    //store for left wheel_position @ step t-1
-    double wheel_l_prev = wheel_l_;
-    //store for right wheel_position @ step t-1
-    double wheel_r_prev = wheel_r_;
-    //store for linear velocity @ step t-1
-    double linear_vel = 0;
-    //store for angular velocity @ step t-1
-    double angular_vel = 0;
-
-    while(ros::ok() && nh_.param("trigger_nodes", true)) //ros::ok() && nh.param("run", true)
-    {
-        ros::spinOnce();
-        dt = ros::Time::now().toSec() - prev_time;
-        if (dt == 0)
+        while (ros::ok() && nh_.param("trigger_nodes", true) && odom_msg_.header.seq == 0 ) // ros::ok() && nh_.param("run", true) && msg_odom.header.seq == 0
         {
-            continue;
+            spinrate.sleep();
+            ros::spinOnce(); //update the topics
         }
 
-        double wheel_l_current = wheel_l_; //current left wheel rotation from callback (*UPDATE*)
-        double wheel_r_current = wheel_r_; //current right wheel rotation from callback (*UPDATE*)
-        double delta_wheel_l = wheel_l_current - wheel_l_prev; //delta of left wheel rotation
-        double delta_wheel_r = wheel_r_current - wheel_r_prev; //delta of right wheel rotation
-
-        double linear_velocity_odom = (wheel_radius_ / (2 * dt)) * (delta_wheel_r + delta_wheel_l); //odometry based linear velocity 
-        double angular_velocity_odom = (wheel_radius_ / (axle_track_ * dt)) * (delta_wheel_r - delta_wheel_l); //odometry based angular velocity
-        
-        double linear_velocity_imu = linear_vel + (imu_linear_acc_ * dt); //sum of the prev linear velocity + linear_acc * dt from imu
-        double angular_velocity_imu = imu_angular_vel_; //the imu reading for angular velocity
-
-        double weighted_linear_velocity = (weight_odom_v_ * linear_velocity_odom) + (weight_imu_v_ * linear_velocity_imu); //fusing linear velocity measurements with a weighted average (*UPDATE*)
-        double weighted_angular_velocity = (weight_odom_w_ * angular_velocity_odom) + (weight_imu_w_ * angular_velocity_imu); //fusing angular velocity measurements with a weighted average (*UPDATE*)
-
-        double delta_heading = weighted_angular_velocity * dt; //using the weighted angular velocity * dt to compute the change in heading
-        double current_robot_heading = bot_utils::limit_angle(robot_heading_ + delta_heading); //adding the change in heading to the current robot angle (*UPDATE*)
-        double turn_radius = weighted_linear_velocity / weighted_angular_velocity; //turn radius computation using the ratio of weighted linear and angular velocities
-
-        double current_position_x = 0;
-        double current_position_y = 0;
-        if (weighted_angular_velocity > straight_thresh_) //case where robot is not straight
+        ROS_INFO("[Motion Filter]: Starting Motion Filter using Internal Odometry!");
+        while (ros::ok() && nh_.param("trigger_nodes",true))
         {
-            current_position_x = robot_position_.x + (turn_radius * (-sin(robot_heading_) + sin(current_robot_heading)));
-            current_position_y = robot_position_.y + (turn_radius * (cos(robot_heading_) - cos(current_robot_heading)));
-        }
+            ros::spinOnce();
 
-        else //case where robot is straight
-        {
-            current_position_x = robot_position_.x + (weighted_linear_velocity * dt * cos(robot_heading_));
-            current_position_y = robot_position_.y + (weighted_linear_velocity * dt * sin(robot_heading_));
-        }
-        
-        //update previous store
-        wheel_l_prev = wheel_l_current;
-        wheel_r_prev = wheel_r_current;
-        linear_vel = weighted_linear_velocity;
-        angular_vel = weighted_angular_velocity;
-        robot_heading_ = current_robot_heading;
-        robot_position_.x = current_position_x;
-        robot_position_.y = current_position_y;
-        prev_time += dt;
-
-        robot_pose_odom_.pose = odom_msg_.pose.pose;
-        
-        robot_pose_mf_.pose.position.x = robot_position_.x;
-        robot_pose_mf_.pose.position.y = robot_position_.y;
-        robot_pose_mf_.pose.orientation.x = 0;
-        robot_pose_mf_.pose.orientation.y = 0;
-        robot_pose_mf_.pose.orientation.z = sin(robot_heading_ / 2);
-        robot_pose_mf_.pose.orientation.w = cos(robot_heading_ / 2);
-
-        if (use_internal_odom_)
-        {
+            robot_pose_odom_.pose = odom_msg_.pose.pose;
+            std_msgs::Float64 speed_msg;
+            speed_msg.data = odom_msg_.twist.twist.linear.x;
             pose_pub_.publish(robot_pose_odom_);
+            speed_pub_.publish(speed_msg);
+
+            spinrate.sleep();
         }
-        else
-        {
-            pose_pub_.publish(robot_pose_mf_);
-        }
-        if (verbose_)
-        {
-            ROS_INFO_STREAM("Robot Position: " << robot_position_.x << "," << robot_position_.y<<")");
-            ROS_INFO_STREAM("Robot Heading: " << robot_heading_);
-        }
-        std_msgs::Float64 speed_msg;
-        speed_msg.data = linear_vel;
-        speed_pub_.publish(speed_msg);
-        spinrate.sleep();
     }
 
+    else
+    {
+        ros::Rate spinrate(rate_);
+        ROS_INFO("[Motion Filter]: Using Weighted Average Motion Filter!");
+        ROS_INFO("[Motion Filter]: Waiting for topics");
+
+        while (ros::ok() && nh_.param("trigger_nodes", true) && (wheel_l_ == 10 || wheel_r_ == 10 || imu_angular_vel_ == -10)) // dependent on imu and wheels
+        {
+            spinrate.sleep();
+            ros::spinOnce(); //update the topics
+        }
+
+        ROS_INFO("[Motion Filter]: Starting Motion Filter using Weighted Average Filter!");
+        
+        //time at previous time step
+        double prev_time = ros::Time::now().toSec();
+        //size of time step
+        double dt = 0;
+        //store for left wheel_position @ step t-1
+        double wheel_l_prev = wheel_l_;
+        //store for right wheel_position @ step t-1
+        double wheel_r_prev = wheel_r_;
+        //store for linear velocity @ step t-1
+        double linear_vel = 0;
+        //store for angular velocity @ step t-1
+        double angular_vel = 0;
+
+        while(ros::ok() && nh_.param("trigger_nodes", true))
+        {
+            ros::spinOnce();
+            dt = ros::Time::now().toSec() - prev_time;
+            if (dt == 0)
+            {
+                continue;
+            }
+
+            double wheel_l_current = wheel_l_; //current left wheel rotation from callback (*UPDATE*)
+            double wheel_r_current = wheel_r_; //current right wheel rotation from callback (*UPDATE*)
+            double delta_wheel_l = wheel_l_current - wheel_l_prev; //delta of left wheel rotation
+            double delta_wheel_r = wheel_r_current - wheel_r_prev; //delta of right wheel rotation
+
+            double linear_velocity_odom = (wheel_radius_ / (2 * dt)) * (delta_wheel_r + delta_wheel_l); //odometry based linear velocity 
+            double angular_velocity_odom = (wheel_radius_ / (axle_track_ * dt)) * (delta_wheel_r - delta_wheel_l); //odometry based angular velocity
+            
+            double linear_velocity_imu = linear_vel + (imu_linear_acc_ * dt); //sum of the prev linear velocity + linear_acc * dt from imu
+            double angular_velocity_imu = imu_angular_vel_; //the imu reading for angular velocity
+
+            double weighted_linear_velocity = (weight_odom_v_ * linear_velocity_odom) + (weight_imu_v_ * linear_velocity_imu); //fusing linear velocity measurements with a weighted average (*UPDATE*)
+            double weighted_angular_velocity = (weight_odom_w_ * angular_velocity_odom) + (weight_imu_w_ * angular_velocity_imu); //fusing angular velocity measurements with a weighted average (*UPDATE*)
+
+            double delta_heading = weighted_angular_velocity * dt; //using the weighted angular velocity * dt to compute the change in heading
+            double current_robot_heading = bot_utils::limit_angle(robot_heading_ + delta_heading); //adding the change in heading to the current robot angle (*UPDATE*)
+            double turn_radius = weighted_linear_velocity / weighted_angular_velocity; //turn radius computation using the ratio of weighted linear and angular velocities
+
+            double current_position_x = 0;
+            double current_position_y = 0;
+            if (weighted_angular_velocity > straight_thresh_) //case where robot is not straight
+            {
+                current_position_x = robot_position_.x + (turn_radius * (-sin(robot_heading_) + sin(current_robot_heading)));
+                current_position_y = robot_position_.y + (turn_radius * (cos(robot_heading_) - cos(current_robot_heading)));
+            }
+
+            else //case where robot is straight
+            {
+                current_position_x = robot_position_.x + (weighted_linear_velocity * dt * cos(robot_heading_));
+                current_position_y = robot_position_.y + (weighted_linear_velocity * dt * sin(robot_heading_));
+            }
+            
+            //update previous store
+            wheel_l_prev = wheel_l_current;
+            wheel_r_prev = wheel_r_current;
+            linear_vel = weighted_linear_velocity;
+            angular_vel = weighted_angular_velocity;
+            robot_heading_ = current_robot_heading;
+            robot_position_.x = current_position_x;
+            robot_position_.y = current_position_y;
+            prev_time += dt;
+
+            //robot_pose_odom_.pose = odom_msg_.pose.pose;
+            
+            robot_pose_mf_.pose.position.x = robot_position_.x;
+            robot_pose_mf_.pose.position.y = robot_position_.y;
+            robot_pose_mf_.pose.orientation.x = 0;
+            robot_pose_mf_.pose.orientation.y = 0;
+            robot_pose_mf_.pose.orientation.z = sin(robot_heading_ / 2);
+            robot_pose_mf_.pose.orientation.w = cos(robot_heading_ / 2);
+
+            pose_pub_.publish(robot_pose_mf_);
+
+            if (verbose_)
+            {
+                ROS_INFO_STREAM("Robot Position: " << robot_position_.x << "," << robot_position_.y<<")");
+                ROS_INFO_STREAM("Robot Heading: " << robot_heading_);
+            }
+            std_msgs::Float64 speed_msg;
+            speed_msg.data = linear_vel;
+            speed_pub_.publish(speed_msg);
+            spinrate.sleep();
+        }
+    }
 }
 
 void MotionFilter::loadParams()

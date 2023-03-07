@@ -93,7 +93,7 @@ void OccupancyGrid::run()
     ros::Rate spinrate(rate_);
 
     ROS_INFO("[OccupancyGrid]: Waiting for topics");
-    while(ros::ok && (ranges.empty() || robot_heading_ == -10) && nh_.param("trigger_nodes" , true)) //tick until we receive all the information && nh_.param("trigger_occ" , true)
+    while(ros::ok && nh_.param("trigger_nodes" , true) && (ranges.empty() || robot_heading_ == -10 || robot_position_.x == -50))
     {
         spinrate.sleep();
         ros::spinOnce();

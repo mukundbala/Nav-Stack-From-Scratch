@@ -5,5 +5,5 @@ weight_odom_v: 0.99
 weight_odom_w: 0.01
 straight_thresh: 0.05
 mf_rate: 50
-use_internal_odom: false
+use_internal_odom: true
 verbose_mf: false
