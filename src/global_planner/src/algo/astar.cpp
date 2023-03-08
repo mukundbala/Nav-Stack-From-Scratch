@@ -104,7 +104,7 @@ std::vector<bot_utils::Index> Astar::plan(bot_utils::Index idx_start, bot_utils:
         // (3) return path if node is the goal
         if (node->idx.i == idx_goal.i && node->idx.j == idx_goal.j)
         {   // reached the goal, return the path
-            ROS_INFO("[Global Planner - Astar]: Goal found. Generating path!");
+            //ROS_INFO("[Global Planner - Astar]: Goal found. Generating path!");
 
             path_idx.push_back(node->idx);
 

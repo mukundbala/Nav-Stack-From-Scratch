@@ -82,7 +82,7 @@ void GlobalPlanner::goalCallback(const tmsgs::GoalConstPtr &goal)
         this->path_.clear();
         this->path_msg_.poses.clear();
         trigger_plan = true;
-        ROS_INFO_STREAM("[GlobalPlanner]: New goal received: (" << current_goal_.x << "," << current_goal_.y << ")");
+        if (verbose_){ROS_INFO_STREAM("[GlobalPlanner]: New goal received: (" << current_goal_.x << "," << current_goal_.y << ")");};
     }
     // else
     // {
@@ -95,7 +95,7 @@ void GlobalPlanner::replanCallback(const std_msgs::BoolConstPtr &trigger)
     this -> trigger_replan = trigger->data;
     if (trigger_replan)
     {
-        ROS_WARN("[GlobalPlanner]: Trigger replan from Commander's Request");
+        if (verbose_){ROS_WARN("[GlobalPlanner]: Trigger replan from Commander's Request");};
     }
 }
 
@@ -374,7 +374,7 @@ void GlobalPlanner::writeToPathMsg()
         path_comm_msg_.path.poses.push_back(pt);
     }
     path_comm_msg_.id = ++(this->path_id_); //everytime we write to message, we update the id
-    ROS_INFO_STREAM("[GlobalPlanner]: Current Path Id: " << path_id_);
+    if (verbose_){ROS_INFO_STREAM("[GlobalPlanner]: Current Path Id: " << path_id_);};
 }
 
 bool GlobalPlanner::loadParams()

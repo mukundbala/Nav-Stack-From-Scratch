@@ -101,7 +101,7 @@ void Commander::pathCallback(const tmsgs::TurtlePath &path)
         generate_trajectory_ = true;
         trigger_replan_ = false;
         trajectory_.clear();
-        ROS_INFO("[Commander]: New Path Received!");
+        if (verbose_){ROS_INFO("[Commander]: New Path Received!");};
     }
 }
 
@@ -166,14 +166,15 @@ void Commander::run()
             }
 
             spline_msg_.spline.poses.clear();
-            for (int i = t_id ; i>=0 ; i--)
+
+            for (int i = t_id ; i>=0 ; i--) //t_id is the current target of the robot
             {
                 geometry_msgs::PoseStamped p;
                 p.pose.position.x = trajectory_.at(i).x;
                 p.pose.position.y = trajectory_.at(i).y;
                 spline_msg_.spline.poses.push_back(p);
             }
-            spline_msg_.spline_id = spline_id_;
+            spline_msg_.spline_id = spline_id_; //we have pushed back all the trajectories from the turtle's current target all the way to the final target
             spline_id_ ++;
         }
 
@@ -277,6 +278,7 @@ void Commander::run()
         target_pub_.publish(target_msg_);
         cmd_vel_pub_.publish(cmd_vel_msg_);
         replan_pub_.publish(replan_msg_);
+
         if (spline_msg_.spline_id != -1)
         {
             spline_pub_.publish(spline_msg_);

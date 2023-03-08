@@ -88,7 +88,7 @@ bot_utils::Index Djikstra::plan(bot_utils::Index idx_start)
         // (3) return path if node is a free cell
         if (testPos(idx2pos(node -> idx)))
         {   // reached the goal, return the path
-            ROS_INFO("[GlobalPlanner - Djikstra]: Generating new point");
+            //ROS_INFO("[GlobalPlanner - Djikstra]: Generating new point");
             return node->idx;
         }
 
@@ -145,7 +145,7 @@ bot_utils::Index Djikstra::plan(bot_utils::Index idx_start)
     }
     // clear open list
     open_list.clear();
-    ROS_INFO("AM I REALLY HERE?");
+    //ROS_INFO("AM I REALLY HERE?");
     return node->idx;
 }
 

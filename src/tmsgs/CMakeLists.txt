@@ -14,6 +14,7 @@ add_message_files(
   FILES
   Goal.msg
   TurtlePath.msg
+  TurtleSpline.msg
 )
 
 ## Generate services in the 'srv' folder
