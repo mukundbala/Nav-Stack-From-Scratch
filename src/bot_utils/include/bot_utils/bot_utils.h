@@ -82,6 +82,11 @@ struct Pos3D
     Pos3D(double x_, double y_, double z_);
     Pos3D();
     void setCoords(double x_, double y_ , double z_);
+
+    void print()
+    {
+        ROS_INFO_STREAM("(" << x << "," << y << "," << z << ")");
+    }
 };
 
 //Index object
