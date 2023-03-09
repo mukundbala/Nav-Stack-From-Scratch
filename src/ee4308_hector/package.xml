@@ -50,6 +50,7 @@
   <exec_depend>hector_uav_msgs</exec_depend>
   <exec_depend>bot_utils</exec_depend>
   <exec_depend>tmsgs</exec_depend>
+  <exec_depend>cmake_modules</exec_depend>
 
   <export>
   </export>
