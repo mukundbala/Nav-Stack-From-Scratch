@@ -50,8 +50,8 @@ bool verbose;
 bool kill_switch = false;
 
 //states
-HectorState state = HectorState::TAKEOFF;
-GoalState g_state = GoalState::CHASE;
+HectorState state;
+GoalState g_state;
 
 //store for hector's position and orientation about the z axis
 bot_utils::Pos3D hector_position(NaN,NaN,NaN);
@@ -65,8 +65,10 @@ double hector_angular_velocity = NaN;
 bot_utils::Pos2D tbot_position(NaN,NaN);
 double tbot_heading = NaN;
 
-//triggers
-bool generate_trajectory_ = false;
+//generate trajectory triggers.
+//We need 2 to avoid generate trajectories for passthroughs if turtle gets a new traj
+bool generate_trajectory_turtle = false;
+bool generate_trajectory_passthrough = false;
 
 //Hector current target
 bot_utils::Pos3D current_target;
@@ -80,6 +82,7 @@ bot_utils::Pos3D hector_takeoff_goal(NaN,NaN,NaN); //hector's takeoff goal
 bot_utils::Pos3D hector_land_goal(NaN,NaN,NaN); //hector's land goal
 bot_utils::Pos2D turtle_predicted_goal(NaN,NaN);
 int predicted_id = -1;
+
 //Hector Spline
 SplineData3D hector_spline_data;
 int h_id = -1;
@@ -138,10 +141,11 @@ void cbTSpline(const tmsgs::TurtleSplineConstPtr &spline_msg)
         {
             ROS_INFO("[Tmain]: New Turtle Spline Received!");
         }
-        generate_trajectory_ = true;
+        generate_trajectory_turtle = true;
     }
 
 }
+
 
 int main(int argc, char **argv)
 {
@@ -231,7 +235,10 @@ int main(int argc, char **argv)
     ROS_INFO(" HMAIN : ===== BEGIN =====");
     ros::Rate rate(main_iter_rate);
 
+    HectorState state = HectorState::TAKEOFF;
+    GoalState g_state = GoalState::CHASE;
     current_goal = hector_takeoff_goal;
+    generate_trajectory_passthrough = true;
     next_goal.setCoords(NaN,NaN,NaN);
     //                                                          If turtle ends: LAND
     //                                                                            ^
@@ -246,7 +253,9 @@ int main(int argc, char **argv)
         if (state == HectorState::TAKEOFF)
         {   
             msg_rotate.data = false;
-            g_state = GoalState::CHASE;
+
+            generate_trajectory_turtle = false;
+
             if (dist_euc(hector_position.x , hector_position.y , current_target.x , current_target.y) && std::abs(hector_position.z - height) < 0.05)
             {
                 //transition state
@@ -256,12 +265,15 @@ int main(int argc, char **argv)
                 std::tie(turtle_predicted_goal,predicted_id) = get_best_goal(turtle_spline_data , hector_position , tbot_position , average_speed); //predict a goal
                 current_goal.setCoords(turtle_predicted_goal.x , turtle_predicted_goal.y , height);
                 next_goal = final_goal;
-                generate_trajectory_ = true;
+                generate_trajectory_turtle = true;
+                generate_trajectory_passthrough = false;
             }
         }
         else if (state == HectorState::TURTLE)
         {   
             msg_rotate.data = true;
+            generate_trajectory_passthrough = false;
+
             if (dist_euc(hector_position.x , hector_position.y , tbot_position.x , tbot_position.y) < close_enough) //base check if we are close enough to the turtle
             {
                 //transition state
@@ -270,11 +282,12 @@ int main(int argc, char **argv)
                 g_state = GoalState::GOTO;
                 current_goal = final_goal;
                 next_goal = hector_takeoff_goal;
-                generate_trajectory_ = true;
+                generate_trajectory_turtle = false;
+                generate_trajectory_passthrough = true;
             }
             else //if we are nowhere close to the turtle yet
             {
-                if (generate_trajectory_)
+                if (generate_trajectory_turtle)
                 {
                     //a case where we recived a new trajectory
                     std::tie(turtle_predicted_goal,predicted_id) = get_best_goal(turtle_spline_data , hector_position , tbot_position , average_speed);
@@ -283,7 +296,7 @@ int main(int argc, char **argv)
                     g_state = GoalState::PREDICTION;
                 }
 
-                else
+                else //!generate_trajectory_turtle
                 {
                     //we have received no new trajectories.
                     if (g_state == GoalState::PREDICTION)
@@ -297,7 +310,7 @@ int main(int argc, char **argv)
                             current_goal.setCoords(turtle_predicted_goal.x , turtle_predicted_goal.y , height);
                             next_goal = final_goal;
                             g_state = GoalState::PREDICTION;
-                            generate_trajectory_ = true;
+                            generate_trajectory_turtle = true;
                         }
 
                         else if (hector_reached_pred & !turtle_reached_pred)
@@ -307,7 +320,7 @@ int main(int argc, char **argv)
                             current_goal.setCoords(tbot_position.x , tbot_position.y , height);
                             next_goal = final_goal;
                             g_state = GoalState::CHASE;
-                            generate_trajectory_ = true;
+                            generate_trajectory_turtle = true;
                         }
                     }
                     
@@ -320,7 +333,8 @@ int main(int argc, char **argv)
                             g_state = GoalState::GOTO;
                             current_goal = final_goal;
                             next_goal = hector_takeoff_goal;
-                            generate_trajectory_ = true;
+                            generate_trajectory_turtle = false;
+                            generate_trajectory_passthrough = true;
                         }
                         else
                         {
@@ -329,7 +343,7 @@ int main(int argc, char **argv)
                             current_goal.setCoords(tbot_position.x , tbot_position.y , height);
                             next_goal = final_goal;
                             g_state = GoalState::CHASE;
-                            generate_trajectory_ = true;
+                            generate_trajectory_turtle = true;
                         }
                     }
                 }
@@ -339,7 +353,10 @@ int main(int argc, char **argv)
         else if (state == HectorState::GOAL)
         {   
             msg_rotate.data = true;
-            if (dist_euc(hector_position.x , hector_position.y , final_goal.x , final_goal.y) < close_enough && std::abs(hector_position.z - height) < 0.05)
+            generate_trajectory_turtle = false;
+            generate_trajectory_passthrough = false;
+
+            if (dist_euc(hector_position.x , hector_position.y , final_goal.x , final_goal.y) < close_enough && std::abs(hector_position.z - height) < 0.1)
             {
                 //state transition to START
                 ROS_INFO("TRANSITION FROM GOAL TO START");
@@ -347,29 +364,33 @@ int main(int argc, char **argv)
                 g_state = GoalState::GOTO;
                 current_goal = hector_takeoff_goal;
                 next_goal.setCoords(NaN,NaN,NaN);
-                generate_trajectory_ = true;
             }
         }
 
         else if (state == HectorState::START)
         {   
             msg_rotate.data = true;
+            generate_trajectory_turtle = false;
+            generate_trajectory_passthrough = false;
+
             if (!nh.param("/turtle/trigger_nodes", false))
             { 
-                if (dist_euc(hector_position.x , hector_position.y , hector_takeoff_goal.x , hector_takeoff_goal.y) < close_enough && std::abs(hector_position.z - height) < 0.05)
+                if (dist_euc(hector_position.x , hector_position.y , hector_takeoff_goal.x , hector_takeoff_goal.y) < close_enough && std::abs(hector_position.z - height) < 0.1)
                 {
                     //transition to landing
                     ROS_INFO("TRANSITION FROM START TO LAND");
                     state = HectorState::LAND;
                     g_state = GoalState::CHASE;
                     current_goal = hector_land_goal;
-                    generate_trajectory_ = true;
+                    next_goal.setCoords(NaN,NaN,NaN);
+                    generate_trajectory_turtle = false;
+                    generate_trajectory_passthrough = true;
                 }
             }
 
             else
             {
-                if (dist_euc(hector_position.x , hector_position.y , hector_takeoff_goal.x , hector_takeoff_goal.y) < close_enough && std::abs(hector_position.z - height) < 0.05)
+                if (dist_euc(hector_position.x , hector_position.y , hector_takeoff_goal.x , hector_takeoff_goal.y) < close_enough && std::abs(hector_position.z - height) < 0.1)
                 {
                     //state transition
                     ROS_INFO("TRANSITION FROM START TO TURTLE");
@@ -377,7 +398,8 @@ int main(int argc, char **argv)
                     g_state = GoalState::PREDICTION;
                     std::tie(turtle_predicted_goal,predicted_id) = get_best_goal(turtle_spline_data , hector_position , tbot_position , average_speed);
                     current_goal.setCoords(turtle_predicted_goal.x , turtle_predicted_goal.y , height);
-                    generate_trajectory_ = true;
+                    generate_trajectory_turtle = true;
+                    generate_trajectory_passthrough = false;
                 }
             }
         }
@@ -385,7 +407,9 @@ int main(int argc, char **argv)
         else if (state == HectorState::LAND)
         {   
             msg_rotate.data = false;
-            if (dist_euc(hector_position.x , hector_position.y , hector_land_goal.x , hector_land_goal.y) < 0.05 && std::abs(hector_position.z - hector_land_goal.z) < 0.05)
+            generate_trajectory_turtle = false;
+            generate_trajectory_passthrough = false;
+            if (dist_euc(hector_position.x , hector_position.y , hector_land_goal.x , hector_land_goal.y) < 0.05 && std::abs(hector_position.z - hector_land_goal.z) < 0.1)
             {
                 ROS_INFO("LANDED SAFELY");
                 kill_switch = true;
@@ -398,16 +422,57 @@ int main(int argc, char **argv)
             break;
         }
 
-        if (generate_trajectory_)
+        if (generate_trajectory_passthrough && generate_trajectory_turtle)
         {
-            generate_trajectory_ = false;
+            ROS_ERROR("SOMETHING WRONG WITH STATE MACHINE");
         }
+
+        if (generate_trajectory_turtle || generate_trajectory_passthrough)
+        {
+            int hector_state = static_cast<unsigned int>(state);
+            int goal_state = static_cast<unsigned int>(g_state);
+
+            
+            TrajectoryGenerationHandler(current_goal , 
+                                        next_goal ,  
+                                        hector_position ,
+                                        hector_linear_velocity ,
+                                        hector_spline_data, 
+                                        average_speed , 
+                                        target_dt , 
+                                        height, 
+                                        close_enough , 
+                                        hector_state , goal_state);
+            
+            msg_traj.poses.clear();
+            for (auto &p : hector_spline_data.spline)
+            {
+                //p.print();
+                geometry_msgs::PoseStamped x;
+                x.pose.position.x = p.x;
+                x.pose.position.y = p.y;
+                x.pose.position.z = p.z;
+
+                msg_traj.poses.push_back(x);
+            }
+
+            h_id = hector_spline_data.spline.size() - 1; //set to the last index because we generate traj from the back!
+
+            if (hector_spline_data.spline.size() > look_ahead)
+            {
+                h_id -= look_ahead;
+            }
+            generate_trajectory_turtle = false;
+            generate_trajectory_passthrough = false;
+        }
+
+        current_target = hector_spline_data.spline.at(h_id);
 
         msg_target.point.x = current_goal.x;
         msg_target.point.y = current_goal.y; 
         msg_target.point.z = current_goal.z;
         pub_target.publish(msg_target);
-
+        pub_traj.publish(msg_traj);
         ROS_INFO_STREAM("HECTOR STATE: " << to_string(state));
         ROS_INFO_STREAM("GOAL STATE: " << to_string(g_state));
         // if (verbose)
