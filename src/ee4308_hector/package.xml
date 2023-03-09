@@ -20,6 +20,8 @@
   <build_depend>message_generation</build_depend>
   <build_depend>std_srvs</build_depend>
   <build_depend>hector_uav_msgs</build_depend>
+  <build_depend>bot_utils</build_depend>
+  <build_depend>tmsgs</build_depend>
 
   <build_export_depend>geometry_msgs</build_export_depend>
   <build_export_depend>nav_msgs</build_export_depend>
@@ -32,6 +34,8 @@
   <build_export_depend>tf2</build_export_depend>
   <build_export_depend>message_runtime</build_export_depend>
   <build_export_depend>message_generation</build_export_depend>
+  <build_export_depend>bot_utils</build_export_depend>
+  <build_export_depend>tmsgs</build_export_depend>
 
   <exec_depend>geometry_msgs</exec_depend>
   <exec_depend>nav_msgs</exec_depend>
@@ -44,6 +48,8 @@
   <exec_depend>message_generation</exec_depend>
   <exec_depend>std_srvs</exec_depend>
   <exec_depend>hector_uav_msgs</exec_depend>
+  <exec_depend>bot_utils</exec_depend>
+  <exec_depend>tmsgs</exec_depend>
 
   <export>
   </export>
