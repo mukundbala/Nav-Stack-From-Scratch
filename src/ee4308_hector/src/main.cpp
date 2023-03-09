@@ -201,13 +201,18 @@ int main(int argc, char **argv)
         ros::shutdown();
         return 1;
     }
-    hector_land_goal.setCoords(hector_initial.x , hector_initial.y , 0.18);
+
+    double close_enough_height = 0.1;
+    double close_enough_planar = close_enough;
+    double target_dt = 0.033;
+
+    hector_land_goal.setCoords(hector_initial.x , hector_initial.y , hector_initial.z);
     hector_takeoff_goal.setCoords(hector_initial.x , hector_initial.y , height);
     final_goal.setCoords(goal_x , goal_y , height);
-    double target_dt = 0.033;
     hector_spline_data.avg_speed = average_speed;
     hector_spline_data.target_dt = target_dt;
     hector_spline_data.curr_spline_id = -1;
+
     //Subscribers
     ros::Subscriber sub_hpose = nh.subscribe("pose", 1, &cbHPose);
     ros::Subscriber sub_tpose = nh.subscribe("/turtle/pose", 1, &cbTPose);
@@ -243,9 +248,10 @@ int main(int argc, char **argv)
     //                                                          If turtle ends: LAND
     //                                                                            ^
     //TAKEOFF --> TURTLE --> FINAL GOAL --> START --> TURTLE --> FINAL GOAL --> START ...
+    bot_utils::timeLogger logger;
     while (ros::ok() && nh.param("run", true))
     {
-        
+        logger.start();
         ros::spinOnce();
 
         int current_turtle_id = turtle_spline_data.find_pos_id(tbot_position);
@@ -302,7 +308,7 @@ int main(int argc, char **argv)
                     if (g_state == GoalState::PREDICTION)
                     {
                         bool turtle_reached_pred = current_turtle_id >= predicted_id;
-                        bool hector_reached_pred = bot_utils::dist_euc(hector_position.x , hector_position.y , turtle_predicted_goal.x , turtle_predicted_goal.y) < 0.1;
+                        bool hector_reached_pred = bot_utils::dist_euc(hector_position.x , hector_position.y , turtle_predicted_goal.x , turtle_predicted_goal.y) < 0.2;
 
                         if (turtle_reached_pred && !hector_reached_pred)
                         {
@@ -363,7 +369,8 @@ int main(int argc, char **argv)
                 state = HectorState::START;
                 g_state = GoalState::GOTO;
                 current_goal = hector_takeoff_goal;
-                next_goal.setCoords(NaN,NaN,NaN);
+                ROS_WARN("YOURE SETTING NEXT GOAL TO NAN IN GOAL TO START TRANSITION");
+                next_goal = hector_takeoff_goal;
             }
         }
 
@@ -382,6 +389,7 @@ int main(int argc, char **argv)
                     state = HectorState::LAND;
                     g_state = GoalState::CHASE;
                     current_goal = hector_land_goal;
+                    ROS_WARN("YOURE SETTING NEXT GOAL TO NAN");
                     next_goal.setCoords(NaN,NaN,NaN);
                     generate_trajectory_turtle = false;
                     generate_trajectory_passthrough = true;
@@ -398,6 +406,7 @@ int main(int argc, char **argv)
                     g_state = GoalState::PREDICTION;
                     std::tie(turtle_predicted_goal,predicted_id) = get_best_goal(turtle_spline_data , hector_position , tbot_position , average_speed);
                     current_goal.setCoords(turtle_predicted_goal.x , turtle_predicted_goal.y , height);
+                    next_goal = final_goal;
                     generate_trajectory_turtle = true;
                     generate_trajectory_passthrough = false;
                 }
@@ -468,16 +477,33 @@ int main(int argc, char **argv)
 
         current_target = hector_spline_data.spline.at(h_id);
 
-        msg_target.point.x = current_goal.x;
-        msg_target.point.y = current_goal.y; 
-        msg_target.point.z = current_goal.z;
+        if (dist_euc(hector_position.x , hector_position.y, current_target.x , current_target.y) < close_enough)
+        {
+            if (h_id == 0)
+            {
+                current_target = hector_spline_data.spline.at(0);
+            }
+            else
+            {
+                h_id--;
+                current_target = hector_spline_data.spline.at(h_id);
+            }
+        }
+
+        current_target.print();
+
+        msg_target.point.x = current_target.x;
+        msg_target.point.y = current_target.y; 
+        msg_target.point.z = current_target.z;
         pub_target.publish(msg_target);
         pub_traj.publish(msg_traj);
-        ROS_INFO_STREAM("HECTOR STATE: " << to_string(state));
-        ROS_INFO_STREAM("GOAL STATE: " << to_string(g_state));
+        pub_rotate.publish(msg_rotate);
+        
+        // ROS_INFO_STREAM("HECTOR STATE: " << to_string(state));
+        // ROS_INFO_STREAM("GOAL STATE: " << to_string(g_state));
         // if (verbose)
         //     ROS_INFO_STREAM(" HMAIN : " << to_string(state));
-
+        logger.stop();
         rate.sleep();
     }
 
