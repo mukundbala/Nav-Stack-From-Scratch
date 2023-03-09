@@ -62,10 +62,13 @@ std::pair<bot_utils::Pos2D,int> get_best_goal(SplineData2D &tspline , bot_utils:
 
         double hector_time = hector_dist / h_avg_speed;
 
-        if (tbot_time - hector_time >= 3.0)
+        if (tbot_time - hector_time >= 1.0)
         {
             ROS_INFO("Found a prediction!");
             res = {tspline.spline.at(i+1) , i+1};
+            res.first.print();
+            ROS_INFO_STREAM(res.second);
+            ROS_INFO("###");
             return res;
         }
         //we continue searching otherwise
@@ -73,35 +76,36 @@ std::pair<bot_utils::Pos2D,int> get_best_goal(SplineData2D &tspline , bot_utils:
    
    //if we came here without returning anything, this means we couldnt find a good enough time
 
-   ROS_INFO("Returning last target");
+   ROS_INFO("Returning last target##");
    res = {tspline.spline.at(tspline.spline.size()-1) , tspline.spline.size() - 1};
+   res.first.print();
+   ROS_INFO("###");
    return res; //return the last value in the spline
 }
 
 std::vector<bot_utils::Pos3D> LinearVert(bot_utils::Pos3D &pos_begin , bot_utils::Pos3D &pos_end)
 {
     //we can just manually do this. Tbh its pretty much what trajectory generation does
-    
-    std::vector<bot_utils::Pos3D> segment_traj = {pos_begin};
-    if (pos_end.z - pos_begin.z < 0) //this is the block for takeoff
+    if (pos_begin.z > pos_end.z)
     {
-        for (int i = 0 ; i < 3 ; ++i)
+        std::vector<bot_utils::Pos3D> segment_traj = {pos_begin};
+        for (int i = 0 ; i < 3 ; ++ i)
         {
-            double decrement = (i+1) * 0.5;
-            segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_begin.z - decrement);
+            segment_traj.emplace_back(pos_begin.x ,pos_begin.y , pos_begin.z - 0.5 * (i+1));
         }
+        return segment_traj;
     }
 
     else
     {
-        for (int i = 0 ; i < 3 ; ++i)
+        std::vector<bot_utils::Pos3D> segment_traj = {pos_begin};
+        for (int i = 0 ; i < 3 ; ++ i)
         {
-            double increment = (i+1) * 0.5;
-            segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_begin.z + increment);
+            segment_traj.emplace_back(pos_begin.x ,pos_begin.y , pos_begin.z + 0.5 * (i+1));
         }
-        segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_begin.z); //this last one is to make the landing smooth
+        return segment_traj;
     }
-
+    std::vector<bot_utils::Pos3D> segment_traj = {pos_begin};
     return segment_traj;
 }
 
