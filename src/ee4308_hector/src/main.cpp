@@ -13,6 +13,7 @@
 #include <opencv2/core/core.hpp>
 #include "common.hpp"
 #include "bot_utils/bot_utils.h"
+#include "bot_utils/spline_data.h"
 #include "tmsgs/TurtleSpline.h"
 #include "hector_trajectory.hpp"
 
@@ -84,11 +85,11 @@ bot_utils::Pos2D turtle_predicted_goal(NaN,NaN);
 int predicted_id = -1;
 
 //Hector Spline
-SplineData3D hector_spline_data;
+bot_utils::SplineData3D hector_spline_data;
 int h_id = -1;
 
 //store of turtle spline information
-SplineData2D turtle_spline_data;
+bot_utils::SplineData2D turtle_spline_data;
 
 
 void cbHPose(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr &msg)

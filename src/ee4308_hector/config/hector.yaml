@@ -1,13 +1,13 @@
 # main
-verbose_main: false
+verbose_main: true
 main_iter_rate: 40
 height: 2
-look_ahead: 1
+look_ahead: 10
 close_enough: 0.2
-average_speed: 2.0
+average_speed: 2.0 ##2.0
 
 # motion
-verbose_motion: true
+verbose_motion: false
 use_ground_truth: true
 qa: 1
 qx: 1
@@ -28,15 +28,13 @@ motion_iter_rate: 20
 # move
 enable_move: true
 verbose_move: false
-Kp_lin: 1
-Ki_lin: 0.0
-Kd_lin: 0
-Kp_z: 1
-Ki_z: 0.0
-Kd_z: 0
+Kp_lin: 1.4 #1
+Ki_lin: 0.00 #0.0
+Kd_lin: 0.3 #0.0
+Kp_z: 0.6 #1 
+Ki_z: 0.0 #0
+Kd_z: 0.1 #0
 yaw_rate: 0.5
 max_lin_vel: 2
 max_z_vel: 0.5
 move_iter_rate: 40
-
-# run param used automatically and should not be written
