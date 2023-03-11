@@ -1,10 +1,10 @@
-# main
-verbose_main: true
-main_iter_rate: 40
-height: 2
-look_ahead: 10
-close_enough: 0.2
-average_speed: 2.0 ##2.0
+# # main
+# verbose_main: true
+# main_iter_rate: 40
+# height: 2
+# look_ahead: 10
+# close_enough: 0.2
+# average_speed: 2.0 ##2.0
 
 # motion
 verbose_motion: false
@@ -25,16 +25,16 @@ enable_sonar: true
 r_snr_z: 1.0e-1
 motion_iter_rate: 20
 
-# move
-enable_move: true
-verbose_move: false
-Kp_lin: 1.4 #1
-Ki_lin: 0.00 #0.0
-Kd_lin: 0.3 #0.0
-Kp_z: 0.6 #1 
-Ki_z: 0.0 #0
-Kd_z: 0.1 #0
-yaw_rate: 0.5
-max_lin_vel: 2
-max_z_vel: 0.5
-move_iter_rate: 40
+# # move
+# enable_move: true
+# verbose_move: false
+# Kp_lin: 1.4 #1
+# Ki_lin: 0.00 #0.0
+# Kd_lin: 0.3 #0.0
+# Kp_z: 0.6 #1 
+# Ki_z: 0.0 #0
+# Kd_z: 0.1 #0
+# yaw_rate: 0.5
+# max_lin_vel: 2
+# max_z_vel: 0.5
+# move_iter_rate: 40
