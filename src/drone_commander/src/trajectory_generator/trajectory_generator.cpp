@@ -193,7 +193,7 @@ void TrajectoryGenerator::trajectory_handler(bot_utils::Pos3D current_goal ,
         if (g_state == mission_states::GoalState::PREDICTION)
         {
             ROS_INFO("SPLINE FOR TURTLE PREDICTION");
-            spline_a = Cubic(current_goal , h_pos, vel_at_turtle , h_vel);
+            spline_a = spline_gen_(current_goal , h_pos, vel_at_turtle , h_vel);
         }
 
         else //(g_state == "CHASE")
@@ -201,7 +201,7 @@ void TrajectoryGenerator::trajectory_handler(bot_utils::Pos3D current_goal ,
             spline_a = LinearPlanar(current_goal , h_pos);
         }
 
-        spline_b = Cubic(next_goal , current_goal , vel_at_next , vel_at_turtle);
+        spline_b = spline_gen_(next_goal , current_goal , vel_at_next , vel_at_turtle);
 
         //merge spline a with spline b
         //spline_a.pop_back(); //pop the last one so we dont have close targets when merging
@@ -238,8 +238,8 @@ void TrajectoryGenerator::trajectory_handler(bot_utils::Pos3D current_goal ,
         vel_at_final.z = 0; //we dont use this, but for posterity's sake, lets just set this to 0
         bot_utils::Pos3D vel_at_next(0,0,0);
 
-        std::vector<bot_utils::Pos3D> spline_a = Cubic(current_goal , h_pos , vel_at_final , h_vel);
-        std::vector<bot_utils::Pos3D> spline_b = Cubic(next_goal , current_goal , vel_at_next , vel_at_final);
+        std::vector<bot_utils::Pos3D> spline_a = spline_gen_(current_goal , h_pos , vel_at_final , h_vel);
+        std::vector<bot_utils::Pos3D> spline_b = spline_gen_(next_goal , current_goal , vel_at_next , vel_at_final);
         
         for (auto & tgt: spline_a)
         {
