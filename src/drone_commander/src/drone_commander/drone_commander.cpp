@@ -223,8 +223,6 @@ void DroneCommander::run()
     TrajectoryGenerator trajectory_generator(target_dt_ , average_speed_ , traj_name_ , cruise_height_ , takeoff_height_ , land_height_ , verbose_traj_);
     VelocityController velocity_controller(controller_params_, verbose_);
 
-    //VelocityController(...)
-
     ROS_INFO("[DroneCommander]: Waiting for Topics!");
     if (co_op_)
     {
@@ -232,7 +230,6 @@ void DroneCommander::run()
                                                     std::isnan(hector_lin_vel_.x) || turtle_spline_.curr_spline_id == -1))
         {
             ros::spinOnce();
-            //spinrate.sleep();
         }
     }
 
@@ -241,11 +238,10 @@ void DroneCommander::run()
         while (ros::ok() && nh_.param("run", true) && (std::isnan(hector_position_.x) || std::isnan(hector_lin_vel_.x)))
         {
             ros::spinOnce();
-            //spinrate.sleep();
         }
     }
 
-                                                   
+    // signal(SIGINT,sigintHandler);                                  
     ROS_INFO("[DroneCommander]: Starting Drone Commander!");
 
     ROS_INFO("[DroneCommander]: Starting Motors");
@@ -629,6 +625,13 @@ bool DroneCommander::disableMotor()
     return status;
 }
 
+void DroneCommander::sigintHandler()
+{
+    ROS_INFO("[DroneCommander]: SIGINT RECEIVED!");
+    hector_uav_msgs::EnableMotors en_mtrs_srv;
+    en_mtrs_srv.request.enable = false;
+    motor_switch_client_.call(en_mtrs_srv); 
+}
 
 void DroneCommander::writeTrajMsg()
 {
