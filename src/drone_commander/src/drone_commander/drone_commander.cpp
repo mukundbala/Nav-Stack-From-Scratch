@@ -68,14 +68,25 @@ DroneCommander::DroneCommander(ros::NodeHandle &nh)
         }
     }
 
+    //initialise velocities to 0
+    vel_x_ = 0;
+    vel_y_ = 0;
+    vel_z_ = 0;
+    
     //setup messages
     traj_msg_.header.frame_id = "world";
     target_msg_.header.frame_id = "world";
+    vel_msg_.linear.x = 0;
+    vel_msg_.linear.y = 0;
+    vel_msg_.linear.z = 0;
+    vel_msg_.angular.z = 0;
 
     //setup publishers
     traj_pub_ = nh_.advertise<nav_msgs::Path>("trajectory", 1, true);
     target_pub_ = nh_.advertise<geometry_msgs::PointStamped>("target", 1, true);
     rotate_pub_ = nh_.advertise<std_msgs::Bool>("rotate", 1, true);
+    vel_pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel" ,1 , true);
+    motor_switch_client_ = nh_.serviceClient<hector_uav_msgs::EnableMotors>("enable_motors");
 
     //setup subscribers
     sub_h_pose_ = nh_.subscribe("pose", 1, &DroneCommander::callbackHPose,this);
@@ -210,7 +221,8 @@ void DroneCommander::run()
     nh_.setParam("run" , true);
 
     TrajectoryGenerator trajectory_generator(target_dt_ , average_speed_ , traj_name_ , cruise_height_ , takeoff_height_ , land_height_ , verbose_traj_);
-    
+    VelocityController velocity_controller(controller_params_, verbose_);
+
     //VelocityController(...)
 
     ROS_INFO("[DroneCommander]: Waiting for Topics!");
@@ -236,9 +248,27 @@ void DroneCommander::run()
                                                    
     ROS_INFO("[DroneCommander]: Starting Drone Commander!");
 
+    ROS_INFO("[DroneCommander]: Starting Motors");
+    bool allOk = armMotor();
+
+    if (!allOk)
+    {
+        nh_.setParam("run" , false);
+        ROS_INFO("[DroneCommander]: Avionics shut down!");
+    }
+
+    double now = ros::Time::now().toSec();
+    velocity_controller.prepareController(now);
+
     while (ros::ok() && nh_.param("run" , true))
     {
         ros::spinOnce();
+        double time_now = ros::Time::now().toSec(); 
+        bool vel_cont_status = velocity_controller.updateDt(time_now);
+        if (!vel_cont_status)
+        {
+            continue;
+        }
 
         ts_id_ = turtle_spline_.find_pos_id(turtle_position_); //prepare for the current loop
     
@@ -375,7 +405,6 @@ void DroneCommander::run()
                 h_state_ = mission_states::HectorState::START;
                 g_state_ = mission_states::GoalState::GOTO;
                 current_goal_ = hector_start_goal_;
-                ROS_WARN("YOURE SETTING NEXT GOAL TO NAN IN GOAL TO START TRANSITION");
                 next_goal_.setCoords(NaN,NaN,NaN);
             }
         }
@@ -395,7 +424,6 @@ void DroneCommander::run()
                     h_state_ = mission_states::HectorState::LAND;
                     g_state_ = mission_states::GoalState::CHASE;
                     current_goal_ = hector_land_goal_;
-                    ROS_WARN("YOURE SETTING NEXT GOAL TO NAN");
                     next_goal_.setCoords(NaN,NaN,NaN);
                     gen_traj_turtle_ = false;
                     gen_traj_passthrough_ = true;
@@ -419,6 +447,20 @@ void DroneCommander::run()
             }
         }
 
+        else if (h_state_ == mission_states::HectorState::LAND)
+        {
+            rotate_msg_.data = false;
+            gen_traj_turtle_ = false;
+            gen_traj_passthrough_ = false;
+            double planar_dist_away = bot_utils::dist_euc(hector_position_.x , hector_position_.y , hector_land_goal_.x , hector_land_goal_.y);
+            double vert_dist_away = std::abs(hector_position_.z - land_height_);
+            if (planar_dist_away < thresh_cruise_planar_ && vert_dist_away < thresh_land_height_)
+            {
+                ROS_INFO("[DroneCommander]: Landed Safely.");
+                kill_switch_ = true;
+                ROS_INFO("[DroneCommander]: Shutting down Avionics");
+            }
+        }
         if (kill_switch_)
         {
             break;
@@ -432,9 +474,7 @@ void DroneCommander::run()
         
         if (gen_traj_passthrough_ || gen_traj_turtle_)
         {
-            ROS_INFO("BEFORE TRAJ HANDLER");
             trajectory_generator.trajectory_handler(current_goal_ , next_goal_ , hector_position_ , hector_lin_vel_ , hector_spline_ , h_state_ , g_state_);
-            ROS_INFO("AFTER TRAJ HADNLER");
             h_id_ = hector_spline_.spline.size() - 1;
 
             if (hector_spline_.spline.size() > look_ahead_)
@@ -474,20 +514,120 @@ void DroneCommander::run()
                 current_target_ = hector_spline_.spline.at(h_id_);
             }
         }
-        ROS_INFO_STREAM("H STATE: " << mission_states::unpack_h_state(h_state_));
-        ROS_INFO_STREAM("G_STATE: " << mission_states::unpack_g_state(g_state_));
+        
+        ROS_WARN_COND(std::isnan(current_target_.x) || std::isnan(current_target_.y),"[DroneCommander]: Warning! Current target is NAN");
+        std::array<double,4> curr_vels = velocity_controller.generate_velocities(hector_position_ , hector_heading_ , current_target_ , rotate_msg_.data);
+        
         writeTrajMsg();
         writeTargetMsg();
+
+        if (enable_controller_)
+        {
+            writeVelocityMsg(curr_vels);
+            vel_pub_.publish(vel_msg_);
+        }
+
         traj_pub_.publish(traj_msg_);
-        target_pub_.publish(target_msg_);
+        target_pub_.publish(target_msg_);   
         rotate_pub_.publish(rotate_msg_);
+
+        if (verbose_)
+        {
+            ROS_INFO_STREAM("Current Goal: (" << current_goal_.x << "," << current_goal_.y << "," << current_goal_.z << ")");
+            ROS_INFO_STREAM("Next Goal: (" << next_goal_.x << "," << next_goal_.y << "," << next_goal_.z << ")");
+            ROS_INFO_STREAM("Current Target: " << current_target_.x << "," << current_target_.y << "," << current_target_.z << ")");
+            ROS_INFO_STREAM("H STATE: " << mission_states::unpack_h_state(h_state_));
+            ROS_INFO_STREAM("G_STATE: " << mission_states::unpack_g_state(g_state_));
+            ROS_INFO("##############################################################");
+        }
+
         spinrate.sleep();
     }
+
+    ROS_INFO("[DroneCommander]: Disabling Motors!");
+    bool disableok = disableMotor();
+
+    if (!disableok)
+    {
+        ROS_INFO("[DroneCommander]: Crashing avionics! Watch out!");
+    }
+
+    return;
 };
 
 
 
+bool DroneCommander::armMotor()
+{
+    int attempts = 1;
+    int max_attempts = 5;
+    bool status = false;
 
+    while (!status && attempts <= max_attempts)
+    {
+        motor_switch_srv_.request.enable = true;
+
+        if (motor_switch_client_.call(motor_switch_srv_))
+        {
+            ROS_INFO_STREAM("[DroneCommander]: Attempt " << attempts << "/" << max_attempts << ": Motors Armed!");
+            status = true;
+        }
+
+        else
+        {
+            ROS_WARN_STREAM("[DroneCommander]: Attempt " << attempts << "/" << max_attempts << ": Unable to Arm Motor! Trying again");
+            attempts ++;
+        }
+    }
+
+    if (status)
+    {
+        ROS_INFO("[DroneCommander]: Ready to Fly!");
+    }
+
+    else
+    {
+        ROS_INFO("[DroneCommander]: Shutting down avionics!");
+    }
+
+    return status;
+}
+
+bool DroneCommander::disableMotor()
+{
+    int attempts = 1;
+    int max_attempts = 5;
+    bool status = false;
+
+    while (!status && attempts <= max_attempts)
+    {
+        motor_switch_srv_.request.enable = false;
+
+        if (motor_switch_client_.call(motor_switch_srv_))
+        {
+            ROS_INFO_STREAM("[DroneCommander]: Attempt " << attempts << "/" << max_attempts << ": Motors Disabled!");
+            status = true;
+        }
+
+        else
+        {
+            ROS_WARN_STREAM("[DroneCommander]: Attempt " << attempts << "/" << max_attempts << ": Unable to Arm Motor! Trying again");
+            attempts++;
+        }
+    }
+
+    if (status)
+    {
+        ROS_INFO("[DroneCommander]: Motors disabled succesfully!");
+    }
+    
+    else
+    {
+        ROS_WARN("[DroneCommander]: Danger! Unable to disable motors!");
+    }
+
+    return status;
+}
 
 
 void DroneCommander::writeTrajMsg()
@@ -512,7 +652,13 @@ void DroneCommander::writeTargetMsg()
     target_msg_.point.z = current_target_.z;
 }
 
-
+void DroneCommander::writeVelocityMsg(std::array<double,4> &vels)
+{
+    vel_msg_.linear.x = vels.at(0);
+    vel_msg_.linear.y = vels.at(1);
+    vel_msg_.linear.z = vels.at(2);
+    vel_msg_.angular.z = vels.at(3);
+}
 
 
 
