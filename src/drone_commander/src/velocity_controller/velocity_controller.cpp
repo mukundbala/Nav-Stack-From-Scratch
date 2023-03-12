@@ -56,7 +56,7 @@ std::array<double,4> VelocityController::generate_velocities(bot_utils::Pos3D &h
     double error_x_world = target.x - hector_pos.x;
     double error_y_world = target.y - hector_pos.y;
 
-    Eigen::Matrix2d R_MATRIX; //matrix that converts from World Frame to Robot Frame
+    Eigen::Matrix2d R_MATRIX; //rotation matrix that converts from World Frame to Robot Frame
 
     R_MATRIX << std::cos(hector_heading),std::sin(hector_heading),
                 -std::sin(hector_heading),std::cos(hector_heading);
