@@ -18,6 +18,7 @@
 #include <stdlib.h>
 #include <cmath>
 #include <errno.h>
+#include <signal.h>
 
 #include "trajectory_generator.h"
 #include "velocity_controller.h"
@@ -105,10 +106,16 @@ private:
     bool gen_traj_passthrough_;
     bool kill_switch_;
 
+    //velocities for the drone in WORLD FRAME
+    double vel_x_;
+    double vel_y_;
+    double vel_z_;
+
     //Publishers
     ros::Publisher traj_pub_;
     ros::Publisher target_pub_;
     ros::Publisher rotate_pub_;
+    ros::Publisher vel_pub_;
 
     //Subscribers
     ros::Subscriber sub_h_pose_;
@@ -121,6 +128,13 @@ private:
     nav_msgs::Path traj_msg_;
     geometry_msgs::PointStamped target_msg_;
     std_msgs::Bool rotate_msg_;
+    geometry_msgs::Twist vel_msg_;
+
+    //setup service call to trigger motor
+    ros::ServiceClient motor_switch_client_;
+
+    //set up service request
+    hector_uav_msgs::EnableMotors motor_switch_srv_;
 
     //ros nodehandle
     ros::NodeHandle nh_;
@@ -151,7 +165,11 @@ public:
     
     void writeTrajMsg();
     void writeTargetMsg();
+    void writeVelocityMsg(std::array<double,4> &vels);
     
+    bool armMotor();
+    bool disableMotor();
+
     //load params
     bool loadCommanderParams();
     bool loadTrajParams();
