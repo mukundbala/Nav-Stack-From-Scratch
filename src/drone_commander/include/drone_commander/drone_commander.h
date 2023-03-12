@@ -169,6 +169,7 @@ public:
     
     bool armMotor();
     bool disableMotor();
+    void sigintHandler();
 
     //load params
     bool loadCommanderParams();
