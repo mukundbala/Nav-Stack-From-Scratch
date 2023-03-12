@@ -1,0 +1,11 @@
+enable_controller: true
+verbose_controller: false
+Kp_lin: 1.4 #1
+Ki_lin: 0.00 #0.0
+Kd_lin: 0.3 #0.0
+Kp_z: 0.6 #1 
+Ki_z: 0.0 #0
+Kd_z: 0.1 #0
+yaw_rate: 0.5
+max_lin_vel: 2
+max_z_vel: 0.5

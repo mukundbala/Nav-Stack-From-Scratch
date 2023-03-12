@@ -1,42 +1,6 @@
 #include "hector_trajectory.hpp"
 
-
-int SplineData2D::get_num_targets()
-{
-    return spline.size();
-}
-
-int SplineData2D::find_pos_id(bot_utils::Pos2D &pos) //this works
-{
-    double best_dist = 1e6;
-    double best_id = -1;
-
-    for (int i = 0 ; i < spline.size() ; ++i)
-    {
-        double dist = bot_utils::dist_euc(pos , spline.at(i));
-        if (dist < best_dist)
-        {
-            best_dist = dist;
-            best_id = i;
-        }
-
-        if (dist > best_dist) //an optimization. Once distance starts increasing, just stop looking
-        {
-            break;
-        }
-    }
-
-    return best_id;
-}
-
-int SplineData3D::get_num_targets()
-{
-    return spline.size();
-}
-
-
-
-std::pair<bot_utils::Pos2D,int> get_best_goal(SplineData2D &tspline , bot_utils::Pos3D &hector_pos , bot_utils::Pos2D &turtle_pos, double h_avg_speed)
+std::pair<bot_utils::Pos2D,int> get_best_goal(bot_utils::SplineData2D &tspline , bot_utils::Pos3D &hector_pos , bot_utils::Pos2D &turtle_pos, double h_avg_speed)
 {
     bot_utils::Pos2D h_planar_pos(hector_pos.x , hector_pos.y);
     std::pair<bot_utils::Pos2D,int> res;
@@ -170,7 +134,7 @@ void TrajectoryGenerationHandler(bot_utils::Pos3D current_goal ,
                                  bot_utils::Pos3D next_goal , 
                                  bot_utils::Pos3D h_pos , 
                                  bot_utils::Pos3D h_vel,
-                                 SplineData3D &tspline,
+                                 bot_utils::SplineData3D &tspline,
                                  double average_speed , 
                                  double target_dt , 
                                  double height ,

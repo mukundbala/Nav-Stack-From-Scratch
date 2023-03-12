@@ -259,7 +259,7 @@ int main(int argc, char **argv)
 
         cmd_lin_vel_x = est_x_vel > planar_saturation ? planar_saturation : est_x_vel;
         cmd_lin_vel_y = est_y_vel > planar_saturation ? planar_saturation : est_y_vel;
-        cmd_lin_vel_z = est_z_vel > max_z_vel ? est_z_vel : est_z_vel;
+        cmd_lin_vel_z = est_z_vel > max_z_vel ? max_z_vel : est_z_vel;
         cmd_ang_vel_a = rotate ? yaw_rate : 0;
 
         x_error_prev = error_x;
