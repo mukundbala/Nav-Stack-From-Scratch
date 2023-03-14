@@ -255,4 +255,31 @@ void TrajectoryGenerator::trajectory_handler(bot_utils::Pos3D current_goal ,
     {
         ROS_ERROR("If I am here, something is wrong with the state machine. Check the trigggers!");
     }
+
+    else if (h_state == mission_states::HectorState::FOLLOW || h_state == mission_states::HectorState::HOME)
+    {
+        std::vector<bot_utils::Pos3D> spline_a;
+
+        if (g_state == mission_states::GoalState::GOTO)
+        {
+            bot_utils::Pos2D dir(h_pos.x - current_goal.x , h_pos.y - current_goal.x);
+            bot_utils::Pos3D vel;
+            double heading = atan2(dir.y , dir.x);
+            vel.x = average_speed_ * std::cos(heading);
+            vel.y = average_speed_ * std::sin(heading);
+            vel.z = 0;
+            spline_a = spline_gen_(current_goal , h_pos , vel , h_vel);
+            hspline.spline.clear();
+            hspline.spline = spline_a;
+            hspline.curr_spline_id++;
+        }
+
+        else if (g_state == mission_states::GoalState::CHASE)
+        {
+            spline_a = LinearPlanar(current_goal , h_pos);
+            hspline.spline.clear();
+            hspline.spline = spline_a;
+            hspline.curr_spline_id++;
+        }
+    }
 }

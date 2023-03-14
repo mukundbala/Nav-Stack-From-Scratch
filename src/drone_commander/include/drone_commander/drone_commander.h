@@ -36,7 +36,10 @@ private:
     //state machine states
     mission_states::HectorState h_state_;
     mission_states::GoalState g_state_;
-
+    
+    //solo flight goals
+    std::vector<bot_utils::Pos3D> solo_goals_;
+    int solo_goal_id_;
     //#############Hector Data########################
 
     //hector robot position and heading in WORLD FRAME
@@ -59,6 +62,7 @@ private:
     bot_utils::Pos3D hector_land_goal_; //store for hector's land goals
     bot_utils::Pos3D hector_start_goal_; //store for start goal. Also the takeoff goal
     bot_utils::Pos3D hector_end_goal_;
+    bot_utils::Pos3D hector_home_goal_;
     bot_utils::Pos2D hector_pred_goal_; //store for hector's prediction of Tbot position
     double pred_id_; //store for the hector's prediction of the TRAJECTORY ID the turtlebot is on
     

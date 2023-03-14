@@ -40,6 +40,7 @@ DroneCommander::DroneCommander(ros::NodeHandle &nh)
     hector_land_goal_.setCoords(hector_initial_pos_.x , hector_initial_pos_.y , land_height_);
     hector_start_goal_.setCoords(NaN,NaN,NaN);
     hector_end_goal_.setCoords(NaN,NaN,NaN);
+    hector_home_goal_.setCoords(NaN,NaN,NaN);
     hector_pred_goal_.setCoords(NaN,NaN);
     pred_id_ = -1;
 
@@ -51,7 +52,7 @@ DroneCommander::DroneCommander(ros::NodeHandle &nh)
         if (nh_.hasParam("/turtle/goals"))
         {
             XmlRpc::XmlRpcValue goal_loader;
-            nh.getParam("/turtle/goals",goal_loader);
+            nh_.getParam("/turtle/goals",goal_loader);
 
             if (goal_loader.getType() == XmlRpc::XmlRpcValue::TypeArray)
             {
@@ -67,7 +68,27 @@ DroneCommander::DroneCommander(ros::NodeHandle &nh)
             kill_switch_ = true;
         }
     }
+    else
+    {
+        if (nh_.hasParam("solo_goals"))
+        {
+            XmlRpc::XmlRpcValue goal_loader;
+            nh_.getParam("solo_goals" , goal_loader);
 
+            if (goal_loader.getType() == XmlRpc::XmlRpcValue::TypeArray)
+            {
+                int total_goals = goal_loader.size();
+                for (int i = 0; i < total_goals ; ++i)
+                {
+                    bot_utils::Pos3D goal(goal_loader[i][0] ,goal_loader[i][1] , goal_loader[i][2]);
+                    goal.print();
+                    solo_goals_.push_back(goal);
+                }
+                solo_goal_id_ = 0;
+                hector_home_goal_.setCoords(hector_initial_pos_.x , hector_initial_pos_.y , cruise_height_);
+            }
+        }
+    }
     //initialise velocities to 0
     vel_x_ = 0;
     vel_y_ = 0;
@@ -270,7 +291,11 @@ void DroneCommander::run()
             continue;
         }
 
-        ts_id_ = turtle_spline_.find_pos_id(turtle_position_); //prepare for the current loop
+        if (co_op_)
+        {
+            ts_id_ = turtle_spline_.find_pos_id(turtle_position_); //prepare for the current loop
+        }
+        
     
         if (h_state_ == mission_states::HectorState::TAKEOFF)
         {
@@ -302,8 +327,8 @@ void DroneCommander::run()
                 {
                     h_state_ = mission_states::HectorState::FOLLOW;
                     g_state_ = mission_states::GoalState::GOTO;
-                    //put something here to set the curren goal, or some callback to mission planner
-                    //topic that automatically does this
+                    current_goal_ = solo_goals_.at(solo_goal_id_);
+                    next_goal_.setCoords(NaN,NaN,NaN);
                     gen_traj_turtle_ = false;
                     gen_traj_passthrough_ = true;
                 }
@@ -461,16 +486,62 @@ void DroneCommander::run()
                 ROS_INFO("[DroneCommander]: Shutting down Avionics");
             }
         }
+
+        ///APPLICABLE TO ONLY SOLO FLIGHTS!
+        else if (h_state_ == mission_states::HectorState::FOLLOW)
+        {
+            rotate_msg_.data = true;
+            gen_traj_turtle_ = false;
+            gen_traj_passthrough_ = false;
+            double planar_dist_away = bot_utils::dist_euc(hector_position_.x , hector_position_.y , current_goal_.x , current_goal_.y);
+            double vert_dist_away = std::abs(hector_position_.z - cruise_height_);
+            if (planar_dist_away < thresh_cruise_planar_ && vert_dist_away < thresh_cruise_height_)
+            {
+                if (solo_goal_id_ == solo_goals_.size() - 1)
+                {
+                    //this means that we have reached out last goal
+                    ROS_INFO("TRANSITION FROM FOLLOW TO HOME");
+                    h_state_ = mission_states::HectorState::HOME;
+                    g_state_ = mission_states::GoalState::GOTO;
+                    current_goal_ = hector_home_goal_;
+                    next_goal_.setCoords(NaN,NaN,NaN);
+                    gen_traj_passthrough_ = true;
+                }
+                else
+                {
+                    solo_goal_id_ ++;
+                    
+                    current_goal_ = solo_goals_.at(solo_goal_id_);
+                    h_state_ = mission_states::HectorState::FOLLOW;
+                    g_state_ = mission_states::GoalState::GOTO;
+                    next_goal_.setCoords(NaN,NaN,NaN);
+                    gen_traj_passthrough_ = true;
+                }
+            }
+        }
+
+        else if (h_state_ == mission_states::HectorState::HOME)
+        {
+            double planar_dist_away = bot_utils::dist_euc(hector_position_.x , hector_position_.y , hector_home_goal_.x , hector_home_goal_.y);
+            double vert_dist_away = std::abs(hector_position_.z - cruise_height_);
+            if (planar_dist_away < thresh_cruise_planar_ && vert_dist_away < thresh_cruise_height_)
+            {
+                ROS_INFO("TRANSITION FROM HOME TO LAND");
+                h_state_ = mission_states::HectorState::LAND;
+                g_state_ = mission_states::GoalState::CHASE;
+                current_goal_ = hector_land_goal_;
+                next_goal_.setCoords(NaN,NaN,NaN);
+                gen_traj_turtle_ = false;
+                gen_traj_passthrough_ = true;
+            }
+        }
+
+
         if (kill_switch_)
         {
             break;
         }
         
-
-        ROS_INFO("Current Goal: ");
-        current_goal_.print();
-        ROS_INFO("Next Goal");
-        next_goal_.print();
         
         if (gen_traj_passthrough_ || gen_traj_turtle_)
         {
@@ -539,7 +610,7 @@ void DroneCommander::run()
             ROS_INFO_STREAM("Current Target: " << current_target_.x << "," << current_target_.y << "," << current_target_.z << ")");
             ROS_INFO_STREAM("H STATE: " << mission_states::unpack_h_state(h_state_));
             ROS_INFO_STREAM("G_STATE: " << mission_states::unpack_g_state(g_state_));
-            ROS_INFO("##############################################################");
+            ROS_INFO("#######################################################");
         }
 
         spinrate.sleep();
@@ -552,7 +623,7 @@ void DroneCommander::run()
     {
         ROS_INFO("[DroneCommander]: Crashing avionics! Watch out!");
     }
-
+    nh_.setParam("run", false);
     return;
 };
 
