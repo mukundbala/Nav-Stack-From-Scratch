@@ -86,6 +86,7 @@ DroneCommander::DroneCommander(ros::NodeHandle &nh)
     target_pub_ = nh_.advertise<geometry_msgs::PointStamped>("target", 1, true);
     rotate_pub_ = nh_.advertise<std_msgs::Bool>("rotate", 1, true);
     vel_pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel" ,1 , true);
+    vel_mag_pub_ = nh_.advertise<std_msgs::Float64>("vel_mag" , 1 , true);
     motor_switch_client_ = nh_.serviceClient<hector_uav_msgs::EnableMotors>("enable_motors");
 
     //setup subscribers
@@ -124,6 +125,9 @@ void DroneCommander::callbackHVel(const geometry_msgs::Twist::ConstPtr &msg)
 {
     hector_lin_vel_.setCoords(msg->linear.x , msg->linear.y, msg->linear.z);
     hector_ang_vel_ = msg->angular.z;
+
+    double mag = sqrt(msg->linear.x * msg->linear.x + msg->linear.y * msg->linear.y); //compute planar magnitude
+    vel_mag_msg_.data = mag; //attach value to the message
 }
 
 void DroneCommander::callbackTPose(const geometry_msgs::PoseStamped::ConstPtr &msg)
@@ -526,7 +530,8 @@ void DroneCommander::run()
         traj_pub_.publish(traj_msg_);
         target_pub_.publish(target_msg_);   
         rotate_pub_.publish(rotate_msg_);
-
+        vel_mag_pub_.publish(vel_mag_msg_);
+        
         if (verbose_)
         {
             ROS_INFO_STREAM("Current Goal: (" << current_goal_.x << "," << current_goal_.y << "," << current_goal_.z << ")");

@@ -9,6 +9,7 @@
 #include <geometry_msgs/PointStamped.h>
 #include "geometry_msgs/Twist.h"
 #include "std_msgs/Bool.h"
+#include "std_msgs/Float64.h"
 #include "xmlrpcpp/XmlRpc.h"
 #include "bot_utils/bot_utils.h"
 #include "bot_utils/spline_data.h"
@@ -116,7 +117,7 @@ private:
     ros::Publisher target_pub_;
     ros::Publisher rotate_pub_;
     ros::Publisher vel_pub_;
-
+    ros::Publisher vel_mag_pub_;
     //Subscribers
     ros::Subscriber sub_h_pose_;
     ros::Subscriber sub_h_vel_;
@@ -129,6 +130,7 @@ private:
     geometry_msgs::PointStamped target_msg_;
     std_msgs::Bool rotate_msg_;
     geometry_msgs::Twist vel_msg_;
+    std_msgs::Float64 vel_mag_msg_;
 
     //setup service call to trigger motor
     ros::ServiceClient motor_switch_client_;
