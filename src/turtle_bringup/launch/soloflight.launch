@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<launch>
+    <arg name="turtle_namespace" default="turtle"/>
+    <arg name="drone_namespace"  default="hector"/>
+    <arg name="project" default="$(env TASK)"/>
+
+    <group if="$(eval project == 'soloflight')">
+
+        <rosparam command="load" file="$(find turtle_bringup)/worlds/$(env WORLD)/$(env WORLD)_goals.yaml" ns="$(arg drone_namespace)"/>
+        <include file="$(find ee4308_hector)/launch/run.launch" ns="$(arg drone_namespace)"/>
+    </group>
+        
+</launch>
