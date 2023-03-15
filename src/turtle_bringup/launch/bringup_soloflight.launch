@@ -20,19 +20,17 @@
             <arg name="y" value="$(env HECTOR_Y)"/>
             <arg name="z" value="$(env HECTOR_Z)"/>
             <arg name="use_ground_truth_for_tf" value="true" />
-            <arg name="use_ground_truth_for_control" value="true" />
+            <arg name="use_ground_truth_for_control" value="true" />\
 	    </include>
     </group>
 
-    <!-- spawn turtle -->
-
+    
     
     <!-- merge tf trees -->
-    <!-- <node pkg="tf" type="static_transform_publisher" name="world_to_turtle_tf_broadcaster"  args="0 0 0 0 0 0 /world /turtle/odom 100"/> -->
     <node pkg="tf" type="static_transform_publisher" name="world_to_hector_tf_broadcaster"  args="0 0 0 0 0 0 /world /hector/world 100"/>
 
     <!-- rviz -->
-    <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find turtle_bringup)/rviz/$(env TASK).rviz"/> -->
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(find turtle_bringup)/logging/drone_logging.rviz"/>
     
     
     <!-- test -->
