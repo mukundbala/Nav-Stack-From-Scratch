@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+ <tabbed_widget parent="main_window" name="Main Window">
+  <Tab containers="1" tab_name="Errors">
+   <Container>
+    <DockSplitter orientation="|" count="2" sizes="0.503788;0.496212">
+     <DockSplitter orientation="-" count="4" sizes="0.25;0.39693;0.171053;0.182018">
+      <DockArea name="...">
+       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+        <range left="34.650000" bottom="-10.000000" right="39.656000" top="10.000000"/>
+        <limitY max="10" min="-10"/>
+        <curve color="#17becf" name="/hector/pose/pose/pose/position/x"/>
+        <curve color="#d62728" name="/hector/goal_full/goal_position/point/x"/>
+       </plot>
+      </DockArea>
+      <DockArea name="...">
+       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+        <range left="34.650000" bottom="-10.000000" right="39.656000" top="10.000000"/>
+        <limitY max="10" min="-10"/>
+        <curve color="#bcbd22" name="/hector/pose/pose/pose/position/y"/>
+        <curve color="#1ac938" name="/hector/goal_full/goal_position/point/y"/>
+       </plot>
+      </DockArea>
+      <DockArea name="...">
+       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+        <range left="34.650000" bottom="0.100000" right="39.656000" top="3.000010"/>
+        <limitY max="3.00001" min="0.1"/>
+        <curve color="#1f77b4" name="/hector/pose/pose/pose/position/z"/>
+        <curve color="#ff7f0e" name="/hector/goal_full/goal_position/point/z"/>
+       </plot>
+      </DockArea>
+      <DockArea name="...">
+       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+        <range left="34.650000" bottom="25.900000" right="39.656000" top="26.100000"/>
+        <limitY/>
+        <curve color="#1f77b4" name="/hector/goal_full/goal_id"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+     <DockSplitter orientation="-" count="3" sizes="0.332968;0.334064;0.332968">
+      <DockArea name="...">
+       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+        <range left="34.650000" bottom="0.620389" right="39.656000" top="1.791267"/>
+        <limitY/>
+        <curve color="#f14cc1" name="/hector/error_vec/x"/>
+       </plot>
+      </DockArea>
+      <DockArea name="...">
+       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+        <range left="34.650000" bottom="-0.027381" right="39.656000" top="1.246269"/>
+        <limitY/>
+        <curve color="#9467bd" name="/hector/error_vec/y"/>
+       </plot>
+      </DockArea>
+      <DockArea name="...">
+       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+        <range left="34.650000" bottom="0.000010" right="39.656000" top="1.000000"/>
+        <limitY max="1" min="1e-05"/>
+        <curve color="#17becf" name="/hector/error_vec/z"/>
+       </plot>
+      </DockArea>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab containers="1" tab_name="VELS">
+   <Container>
+    <DockSplitter orientation="-" count="1" sizes="1">
+     <DockSplitter orientation="|" count="2" sizes="0.5;0.5">
+      <DockSplitter orientation="-" count="4" sizes="0.25;0.25;0.25;0.25">
+       <DockArea name="...">
+        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+         <range left="34.650000" bottom="-0.340645" right="39.656000" top="-0.159194"/>
+         <limitY/>
+         <curve color="#ff7f0e" name="/hector/velocity/linear/x"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+         <range left="34.650000" bottom="-0.279114" right="39.656000" top="-0.164385"/>
+         <limitY/>
+         <curve color="#f14cc1" name="/hector/velocity/linear/y"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+         <range left="34.650000" bottom="-0.000352" right="39.656000" top="0.000270"/>
+         <limitY/>
+         <curve color="#9467bd" name="/hector/velocity/linear/z"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+         <range left="34.650000" bottom="0.100000" right="39.656000" top="2.000000"/>
+         <limitY max="2" min="0.1"/>
+         <curve color="#bcbd22" name="/hector/vel_mag/data"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+      <DockSplitter orientation="-" count="3" sizes="0.332968;0.334064;0.332968">
+       <DockArea name="...">
+        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+         <range left="34.650000" bottom="-0.576753" right="39.656000" top="1.143278"/>
+         <limitY/>
+         <curve color="#1f77b4" name="/hector/cmd_vel/linear/x"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+         <range left="34.650000" bottom="-0.907840" right="39.656000" top="0.189923"/>
+         <limitY/>
+         <curve color="#d62728" name="/hector/cmd_vel/linear/y"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
+         <range left="34.650000" bottom="-0.000336" right="39.656000" top="0.000176"/>
+         <limitY/>
+         <curve color="#1ac938" name="/hector/cmd_vel/linear/z"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <currentTabIndex index="0"/>
+ </tabbed_widget>
+ <use_relative_time_offset enabled="1"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <!-- - - - - - - - - - - - - - - -->
+ <Plugins>
+  <plugin ID="DataLoad CSV">
+   <default time_axis="" delimiter="0"/>
+  </plugin>
+  <plugin ID="DataLoad MCAP"/>
+  <plugin ID="DataLoad ROS bags">
+   <use_header_stamp value="false"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+   <boolean_strings_to_number value="true"/>
+   <remove_suffix_from_strings value="true"/>
+  </plugin>
+  <plugin ID="DataLoad ULog"/>
+  <plugin ID="ROS Topic Subscriber">
+   <use_header_stamp value="false"/>
+   <discard_large_arrays value="true"/>
+   <max_array_size value="100"/>
+   <boolean_strings_to_number value="true"/>
+   <remove_suffix_from_strings value="true"/>
+  </plugin>
+  <plugin ID="UDP Server"/>
+  <plugin ID="WebSocket Server"/>
+  <plugin ID="ZMQ Subscriber"/>
+  <plugin ID="Fast Fourier Transform"/>
+  <plugin ID="Quaternion to RPY"/>
+  <plugin ID="Reactive Script Editor">
+   <library code="--[[ Helper function to create a series from arrays&#xa;&#xa; new_series: a series previously created with ScatterXY.new(name)&#xa; prefix:     prefix of the timeseries, before the index of the array&#xa; suffix_X:   suffix to complete the name of the series containing the X value. If [nil], use the index of the array.&#xa; suffix_Y:   suffix to complete the name of the series containing the Y value&#xa; timestamp:   usually the tracker_time variable&#xa;              &#xa; Example:&#xa; &#xa; Assuming we have multiple series in the form:&#xa; &#xa;   /trajectory/node.{X}/position/x&#xa;   /trajectory/node.{X}/position/y&#xa;   &#xa; where {N} is the index of the array (integer). We can create a reactive series from the array with:&#xa; &#xa;   new_series = ScatterXY.new(&quot;my_trajectory&quot;) &#xa;   CreateSeriesFromArray( new_series, &quot;/trajectory/node&quot;, &quot;position/x&quot;, &quot;position/y&quot;, tracker_time );&#xa;--]]&#xa;&#xa;function CreateSeriesFromArray( new_series, prefix, suffix_X, suffix_Y, timestamp )&#xa;  &#xa;  --- clear previous values&#xa;  new_series:clear()&#xa;  &#xa;  --- Append points to new_series&#xa;  index = 0&#xa;  while(true) do&#xa;&#xa;    x = index;&#xa;    -- if not nil, get the X coordinate from a series&#xa;    if suffix_X ~= nil then &#xa;      series_x = TimeseriesView.find( string.format( &quot;%s.%d/%s&quot;, prefix, index, suffix_X) )&#xa;      if series_x == nil then break end&#xa;      x = series_x:atTime(timestamp)&#x9; &#xa;    end&#xa;    &#xa;    series_y = TimeseriesView.find( string.format( &quot;%s.%d/%s&quot;, prefix, index, suffix_Y) )&#xa;    if series_y == nil then break end &#xa;    y = series_y:atTime(timestamp)&#xa;    &#xa;    new_series:push_back(x,y)&#xa;    index = index+1&#xa;  end&#xa;end&#xa;&#xa;--[[ Similar to the built-in function GetSeriesNames(), but select only the names with a give prefix. --]]&#xa;&#xa;function GetSeriesNamesByPrefix(prefix)&#xa;  -- GetSeriesNames(9 is a built-in function&#xa;  all_names = GetSeriesNames()&#xa;  filtered_names = {}&#xa;  for i, name in ipairs(all_names)  do&#xa;    -- check the prefix&#xa;    if name:find(prefix, 1, #prefix) then&#xa;      table.insert(filtered_names, name);&#xa;    end&#xa;  end&#xa;  return filtered_names&#xa;end&#xa;&#xa;--[[ Modify an existing series, applying offsets to all their X and Y values&#xa;&#xa; series: an existing timeseries, obtained with TimeseriesView.find(name)&#xa; delta_x: offset to apply to each x value&#xa; delta_y: offset to apply to each y value &#xa;  &#xa;--]]&#xa;&#xa;function ApplyOffsetInPlace(series, delta_x, delta_y)&#xa;  -- use C++ indeces, not Lua indeces&#xa;  for index=0, series:size()-1 do&#xa;    x,y = series:at(index)&#xa;    series:set(index, x + delta_x, y + delta_y)&#xa;  end&#xa;end&#xa;"/>
+   <scripts/>
+  </plugin>
+  <plugin ID="CSV Exporter"/>
+  <plugin ID="ROS /rosout Visualization"/>
+  <plugin ID="ROS Topic Re-Publisher"/>
+ </Plugins>
+ <!-- - - - - - - - - - - - - - - -->
+ <previouslyLoaded_Datafiles/>
+ <previouslyLoaded_Streamer name="ROS Topic Subscriber"/>
+ <!-- - - - - - - - - - - - - - - -->
+ <customMathEquations/>
+ <snippets/>
+ <!-- - - - - - - - - - - - - - - -->
+</root>
+
