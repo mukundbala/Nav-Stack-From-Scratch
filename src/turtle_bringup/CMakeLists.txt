@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   tf2
   tf2_ros
+  hmsgs
 )
 
 catkin_package(
@@ -26,6 +27,7 @@ catkin_package(
     std_msgs 
     tf2
     tf2_ros
+    hmsgs
 )
 
 include_directories(
