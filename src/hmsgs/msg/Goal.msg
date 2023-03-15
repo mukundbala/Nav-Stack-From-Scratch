@@ -1,0 +1,2 @@
+geometry_msgs/PointStamped goal_position
+int64 goal_id
