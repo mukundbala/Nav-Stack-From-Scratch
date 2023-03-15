@@ -547,7 +547,7 @@ void DroneCommander::run()
     {
         ROS_INFO("[DroneCommander]: Crashing avionics! Watch out!");
     }
-
+    nh_.setParam("run", false);
     return;
 };
 
