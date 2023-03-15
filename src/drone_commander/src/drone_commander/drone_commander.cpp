@@ -70,23 +70,22 @@ DroneCommander::DroneCommander(ros::NodeHandle &nh)
     }
     else
     {
-        if (nh_.hasParam("solo_goals"))
-        {
-            XmlRpc::XmlRpcValue goal_loader;
-            nh_.getParam("solo_goals" , goal_loader);
+        
+        XmlRpc::XmlRpcValue goal_loader;
+        nh_.getParam("solo_goals" , goal_loader);
 
-            if (goal_loader.getType() == XmlRpc::XmlRpcValue::TypeArray)
+        if (goal_loader.getType() == XmlRpc::XmlRpcValue::TypeArray)
+        {
+            int total_goals = goal_loader.size();
+            for (int i = 0; i < total_goals ; ++i)
             {
-                int total_goals = goal_loader.size();
-                for (int i = 0; i < total_goals ; ++i)
-                {
-                    bot_utils::Pos3D goal(goal_loader[i][0] ,goal_loader[i][1] , goal_loader[i][2]);
-                    goal.print();
-                    solo_goals_.push_back(goal);
-                }
-                solo_goal_id_ = 0;
-                hector_home_goal_.setCoords(hector_initial_pos_.x , hector_initial_pos_.y , cruise_height_);
+                XmlRpc::XmlRpcValue ob = goal_loader[i];
+                bot_utils::Pos3D goal(ob[0] , ob[1] , ob[2]);
+                goal.print();
+                solo_goals_.push_back(goal);
             }
+            hector_home_goal_.setCoords(hector_initial_pos_.x , hector_initial_pos_.y , cruise_height_);
+            goal_full_msg_.goal_id = -2; //if its takeoff, id is -3
         }
     }
     //initialise velocities to 0
@@ -97,6 +96,7 @@ DroneCommander::DroneCommander(ros::NodeHandle &nh)
     //setup messages
     traj_msg_.header.frame_id = "world";
     target_msg_.header.frame_id = "world";
+    goal_msg_.header.frame_id = "world";
     vel_msg_.linear.x = 0;
     vel_msg_.linear.y = 0;
     vel_msg_.linear.z = 0;
@@ -107,7 +107,6 @@ DroneCommander::DroneCommander(ros::NodeHandle &nh)
     target_pub_ = nh_.advertise<geometry_msgs::PointStamped>("target", 1, true);
     rotate_pub_ = nh_.advertise<std_msgs::Bool>("rotate", 1, true);
     vel_pub_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel" ,1 , true);
-    vel_mag_pub_ = nh_.advertise<std_msgs::Float64>("vel_mag" , 1 , true);
     motor_switch_client_ = nh_.serviceClient<hector_uav_msgs::EnableMotors>("enable_motors");
 
     //setup subscribers
@@ -126,6 +125,11 @@ DroneCommander::DroneCommander(ros::NodeHandle &nh)
         //Note to self. Shut down the general goal subscriber from mission planner!
         sub_t_pose_.shutdown();
         sub_t_spline_.shutdown();
+        vel_mag_pub_ = nh_.advertise<std_msgs::Float64>("vel_mag" , 1 , true);
+        goal_pub_ = nh_.advertise<geometry_msgs::PointStamped>("goal" , 1 , true);
+        goal_full_pub_ = nh_.advertise<hmsgs::Goal>("goal_full" , 1 , true);
+        error_pub_ = nh_.advertise<std_msgs::Float64>("error" , 1 , true);
+        error_vec_pub_ = nh_.advertise<geometry_msgs::Point>("error_vec" , 1 , true);
         ROS_INFO("[DroneCommander]: Drone Commander Prepared! In Solo-Flight mode!");
     }
 }
@@ -301,9 +305,7 @@ void DroneCommander::run()
         {
             rotate_msg_.data = false;
             gen_traj_turtle_ = false; //set this to false to counter callback demands due to new TSpline arriving
-
             ROS_INFO("IN TAKEOFF: ");
-            current_goal_.print();
             if (bot_utils::dist_euc(hector_position_.x , hector_position_.y , current_goal_.x , current_goal_.y) < thresh_cruise_planar_ && std::abs(hector_position_.z - takeoff_height_) < 0.05)
             {
                 if (verbose_)
@@ -327,7 +329,9 @@ void DroneCommander::run()
                 {
                     h_state_ = mission_states::HectorState::FOLLOW;
                     g_state_ = mission_states::GoalState::GOTO;
+                    solo_goal_id_ = 0;
                     current_goal_ = solo_goals_.at(solo_goal_id_);
+                    goal_full_msg_.goal_id = solo_goal_id_;
                     next_goal_.setCoords(NaN,NaN,NaN);
                     gen_traj_turtle_ = false;
                     gen_traj_passthrough_ = true;
@@ -504,13 +508,14 @@ void DroneCommander::run()
                     h_state_ = mission_states::HectorState::HOME;
                     g_state_ = mission_states::GoalState::GOTO;
                     current_goal_ = hector_home_goal_;
+                    goal_full_msg_.goal_id = solo_goals_.size();
                     next_goal_.setCoords(NaN,NaN,NaN);
                     gen_traj_passthrough_ = true;
                 }
                 else
                 {
                     solo_goal_id_ ++;
-                    
+                    goal_full_msg_.goal_id = solo_goal_id_;
                     current_goal_ = solo_goals_.at(solo_goal_id_);
                     h_state_ = mission_states::HectorState::FOLLOW;
                     g_state_ = mission_states::GoalState::GOTO;
@@ -530,6 +535,7 @@ void DroneCommander::run()
                 h_state_ = mission_states::HectorState::LAND;
                 g_state_ = mission_states::GoalState::CHASE;
                 current_goal_ = hector_land_goal_;
+                goal_full_msg_.goal_id = -1; //-2 is takeoff, -1 is land
                 next_goal_.setCoords(NaN,NaN,NaN);
                 gen_traj_turtle_ = false;
                 gen_traj_passthrough_ = true;
@@ -601,7 +607,26 @@ void DroneCommander::run()
         traj_pub_.publish(traj_msg_);
         target_pub_.publish(target_msg_);   
         rotate_pub_.publish(rotate_msg_);
-        vel_mag_pub_.publish(vel_mag_msg_);
+
+        if (!co_op_)
+        {
+            double error = bot_utils::dist_euc(hector_position_.x , hector_position_.y , current_goal_.x , current_goal_.y);
+            error_msg_.data = error;
+            goal_msg_.point.x = current_goal_.x;
+            goal_msg_.point.y = current_goal_.y;
+            goal_msg_.point.z = current_goal_.z;
+            goal_full_msg_.goal_position.point = goal_msg_.point;
+            error_vec_msg.x = abs(current_goal_.x - hector_position_.x);
+            error_vec_msg.y = abs(current_goal_.y - hector_position_.y);
+            error_vec_msg.z = abs(current_goal_.z - hector_position_.z);
+
+            vel_mag_pub_.publish(vel_mag_msg_);
+            goal_pub_.publish(goal_msg_);
+            goal_full_pub_.publish(goal_full_msg_);
+            error_pub_.publish(error_msg_);
+            error_vec_pub_.publish(error_vec_msg);
+        }
+        
         
         if (verbose_)
         {
@@ -738,9 +763,6 @@ void DroneCommander::writeVelocityMsg(std::array<double,4> &vels)
     vel_msg_.linear.z = vels.at(2);
     vel_msg_.angular.z = vels.at(3);
 }
-
-
-
 
 bool DroneCommander::loadCommanderParams()
 {
