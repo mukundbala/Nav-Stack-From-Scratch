@@ -25,12 +25,19 @@ bool ready = false; // signal to topics to begin
 // --------- PREDICTION WITH IMU ----------
 const double G = 9.8;
 double prev_imu_t = 0;
-cv::Matx21d X = {0, 0}, Y = {0, 0}; // see intellisense. This is equivalent to cv::Matx<double, 2, 1>
-cv::Matx21d A = {0, 0};
-cv::Matx21d Z = {0, 0};
+cv::Matx21d X = {0, 0}, Y = {0, 0}, prev_X = {0, 0}, prev_Y = {0, 0}; // see intellisense. This is equivalent to cv::Matx<double, 2, 1>
+cv::Matx21d A = {0, 0}, prev_A = {0, 0};
+cv::Matx21d Z = {0, 0}, prev_Z = {0, 0};
 cv::Matx22d P_x = cv::Matx22d::ones(), P_y = cv::Matx22d::zeros();
 cv::Matx22d P_a = cv::Matx22d::ones();
 cv::Matx22d P_z = cv::Matx22d::ones();
+cv::Matx22d prev_P_x, prev_P_y, prev_P_z, prev_P_a;
+cv::Matx22d Q_x, Q_y;
+double Q_z, Q_a;
+cv::Matx22d F_x, W_x, F_y, W_y, F_z, F_a;
+cv::Matx21d W_z, W_a;
+cv::Matx21d U_x, U_y;
+double U_z, U_a;
 double ua = NaN, ux = NaN, uy = NaN, uz = NaN;
 double qa, qx, qy, qz;
 // see https://docs.opencv.org/3.4/de/de1/classcv_1_1Matx.html
@@ -52,8 +59,86 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
     ux = msg->linear_acceleration.x;
     uy = msg->linear_acceleration.y;
     uz = msg->linear_acceleration.z;
-    
+
     //// IMPLEMENT IMU ////
+
+    // Predicting x state
+    F_x = {
+            1, imu_dt,
+            0, 1
+          };
+    W_x = {
+            -((imu_dt * imu_dt) * cos(prev_A(0)))/2, ((imu_dt * imu_dt) * sin(prev_A(0)))/2,
+            -(imu_dt * cos(prev_A(0))), imu_dt * sin(prev_A(0))
+          };
+    U_x = {
+            ux,
+            uy
+          };
+    Q_x = {
+            qx, 0,
+            0, qy
+          };
+    X = (F_x * prev_X) + (W_x * U_x);
+    P_x = (F_x * prev_P_x * F_x.t()) + (W_x * Q_x * W_x.t());
+    
+    // Predicting y state
+    F_y = {
+            1, imu_dt,
+            0, 1
+          };
+    W_y = {
+            ((imu_dt * imu_dt) * sin(prev_A(0)))/2, ((imu_dt * imu_dt) * cos(prev_A(0)))/2,
+            (imu_dt * sin(prev_A(0))), (imu_dt * cos(prev_A(0)))
+          };
+    U_y = {
+            ux,
+            uy
+          };
+    Q_y = {
+            qx, 0,
+            0, qy
+          };
+    Y = (F_y * prev_Y) + (W_y * U_y);
+    P_y = (F_y * prev_P_y * F_y.t()) + (W_y * Q_y * W_y.t());
+
+    // Predicting z state
+    F_z = {
+            1, imu_dt,
+            0, 1
+          };
+    W_z = {
+            (imu_dt * imu_dt)/2, 
+            imu_dt
+          };
+    U_z = uz - G;
+    Q_z = qx;
+    Z = (F_z * prev_Z) + (W_z * U_z);
+    P_z = (F_z * prev_P_z * F_z.t()) + (W_z * Q_z * W_z.t());
+
+    // Predicting ang state
+    F_a = {
+            1, 0,
+            0, 0
+          };
+    W_a = {
+            imu_dt,
+            1
+          };
+    U_a = ua;
+    Q_a = qa;
+    A = (F_a * prev_A) + (W_a * U_a);
+    P_a = (F_a * prev_P_a * F_a.t()) + (W_a * Q_a * W_a.t());
+    
+    // Update previous filtered position and velocity 
+    prev_X = X;
+    prev_P_x = P_x;
+    prev_Y = Y;
+    prev_P_y = P_y;
+    prev_Z = Z;
+    prev_P_z = P_z;
+    prev_A = A;
+    prev_P_a = P_a;
 }
 
 // --------- GPS ----------
