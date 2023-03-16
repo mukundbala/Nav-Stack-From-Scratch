@@ -130,6 +130,7 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
     A = (F_a * prev_A) + (W_a * U_a);
     P_a = (F_a * prev_P_a * F_a.t()) + (W_a * Q_a * W_a.t());
     
+    // If no measurement data => No correction
     // Update previous filtered position and velocity 
     prev_X = X;
     prev_P_x = P_x;
@@ -145,28 +146,71 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
 // https://docs.ros.org/en/api/sensor_msgs/html/msg/NavSatFix.html
 cv::Matx31d GPS = {NaN, NaN, NaN};
 cv::Matx31d initial_pos = {NaN, NaN, NaN}; // written below in main. no further action needed.
+cv::Matx31d ECEF, initial_ECEF = {NaN, NaN, NaN}, NED;
+cv::Matx33d R_ECEF2NED;
+cv::Matx33d R_NED2GAZEBO = {
+                            1, 0, 0,
+                            0, -1, 0,
+                            0, 0, -1
+                           };
 const double DEG2RAD = M_PI / 180;
 const double RAD_POLAR = 6356752.3;
 const double RAD_EQUATOR = 6378137;
+double e = 1 - (pow(RAD_POLAR, 2)/pow(RAD_EQUATOR, 2)); // First numerical eccentricity
 double r_gps_x, r_gps_y, r_gps_z;
+double N;   // prime_radius, N(φ)
+
+double tf_to_ecef(double lat_measurement)
+{
+    double prime_rad;
+    prime_rad = RAD_EQUATOR/(sqrt(1 - (pow(e, 2) * (sin(lat_measurement) * sin(lat_measurement)))));
+    return prime_rad;
+}
 void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
 {
     if (!ready)
         return;
 
-    /*
+    
     //// IMPLEMENT GPS /////
-    double lat = msg->latitude;
-    double lon = msg->longitude;
-    double alt = msg->altitude;
+    double lat = msg->latitude;  // φ   
+    double lon = msg->longitude; // λ
+    double alt = msg->altitude;  // h
+
+    // Convert degree to radian
+    lat *= DEG2RAD;
+    lon *= DEG2RAD;
+
+    // Calculate N(φ)
+    N = tf_to_ecef(lat);
+
+    // Calculate rotation matrix R to transform from ECEF to NED
+    R_ECEF2NED = {
+                    -(sin(lat) * cos(lon)), -sin(lon), -(cos(lat) * cos(lat)),
+                    -(sin(lat) * sin(lon)), cos(lon), -(cos(lat) * sin(lon)),
+                    cos(lat)              , 0       , -sin(lat)
+                 };
     
     // for initial message -- you may need this:
     if (std::isnan(initial_ECEF(0)))
     {   // calculates initial ECEF and returns
+        initial_ECEF = {
+                        (N + alt) * cos(lat) * cos(lon),
+                        (N + alt) * cos(lat) * sin(lon),
+                        (((1 - e) * N) + alt) * sin(lat)
+                       };
         initial_ECEF = ECEF;
         return;
     }
-    */
+
+    ECEF = {
+            (N + alt) * cos(lat) * cos(lon),
+            (N + alt) * cos(lat) * sin(lon),
+            (((1 - e) * N) + alt) * sin(lat)
+           };
+
+    NED = R_ECEF2NED.t() * (ECEF - initial_ECEF);
+    GPS = (R_NED2GAZEBO * NED) + initial_pos;
 }
 
 // --------- Magnetic ----------
