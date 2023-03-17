@@ -25,19 +25,20 @@ bool ready = false; // signal to topics to begin
 // --------- PREDICTION WITH IMU ----------
 const double G = 9.8;
 double prev_imu_t = 0;
-cv::Matx21d X = {0, 0}, Y = {0, 0}, prev_X = {0, 0}, prev_Y = {0, 0}; // see intellisense. This is equivalent to cv::Matx<double, 2, 1>
-cv::Matx21d A = {0, 0}, prev_A = {0, 0};
-cv::Matx21d Z = {0, 0}, prev_Z = {0, 0};
+cv::Matx21d X = {0, 0}, Y = {0, 0}, pred_X = {0, 0}, pred_Y = {0, 0}; // see intellisense. This is equivalent to cv::Matx<double, 2, 1>
+cv::Matx21d A = {0, 0}, pred_A = {0, 0};                                    
+cv::Matx21d Z = {0, 0}, pred_Z = {0, 0};                                
 cv::Matx22d P_x = cv::Matx22d::ones(), P_y = cv::Matx22d::zeros();
 cv::Matx22d P_a = cv::Matx22d::ones();
-cv::Matx22d P_z = cv::Matx22d::ones();
-cv::Matx22d prev_P_x, prev_P_y, prev_P_z, prev_P_a;
+cv::Matx22d P_z = cv::Matx22d::ones();     
+
+cv::Matx22d pred_P_x, pred_P_y, pred_P_z, pred_P_a; // predicted covariance state matrix from prev time step, after being updated by Kalman gain.
 cv::Matx22d Q_x, Q_y;
-double Q_z, Q_a;
+cv::Matx<double, 1, 1> Q_z, Q_a;
 cv::Matx22d F_x, W_x, F_y, W_y, F_z, F_a;
 cv::Matx21d W_z, W_a;
 cv::Matx21d U_x, U_y;
-double U_z, U_a;
+cv::Matx<double, 1, 1> U_z, U_a;
 double ua = NaN, ux = NaN, uy = NaN, uz = NaN;
 double qa, qx, qy, qz;
 // see https://docs.opencv.org/3.4/de/de1/classcv_1_1Matx.html
@@ -68,8 +69,8 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             0, 1
           };
     W_x = {
-            -((imu_dt * imu_dt) * cos(prev_A(0)))/2, ((imu_dt * imu_dt) * sin(prev_A(0)))/2,
-            -(imu_dt * cos(prev_A(0))), imu_dt * sin(prev_A(0))
+            -((imu_dt * imu_dt) * cos(A(0)))/2, ((imu_dt * imu_dt) * sin(A(0)))/2,
+            -(imu_dt * cos(A(0))), imu_dt * sin(A(0))
           };
     U_x = {
             ux,
@@ -79,8 +80,8 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             qx, 0,
             0, qy
           };
-    X = (F_x * prev_X) + (W_x * U_x);
-    P_x = (F_x * prev_P_x * F_x.t()) + (W_x * Q_x * W_x.t());
+    pred_X = (F_x * X) + (W_x * U_x);
+    pred_P_x = (F_x * P_x * F_x.t()) + (W_x * Q_x * W_x.t());
     
     // Predicting y state
     F_y = {
@@ -88,8 +89,8 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             0, 1
           };
     W_y = {
-            ((imu_dt * imu_dt) * sin(prev_A(0)))/2, ((imu_dt * imu_dt) * cos(prev_A(0)))/2,
-            (imu_dt * sin(prev_A(0))), (imu_dt * cos(prev_A(0)))
+            ((imu_dt * imu_dt) * sin(A(0)))/2, ((imu_dt * imu_dt) * cos(A(0)))/2,
+            (imu_dt * sin(A(0))), (imu_dt * cos(A(0)))
           };
     U_y = {
             ux,
@@ -99,8 +100,8 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             qx, 0,
             0, qy
           };
-    Y = (F_y * prev_Y) + (W_y * U_y);
-    P_y = (F_y * prev_P_y * F_y.t()) + (W_y * Q_y * W_y.t());
+    pred_Y = (F_y * Y) + (W_y * U_y);
+    pred_P_y = (F_y * P_y * F_y.t()) + (W_y * Q_y * W_y.t());
 
     // Predicting z state
     F_z = {
@@ -111,10 +112,10 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             (imu_dt * imu_dt)/2, 
             imu_dt
           };
-    U_z = uz - G;
-    Q_z = qx;
-    Z = (F_z * prev_Z) + (W_z * U_z);
-    P_z = (F_z * prev_P_z * F_z.t()) + (W_z * Q_z * W_z.t());
+    U_z = {uz - G};
+    Q_z = {qx};
+    pred_Z = (F_z * Z) + (W_z * U_z);
+    pred_P_z = (F_z * P_z * F_z.t()) + (W_z * Q_z * W_z.t());
 
     // Predicting ang state
     F_a = {
@@ -125,21 +126,21 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             imu_dt,
             1
           };
-    U_a = ua;
-    Q_a = qa;
-    A = (F_a * prev_A) + (W_a * U_a);
-    P_a = (F_a * prev_P_a * F_a.t()) + (W_a * Q_a * W_a.t());
+    U_a = {ua};
+    Q_a = {qa};
+    pred_A = (F_a * A) + (W_a * U_a);
+    pred_P_a = (F_a * P_a * F_a.t()) + (W_a * Q_a * W_a.t());
     
-    // If no measurement data => No correction
+    // If no measurement data from sensors => No correction
     // Update previous filtered position and velocity 
-    prev_X = X;
-    prev_P_x = P_x;
-    prev_Y = Y;
-    prev_P_y = P_y;
-    prev_Z = Z;
-    prev_P_z = P_z;
-    prev_A = A;
-    prev_P_a = P_a;
+    X = pred_X;
+    P_x = pred_P_x;
+    Y = pred_Y;
+    P_y = pred_P_y;
+    Z = pred_Z;
+    P_z = pred_P_z;
+    A = pred_A;
+    P_a = pred_P_a;
 }
 
 // --------- GPS ----------
@@ -153,6 +154,9 @@ cv::Matx33d R_NED2GAZEBO = {
                             0, -1, 0,
                             0, 0, -1
                            };
+cv::Matx21d K_x, K_y, K_z; // Kalman gain
+cv::Matx12d H = {1, 0};
+cv::Matx<double, 1, 1> V = {1};
 const double DEG2RAD = M_PI / 180;
 const double RAD_POLAR = 6356752.3;
 const double RAD_EQUATOR = 6378137;
@@ -211,6 +215,30 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
 
     NED = R_ECEF2NED.t() * (ECEF - initial_ECEF);
     GPS = (R_NED2GAZEBO * NED) + initial_pos;
+
+    //  EKF correction for x gps
+    // Calculate Kalman gain
+    K_x = (pred_P_x * H.t()) * (((H * pred_P_x * H.t()) + (V * r_gps_x * V)).inv());
+    // Update state matrix
+    X = pred_X + (K_x * (GPS(0) - pred_X(0)));
+    // Update state covariance matrix
+    P_x = pred_P_x - (K_x * H * pred_P_x);
+
+    //  EKF correction for y gps
+    // Calculate Kalman gain
+    K_y = (pred_P_y * H.t()) * (((H * pred_P_y * H.t()) + (V * r_gps_y * V)).inv());
+    // Update state matrix
+    Y = pred_Y + (K_y * (GPS(1) - pred_Y(0)));
+    // Update state covariance matrix
+    P_y = pred_P_y - (K_y * H * pred_P_y);
+
+    //  EKF correction for z gps
+    // Calculate Kalman gain
+    K_z = (pred_P_z * H.t()) * (((H * pred_P_z * H.t()) + (V * r_gps_z * V)).inv());
+    // Update state matrix
+    Z = pred_Z + (K_z * (GPS(2) - pred_Z(0)));
+    // Update state covariance matrix
+    P_z = pred_P_z - (K_z * H * pred_P_z);
 }
 
 // --------- Magnetic ----------
