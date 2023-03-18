@@ -10,7 +10,7 @@ Tested on Ubuntu 20.04 for ROS Noetic and compiled with C++17.
 ##but first, some dependencies
 
 sudo apt install python3-catkin-tools
-sudo apt install ros-noetic-plotjuggler-ros. 
+sudo apt install ros-noetic-plotjuggler-ros
 
 #ensure that you have ros-noetic installed: http://wiki.ros.org/noetic/Installation/Ubuntu
 ```
