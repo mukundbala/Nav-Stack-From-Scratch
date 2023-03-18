@@ -70,7 +70,7 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
           };
     W_x = {
             -((imu_dt * imu_dt) * cos(A(0)))/2, ((imu_dt * imu_dt) * sin(A(0)))/2,
-            -(imu_dt * cos(A(0))), imu_dt * sin(A(0))
+            -(imu_dt * cos(A(0)))             , imu_dt * sin(A(0))
           };
     U_x = {
             ux,
@@ -100,7 +100,7 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             qx, 0,
             0, qy
           };
-    pred_Y = (F_y * Y) + (W_y * U_y);
+    pred_Y = (F_y * Y) - (W_y * U_y);
     pred_P_y = (F_y * P_y * F_y.t()) + (W_y * Q_y * W_y.t());
 
     // Predicting z state
@@ -113,7 +113,7 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             imu_dt
           };
     U_z = {uz - G};
-    Q_z = {qx};
+    Q_z = {qz};
     pred_Z = (F_z * Z) + (W_z * U_z);
     pred_P_z = (F_z * P_z * F_z.t()) + (W_z * Q_z * W_z.t());
 
@@ -160,14 +160,14 @@ cv::Matx<double, 1, 1> V = {1};
 const double DEG2RAD = M_PI / 180;
 const double RAD_POLAR = 6356752.3;
 const double RAD_EQUATOR = 6378137;
-double e = 1 - (pow(RAD_POLAR, 2)/pow(RAD_EQUATOR, 2)); // First numerical eccentricity
+double e_sq = 1 - (pow(RAD_POLAR/RAD_EQUATOR, 2)); // First numerical eccentricity, e^2
 double r_gps_x, r_gps_y, r_gps_z;
 double N;   // prime_radius, N(φ)
 
-double tf_to_ecef(double lat_measurement)
+double primeVerticalRadius_calc(double lat_measurement)
 {
     double prime_rad;
-    prime_rad = RAD_EQUATOR/(sqrt(1 - (pow(e, 2) * (sin(lat_measurement) * sin(lat_measurement)))));
+    prime_rad = RAD_EQUATOR/(sqrt(1 - (e_sq * (sin(lat_measurement) * sin(lat_measurement)))));
     return prime_rad;
 }
 void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
@@ -186,7 +186,7 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
     lon *= DEG2RAD;
 
     // Calculate N(φ)
-    N = tf_to_ecef(lat);
+    N = primeVerticalRadius_calc(lat);
 
     // Calculate rotation matrix R to transform from ECEF to NED
     R_ECEF2NED = {
@@ -201,7 +201,7 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
         initial_ECEF = {
                         (N + alt) * cos(lat) * cos(lon),
                         (N + alt) * cos(lat) * sin(lon),
-                        (((1 - e) * N) + alt) * sin(lat)
+                        (((1 - e_sq) * N) + alt) * sin(lat)
                        };
         initial_ECEF = ECEF;
         return;
@@ -210,7 +210,7 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
     ECEF = {
             (N + alt) * cos(lat) * cos(lon),
             (N + alt) * cos(lat) * sin(lon),
-            (((1 - e) * N) + alt) * sin(lat)
+            (((1 - e_sq) * N) + alt) * sin(lat)
            };
 
     NED = R_ECEF2NED.t() * (ECEF - initial_ECEF);
