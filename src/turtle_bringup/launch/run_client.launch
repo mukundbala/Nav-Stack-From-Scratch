@@ -30,7 +30,7 @@
         <node pkg="global_planner" type="global_planner_node" name="global_planner" output="screen"/>
         <node pkg="commander" type="commander_node" name="commander" output="screen"/>
     </group>
-
+    
     <group if="$(eval project == 'proj2')">
         <include file="$(find ee4308_hector)/launch/run.launch" ns="$(arg drone_namespace)"/>
     </group>

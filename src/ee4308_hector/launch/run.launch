@@ -13,5 +13,4 @@
     <!-- Nodes -->
     <node pkg="drone_commander" type="drone_commander_node" name="drone_commander" output="screen" />
     <node pkg="ee4308_hector" type="hector_motion" name="hector_motion" output="screen" />
-    <!-- <node pkg="ee4308_hector" type="hector_move" name="hector_move" output="screen" /> -->
 </launch>

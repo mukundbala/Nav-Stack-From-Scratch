@@ -15,6 +15,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_srvs
   tf2
   tmsgs
+  hmsgs
 )
 
 find_package(cmake_modules REQUIRED)
@@ -37,6 +38,7 @@ catkin_package(
     tf2
     bot_utils
     tmsgs
+    hmsgs
 )
 
 

@@ -5,3 +5,5 @@
 hector/
 *vscode
 .catkin_workspace
+bagfiles/*
+data/*

@@ -20,12 +20,4 @@ sleep 1s # allow gazebo to reset so as not to mess with the time.
 
 # bring up gazebo and build all models
 echo "Begin..."
-
-if [ $TASK = "soloflight" ];
-then 
 roslaunch turtle_bringup soloflight.launch
-else 
-roslaunch turtle_bringup run_client.launch
-echo "Stopping Turtlebot3 by publishing to /turtle/cmd_vel"
-rostopic pub -1 /turtle/cmd_vel geometry_msgs/Twist  '{linear:  {x: 0.0, y: 0.0, z: 0.0}, angular: {x: 0.0,y: 0.0,z: 0.0}}'
-fi

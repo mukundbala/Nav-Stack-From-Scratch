@@ -10,6 +10,7 @@ Tested on Ubuntu 20.04 for ROS Noetic and compiled with C++17.
 ##but first, some dependencies
 
 sudo apt install python3-catkin-tools
+sudo apt install ros-noetic-plotjuggler-ros. 
 
 #ensure that you have ros-noetic installed: http://wiki.ros.org/noetic/Installation/Ubuntu
 ```
@@ -68,4 +69,15 @@ The tmsgs package contains purely message and service files for communication be
 **================================**
 ## Part 2: Quadrotor
 
+### Instructions (Please Read)
 
+- With the Quadrotor, it is possible to run solo flights AND co-op missions with the turtlebot
+- To set Solo Flight MODE:
+    - Go to params.sh and set TASK to "soloflight" and WORLD to world0
+    - Go to turtle_bringup package/worlds/world0 and set the waypoints you want. Node that each waypoint is a TUPLE of [x,y,z]
+    - Got to drone_commander/config/drone_commander and set co-op param to false
+    - Good to go!
+- To set Co-Op MODE:
+    - Go to params.sh and set TASK to "proj2" and WORLD to world20/world21
+    - Got to drone_commander/config/drone_commander and set co-op param to true
+    - Good to go!

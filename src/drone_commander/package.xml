@@ -25,6 +25,7 @@
   <build_depend>std_srvs</build_depend>
   <build_depend>tf2</build_depend>
   <build_depend>tmsgs</build_depend>
+  <build_depend>hmsgs</build_depend>
   <build_depend>bot_utils</build_depend>
 
   <build_export_depend>bot_utils</build_export_depend>
@@ -38,6 +39,7 @@
   <build_export_depend>std_srvs</build_export_depend>
   <build_export_depend>tf2</build_export_depend>
   <build_export_depend>tmsgs</build_export_depend>
+  <build_export_depend>hmsgs</build_export_depend>
   <build_export_depend>message_runtime</build_export_depend>
   <build_export_depend>message_generation</build_export_depend>
   <build_export_depend>bot_utils</build_export_depend>
@@ -53,6 +55,7 @@
   <exec_depend>std_srvs</exec_depend>
   <exec_depend>tf2</exec_depend>
   <exec_depend>tmsgs</exec_depend>
+  <exec_depend>hmsgs</exec_depend>
   <exec_depend>cmake_modules</exec_depend>
   <exec_depend>message_runtime</exec_depend>
   <exec_depend>message_generation</exec_depend>
