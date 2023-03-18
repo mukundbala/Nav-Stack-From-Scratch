@@ -1,122 +1,132 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <root>
  <tabbed_widget parent="main_window" name="Main Window">
-  <Tab containers="1" tab_name="Errors">
-   <Container>
-    <DockSplitter orientation="|" count="2" sizes="0.503788;0.496212">
-     <DockSplitter orientation="-" count="4" sizes="0.25;0.39693;0.171053;0.182018">
-      <DockArea name="...">
-       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-        <range left="34.650000" bottom="-10.000000" right="39.656000" top="10.000000"/>
-        <limitY max="10" min="-10"/>
-        <curve color="#17becf" name="/hector/pose/pose/pose/position/x"/>
-        <curve color="#d62728" name="/hector/goal_full/goal_position/point/x"/>
-       </plot>
-      </DockArea>
-      <DockArea name="...">
-       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-        <range left="34.650000" bottom="-10.000000" right="39.656000" top="10.000000"/>
-        <limitY max="10" min="-10"/>
-        <curve color="#bcbd22" name="/hector/pose/pose/pose/position/y"/>
-        <curve color="#1ac938" name="/hector/goal_full/goal_position/point/y"/>
-       </plot>
-      </DockArea>
-      <DockArea name="...">
-       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-        <range left="34.650000" bottom="0.100000" right="39.656000" top="3.000010"/>
-        <limitY max="3.00001" min="0.1"/>
-        <curve color="#1f77b4" name="/hector/pose/pose/pose/position/z"/>
-        <curve color="#ff7f0e" name="/hector/goal_full/goal_position/point/z"/>
-       </plot>
-      </DockArea>
-      <DockArea name="...">
-       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-        <range left="34.650000" bottom="25.900000" right="39.656000" top="26.100000"/>
-        <limitY/>
-        <curve color="#1f77b4" name="/hector/goal_full/goal_id"/>
-       </plot>
-      </DockArea>
-     </DockSplitter>
-     <DockSplitter orientation="-" count="3" sizes="0.332968;0.334064;0.332968">
-      <DockArea name="...">
-       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-        <range left="34.650000" bottom="0.620389" right="39.656000" top="1.791267"/>
-        <limitY/>
-        <curve color="#f14cc1" name="/hector/error_vec/x"/>
-       </plot>
-      </DockArea>
-      <DockArea name="...">
-       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-        <range left="34.650000" bottom="-0.027381" right="39.656000" top="1.246269"/>
-        <limitY/>
-        <curve color="#9467bd" name="/hector/error_vec/y"/>
-       </plot>
-      </DockArea>
-      <DockArea name="...">
-       <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-        <range left="34.650000" bottom="0.000010" right="39.656000" top="1.000000"/>
-        <limitY max="1" min="1e-05"/>
-        <curve color="#17becf" name="/hector/error_vec/z"/>
-       </plot>
-      </DockArea>
-     </DockSplitter>
-    </DockSplitter>
-   </Container>
-  </Tab>
-  <Tab containers="1" tab_name="VELS">
+  <Tab tab_name="Errors" containers="1">
    <Container>
     <DockSplitter orientation="-" count="1" sizes="1">
      <DockSplitter orientation="|" count="2" sizes="0.5;0.5">
       <DockSplitter orientation="-" count="4" sizes="0.25;0.25;0.25;0.25">
        <DockArea name="...">
-        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-         <range left="34.650000" bottom="-0.340645" right="39.656000" top="-0.159194"/>
-         <limitY/>
-         <curve color="#ff7f0e" name="/hector/velocity/linear/x"/>
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="10.000000" right="20.100000" bottom="-0.200000" left="0.000000"/>
+         <limitY max="10" min="-0.2"/>
+         <curve name="/hector/error_vec/x" color="#1f77b4"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-         <range left="34.650000" bottom="-0.279114" right="39.656000" top="-0.164385"/>
-         <limitY/>
-         <curve color="#f14cc1" name="/hector/velocity/linear/y"/>
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="10.000000" right="20.100000" bottom="-0.200000" left="0.000000"/>
+         <limitY max="10" min="-0.2"/>
+         <curve name="/hector/error_vec/y" color="#d62728"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-         <range left="34.650000" bottom="-0.000352" right="39.656000" top="0.000270"/>
-         <limitY/>
-         <curve color="#9467bd" name="/hector/velocity/linear/z"/>
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="3.000010" right="20.100000" bottom="0.000000" left="0.000000"/>
+         <limitY max="3.00001" min="0"/>
+         <curve name="/hector/error_vec/z" color="#1ac938"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-         <range left="34.650000" bottom="0.100000" right="39.656000" top="2.000000"/>
-         <limitY max="2" min="0.1"/>
-         <curve color="#bcbd22" name="/hector/vel_mag/data"/>
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="4.349046" right="20.100000" bottom="-0.106063" left="0.000000"/>
+         <limitY/>
+         <curve name="/hector/error/data" color="#ff7f0e"/>
         </plot>
        </DockArea>
       </DockSplitter>
       <DockSplitter orientation="-" count="3" sizes="0.332968;0.334064;0.332968">
        <DockArea name="...">
-        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-         <range left="34.650000" bottom="-0.576753" right="39.656000" top="1.143278"/>
-         <limitY/>
-         <curve color="#1f77b4" name="/hector/cmd_vel/linear/x"/>
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="3.500000" right="20.106000" bottom="-0.143350" left="0.000000"/>
+         <limitY max="3.5"/>
+         <curve name="/hector/goal_full/goal_position/point/x" color="#f14cc1"/>
+         <curve name="/hector/pose/pose/pose/position/x" color="#bcbd22"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-         <range left="34.650000" bottom="-0.907840" right="39.656000" top="0.189923"/>
-         <limitY/>
-         <curve color="#d62728" name="/hector/cmd_vel/linear/y"/>
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="3.500000" right="20.106000" bottom="-0.138102" left="0.000000"/>
+         <limitY max="3.5"/>
+         <curve name="/hector/goal_full/goal_position/point/y" color="#9467bd"/>
+         <curve name="/hector/pose/pose/pose/position/y" color="#1f77b4"/>
         </plot>
        </DockArea>
        <DockArea name="...">
-        <plot flip_y="false" style="Lines" flip_x="false" mode="TimeSeries">
-         <range left="34.650000" bottom="-0.000336" right="39.656000" top="0.000176"/>
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="3.000000" right="20.106000" bottom="0.000000" left="0.000000"/>
+         <limitY max="3" min="0"/>
+         <curve name="/hector/goal_full/goal_position/point/z" color="#17becf"/>
+         <curve name="/hector/pose/pose/pose/position/z" color="#d62728"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+     </DockSplitter>
+    </DockSplitter>
+   </Container>
+  </Tab>
+  <Tab tab_name="VELS" containers="1">
+   <Container>
+    <DockSplitter orientation="-" count="1" sizes="1">
+     <DockSplitter orientation="|" count="2" sizes="0.5;0.5">
+      <DockSplitter orientation="-" count="4" sizes="0.25;0.25;0.25;0.25">
+       <DockArea name="...">
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="0.441726" right="20.106000" bottom="-0.530525" left="0.000000"/>
          <limitY/>
-         <curve color="#1ac938" name="/hector/cmd_vel/linear/z"/>
+         <curve name="/hector/velocity/linear/x" color="#1ac938"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="0.439764" right="20.106000" bottom="-0.532412" left="0.000000"/>
+         <limitY/>
+         <curve name="/hector/velocity/linear/y" color="#ff7f0e"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="0.595242" right="20.106000" bottom="-2.847232" left="0.000000"/>
+         <limitY/>
+         <curve name="/hector/velocity/linear/z" color="#f14cc1"/>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="2.000000" right="20.100000" bottom="0.100000" left="0.000000"/>
+         <limitY max="2" min="0.1"/>
+         <curve name="/hector/vel_mag/data" color="#9467bd"/>
+        </plot>
+       </DockArea>
+      </DockSplitter>
+      <DockSplitter orientation="-" count="3" sizes="0.332968;0.334064;0.332968">
+       <DockArea name="...">
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="0.686723" right="20.100000" bottom="-0.338254" left="0.000000"/>
+         <limitY/>
+         <curve name="/hector/cmd_vel/linear/x" color="#17becf">
+          <transform name="Moving Average" alias="/hector/cmd_vel/linear/x[Moving Average]">
+           <options value="10" compensate_offset="false"/>
+          </transform>
+         </curve>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="0.642990" right="20.100000" bottom="-0.583691" left="0.000000"/>
+         <limitY/>
+         <curve name="/hector/cmd_vel/linear/y" color="#bcbd22">
+          <transform name="Moving Average" alias="/hector/cmd_vel/linear/y[Moving Average]">
+           <options value="10" compensate_offset="false"/>
+          </transform>
+         </curve>
+        </plot>
+       </DockArea>
+       <DockArea name="...">
+        <plot style="Lines" flip_y="false" mode="TimeSeries" flip_x="false">
+         <range top="0.797199" right="20.100000" bottom="-11.685178" left="0.000000"/>
+         <limitY/>
+         <curve name="/hector/cmd_vel/linear/z" color="#1f77b4"/>
         </plot>
        </DockArea>
       </DockSplitter>
@@ -163,8 +173,6 @@
   <plugin ID="ROS Topic Re-Publisher"/>
  </Plugins>
  <!-- - - - - - - - - - - - - - - -->
- <previouslyLoaded_Datafiles/>
- <previouslyLoaded_Streamer name="ROS Topic Subscriber"/>
  <!-- - - - - - - - - - - - - - - -->
  <customMathEquations/>
  <snippets/>
