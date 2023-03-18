@@ -12,4 +12,4 @@ thresh_cruise_planar: 0.2
 look_ahead: 10
 head_start: 1.0
 
-co_op: false
+co_op: true
