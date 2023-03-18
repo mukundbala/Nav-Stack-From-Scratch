@@ -78,15 +78,15 @@ std::array<double,4> VelocityController::generate_velocities(bot_utils::Pos3D &h
 
     double px = Kp_lin_ * error_x;
     double py = Kp_lin_ * error_y;
-    double pz = Kp_lin_ * error_z;
+    double pz = Kp_z_ * error_z;
 
     double ix = Ki_lin_ * error_x_cum_;
     double iy = Ki_lin_ * error_y_cum_;
-    double iz = Ki_lin_ * error_z_cum_;
+    double iz = Ki_z_ * error_z_cum_;
 
     double dx = Kd_lin_ * (error_x_diff / dt_);
     double dy = Kd_lin_ * (error_y_diff / dt_);
-    double dz = Kd_lin_ * (error_z_diff / dt_);
+    double dz = Kd_z_ * (error_z_diff / dt_);
 
     double raw_x = px + ix + dx;
     double raw_y = py + iy + dy;
