@@ -616,7 +616,8 @@ void DroneCommander::run()
             goal_msg_.point.y = current_goal_.y;
             goal_msg_.point.z = current_goal_.z;
             goal_full_msg_.goal_position.point = goal_msg_.point;
-            error_vec_msg.x = abs(current_goal_.x - hector_position_.x);
+
+            error_vec_msg.x = abs(current_goal_.x - hector_position_.x); //errors are in absolute terms
             error_vec_msg.y = abs(current_goal_.y - hector_position_.y);
             error_vec_msg.z = abs(current_goal_.z - hector_position_.z);
 
