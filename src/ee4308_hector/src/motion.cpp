@@ -41,6 +41,9 @@ cv::Matx21d U_x, U_y;
 cv::Matx<double, 1, 1> U_z, U_a;
 double ua = NaN, ux = NaN, uy = NaN, uz = NaN;
 double qa, qx, qy, qz;
+std::vector<double> var_x;
+std::vector<double> var_y; 
+std::vector<double> var_z;
 // see https://docs.opencv.org/3.4/de/de1/classcv_1_1Matx.html
 void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
 {
@@ -132,15 +135,19 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
     pred_P_a = (F_a * P_a * F_a.t()) + (W_a * Q_a * W_a.t());
     
     // If no measurement data from sensors => No correction
-    // Update previous filtered position and velocity 
-    X = pred_X;
-    P_x = pred_P_x;
-    Y = pred_Y;
-    P_y = pred_P_y;
-    Z = pred_Z;
-    P_z = pred_P_z;
-    A = pred_A;
-    P_a = pred_P_a;
+    if (!enable_gps && !enable_baro && !enable_magnet && !enable_sonar)
+    {
+        // Update previous filtered position and velocity with prediction
+        X = pred_X;
+        P_x = pred_P_x;
+        Y = pred_Y;
+        P_y = pred_P_y;
+        Z = pred_Z;
+        P_z = pred_P_z;
+        A = pred_A;
+        P_a = pred_P_a;
+    }
+
 }
 
 // --------- GPS ----------
@@ -180,6 +187,12 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
     double lat = msg->latitude;  // φ   
     double lon = msg->longitude; // λ
     double alt = msg->altitude;  // h
+    double var_E = msg->position_covariance[0];
+    ROS_INFO("[HM]  Longitude variance: %7.3lf", var_E);
+    double var_N = msg->position_covariance[4];
+    ROS_INFO("[HM]  Latitude variance: %7.3lf", var_N);
+    double var_U = msg->position_covariance[8];
+    ROS_INFO("[HM]  Altitude variance: %7.3lf", var_U);
 
     // Convert degree to radian
     lat *= DEG2RAD;
@@ -194,24 +207,19 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
                     -(sin(lat) * sin(lon)), cos(lon), -(cos(lat) * sin(lon)),
                     cos(lat)              , 0       , -sin(lat)
                  };
-    
-    // for initial message -- you may need this:
-    if (std::isnan(initial_ECEF(0)))
-    {   // calculates initial ECEF and returns
-        initial_ECEF = {
-                        (N + alt) * cos(lat) * cos(lon),
-                        (N + alt) * cos(lat) * sin(lon),
-                        (((1 - e_sq) * N) + alt) * sin(lat)
-                       };
-        initial_ECEF = ECEF;
-        return;
-    }
 
     ECEF = {
             (N + alt) * cos(lat) * cos(lon),
             (N + alt) * cos(lat) * sin(lon),
-            (((1 - e_sq) * N) + alt) * sin(lat)
+            (((RAD_POLAR/RAD_EQUATOR) * (RAD_POLAR/RAD_EQUATOR) * N) + alt) * sin(lat)
            };
+
+    // for initial message -- you may need this:
+    if (std::isnan(initial_ECEF(0)))
+    {   // calculates initial ECEF and returns
+        initial_ECEF = ECEF;
+        return;
+    }
 
     NED = R_ECEF2NED.t() * (ECEF - initial_ECEF);
     GPS = (R_NED2GAZEBO * NED) + initial_pos;
