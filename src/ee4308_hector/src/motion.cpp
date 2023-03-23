@@ -259,15 +259,19 @@ void cbMagnet(const geometry_msgs::Vector3Stamped::ConstPtr &msg)
 // --------- Baro ----------
 double z_bar = NaN;
 double r_bar_z;
+double b_bar;
 void cbBaro(const hector_uav_msgs::Altimeter::ConstPtr &msg)
 {
     if (!ready)
         return;
 
-    /*
+    
     //// IMPLEMENT BARO ////
-     z_bar = msg->altitude;
-    */
+    z_bar = msg->altitude;
+    K_z = (pred_P_z * H.t()) * (((H * pred_P_z * H.t()) + (V * r_bar_z * V)).inv());
+    Z = pred_Z + (K_z * (z_bar - pred_Z(0) - b_bar));
+    P_z = pred_P_z - (K_z * H * pred_P_z);
+         
 }
 
 // --------- Sonar ----------
