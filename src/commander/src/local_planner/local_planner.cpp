@@ -29,7 +29,7 @@ std::vector<bot_utils::Pos2D> LocalPlanner::Linear(bot_utils::Pos2D &pos_begin ,
 {
     double Dx = pos_end.x - pos_begin.x;
     double Dy = pos_end.y - pos_begin.y;
-    double d = sqrt ((Dx * Dx) + (Dy * Dy));
+    double d = sqrt((Dx * Dx) + (Dy * Dy)) / average_speed_;
 
     std::vector<bot_utils::Pos2D> segment_traj = {pos_begin};
 
