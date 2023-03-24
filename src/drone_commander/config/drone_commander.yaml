@@ -9,7 +9,7 @@ thresh_takeoff_height: 0.1
 thresh_land_height: 0.05
 thresh_cruise_planar: 0.2
 
-look_ahead: 10
-head_start: 1.0
+look_ahead: 8
+head_start: 0.1
 
 co_op: true

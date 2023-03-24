@@ -206,14 +206,14 @@ std::pair<bot_utils::Pos2D,int> DroneCommander::predict_turtle_pos()
     2. We find a point n at which the drone can reach about as fast as the turtle bot. Return that point
     */
    double tbot_time = 0;
-
+   double tru_avg_speed = 0.35;
    for (int i = tbot_id ; i < turtle_spline_.spline.size() -1 ; ++i)
    {
         tbot_time += turtle_spline_.target_dt; //turtle will reach i to i+1 within target_dt
 
         double hector_dist = bot_utils::dist_euc(hector_position_.x , hector_position_.y , turtle_spline_.spline.at(i+1).x , turtle_spline_.spline.at(i+1).y); //the distance hector needs to fly to the i+1 th index
 
-        double hector_time = hector_dist / average_speed_;
+        double hector_time = hector_dist / tru_avg_speed;
 
         if (tbot_time - hector_time >= head_start_)
         {
