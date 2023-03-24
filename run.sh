@@ -21,7 +21,7 @@ sleep 1s # allow gazebo to reset so as not to mess with the time.
 # bring up gazebo and build all models
 echo "Begin..."
 
-if [ $TASK = "soloflight" ];
+if [ $TASK == "soloflight" ];
 then 
 roslaunch turtle_bringup soloflight.launch
 else 
