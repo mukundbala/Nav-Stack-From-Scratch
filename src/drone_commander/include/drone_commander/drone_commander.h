@@ -51,14 +51,16 @@ private:
     //hector robot linear and angular velocity in ROBOT FRAME
     bot_utils::Pos3D hector_lin_vel_;
     double hector_ang_vel_;
+    double hector_vel_mag_;
 
     //hector spline
     bot_utils::SplineData3D hector_spline_;
     
     //hector goals in WORLD FRAME
     bot_utils::Pos3D current_goal_; //store for current goal
-    bot_utils::Pos3D next_goal_; //store for next goal
+    bot_utils::Pos3D next_goal_;
 
+    //stores for the various goals the hector moves to
     bot_utils::Pos3D hector_initial_pos_; //store for initial hector position
     bot_utils::Pos3D hector_takeoff_goal_;
     bot_utils::Pos3D hector_land_goal_; //store for hector's land goals
@@ -95,7 +97,6 @@ private:
     double thresh_cruise_planar_;
 
     int look_ahead_;
-    double head_start_;
 
     //trajectory generator params
     double target_dt_;

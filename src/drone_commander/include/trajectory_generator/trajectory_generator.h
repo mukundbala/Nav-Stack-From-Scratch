@@ -21,7 +21,7 @@ private:
     std::function<std::vector<bot_utils::Pos3D>(bot_utils::Pos3D &pos_begin , 
                                                 bot_utils::Pos3D &pos_end , 
                                                 bot_utils::Pos3D &vel_begin , 
-                                                bot_utils::Pos3D &vel_end)> spline_gen_;
+                                                bot_utils::Pos3D &vel_end)> SplineGenerator_;
 
 public:
     TrajectoryGenerator(double target_dt , double average_speed, std::string primary_traj, double cruise_height, double takeoff_height, double land_height, bool verbose);
@@ -34,7 +34,9 @@ public:
                             mission_states::HectorState h_state,
                             mission_states::GoalState g_state);
 
-    std::vector<bot_utils::Pos3D> LinearVert(bot_utils::Pos3D &pos_begin , bot_utils::Pos3D &pos_end);
+    std::vector<bot_utils::Pos3D> LinearVertTakeOff(bot_utils::Pos3D &pos_begin , bot_utils::Pos3D &pos_end);
+
+    std::vector<bot_utils::Pos3D> LinearVertLand(bot_utils::Pos3D &pos_begin , bot_utils::Pos3D &pos_end);
 
     std::vector<bot_utils::Pos3D> LinearPlanar(bot_utils::Pos3D &pos_begin , bot_utils::Pos3D &pos_end);
 

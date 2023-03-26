@@ -12,48 +12,51 @@ verbose_(verbose)
 {
     if (primary_traj_ == "Cubic")
     {
-        spline_gen_ = std::bind(&TrajectoryGenerator::Cubic , this , std::placeholders::_1 , std::placeholders::_2 , std::placeholders::_3 , std::placeholders::_4 );
+        SplineGenerator_ = std::bind(&TrajectoryGenerator::Cubic , this , std::placeholders::_1 , std::placeholders::_2 , std::placeholders::_3 , std::placeholders::_4 );
     }
 
     else if (primary_traj_ == "Quintic")
     {
-        spline_gen_ = std::bind(&TrajectoryGenerator::Quintic , this , std::placeholders::_1 , std::placeholders::_2 , std::placeholders::_3 , std::placeholders::_4 );
+        SplineGenerator_ = std::bind(&TrajectoryGenerator::Quintic , this , std::placeholders::_1 , std::placeholders::_2 , std::placeholders::_3 , std::placeholders::_4 );
     }
 
     else
     {
         primary_traj_ = "Cubic";
-        spline_gen_ = std::bind(&TrajectoryGenerator::Quintic , this , std::placeholders::_1 , std::placeholders::_2 , std::placeholders::_3 , std::placeholders::_4 );
+        SplineGenerator_ = std::bind(&TrajectoryGenerator::Quintic , this , std::placeholders::_1 , std::placeholders::_2 , std::placeholders::_3 , std::placeholders::_4 );
     }
 
     ROS_INFO("[DroneCommander- TrajectoryGenerator]: Trajectory Generator Prepared");
 }
 
 
-std::vector<bot_utils::Pos3D> TrajectoryGenerator::LinearVert(bot_utils::Pos3D &pos_begin , bot_utils::Pos3D &pos_end)
+std::vector<bot_utils::Pos3D> TrajectoryGenerator::LinearVertTakeOff(bot_utils::Pos3D &pos_begin , bot_utils::Pos3D &pos_end)
 {
     std::vector<bot_utils::Pos3D> segment_traj = {pos_begin};
     return segment_traj;
+}
 
-    // if (pos_begin.z > pos_end.z)
-    // {
-    //      std::vector<bot_utils::Pos3D> segment_traj = {pos_begin};
-    //     for (int i = 0 ; i < 3 ; ++ i)
-    //     {
-    //         segment_traj.emplace_back(pos_begin.x ,pos_begin.y , pos_begin.z - 0.5 * (i+1));
-    //     }
-    //     return segment_traj;
-    // }
+std::vector<bot_utils::Pos3D> TrajectoryGenerator::LinearVertLand(bot_utils::Pos3D &pos_begin , bot_utils::Pos3D &pos_end)
+{
+    std::vector<bot_utils::Pos3D> segment_traj = {pos_begin}; //landing position
+    
+    for (int i = 0 ; i < 30 ; ++i)
+    {
+        segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_end.z / 8);
+    }
 
-    // else
-    // {
-    //     std::vector<bot_utils::Pos3D> segment_traj = {pos_begin};
-    //     for (int i = 0 ; i < 3 ; ++ i)
-    //     {
-    //         segment_traj.emplace_back(pos_begin.x ,pos_begin.y , pos_begin.z + 0.5 * (i+1));
-    //     }
-    //     return segment_traj;
-    // }
+    for (int i = 0 ; i < 30 ; ++i)
+    {
+        segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_end.z / 4);
+    }
+
+    for (int i = 0 ; i < 30 ; ++i)
+    {
+        segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_end.z / 2);
+    }
+
+    return segment_traj;
+    
 }
 
 std::vector<bot_utils::Pos3D> TrajectoryGenerator::LinearPlanar(bot_utils::Pos3D &pos_begin , bot_utils::Pos3D &pos_end)
@@ -120,7 +123,7 @@ std::vector<bot_utils::Pos3D> TrajectoryGenerator::Quintic(bot_utils::Pos3D &pos
              0.0 , 0.0 , 0.5, 0.0 , 0.0 , 0.0,
              -10.0/(d*d*d) , -6.0/(d*d) , -3.0/(2.0*d) , 10.0/(d*d*d) , -4.0/(d*d), 1.0/(2.0*d),
              15.0/(d*d*d*d) , 8.0/(d*d*d) , 3.0/(2.0*d*d) , -15.0/(d*d*d*d) , 7.0/(d*d*d) , -1.0/(d*d),
-             -6.0/(d*d*d*d*d) , -3/(d*d*d*d) , -1.0/(2*d*d*d) , 6.0/(d*d*d*d*d) , -3.0/(d*d*d*d) , 1.0/(2*d*d*d);
+             -6.0/(d*d*d*d*d) , -3.0/(d*d*d*d) , -1.0/(2.0*d*d*d) , 6.0/(d*d*d*d*d) , -3.0/(d*d*d*d) , 1.0/(2.0*d*d*d);
     
     Eigen::VectorXd in_x(6);
     in_x << pos_begin.x , vel_begin.x , 0 , pos_end.x , vel_end.x , 0;
@@ -144,108 +147,91 @@ std::vector<bot_utils::Pos3D> TrajectoryGenerator::Quintic(bot_utils::Pos3D &pos
 
 }   
 
-void TrajectoryGenerator::trajectory_handler(bot_utils::Pos3D current_goal , 
-                        bot_utils::Pos3D next_goal , 
-                        bot_utils::Pos3D h_pos , 
-                        bot_utils::Pos3D h_vel ,
+void TrajectoryGenerator::trajectory_handler(
+                        bot_utils::Pos3D current_goal,
+                        bot_utils::Pos3D next_goal,
+                        bot_utils::Pos3D h_pos, 
+                        bot_utils::Pos3D h_vel,
                         bot_utils::SplineData3D &hspline,
                         mission_states::HectorState h_state,
                         mission_states::GoalState g_state)
 {
-    if (h_state == mission_states::HectorState::TAKEOFF || h_state == mission_states::HectorState::LAND)
+    if (h_state == mission_states::HectorState::TAKEOFF)
     {
-        ROS_INFO("[DroneCommander]: Serving TAKEOFF/LAND");
+        ROS_INFO("[DroneCommander]: SERVING TAKEOFF");
         hspline.spline.clear();
-        hspline.spline = LinearVert(current_goal,h_pos);
+        hspline.spline = LinearVertTakeOff(current_goal,h_pos);
+        hspline.curr_spline_id++;
+    }
+
+    else if (h_state == mission_states::HectorState::LAND)
+    {
+        ROS_INFO("[DroneCommander]: SERVING LAND");
+        hspline.spline.clear();
+        hspline.spline = LinearVertLand(current_goal,h_pos);
         hspline.curr_spline_id++;
     }
 
     else if (h_state == mission_states::HectorState::TURTLE)
     {
-        ROS_INFO("[DroneCommander]: SERVING TO TURTLE");
+        ROS_INFO("[DroneCommander]: SERVING TURTLE");
         /*
             there will be 2 possibilities here: 
-            1. Hector Position --> TurtlePosition(GOTO) --> Final Goal (GOTO)
-            2. Hector Position --> TurtlePosition(CHASE) --> Final Goal (GOTO)
-
-            Hence, the full trajectory of the turtlebot will be in 2 pieces
-            (a1) TurtlePosition_PREDICTION(PosBegin) -- HectorPosition(PosEnd) : Higher Order Spline
-            (a2) TurtlePosition_CHASE(PosBegin) -- HectorPosition(PosEnd) : Linear Planar Spline --> [TurtlePosition,.....,HectorPosition)
-            (b) FinalGoal_GOTO(PosBegin) -- TurtlePosition(PosEnd) : Higher Order Spline --> [FinalGoal, ......, TurtlePosition)
-
-            Spline Combination: Spline B concatenated with Spline A --> [FinalGoal, ......, TurtlePosition) + [TurtlePosition,.....,HectorPosition)
+            1. Hector Position --> TurtlePosition(PREDICTION)
+            2. Hector Position --> TurtlePosition(CHASE)
         */
         std::vector<bot_utils::Pos3D> spline_a;
-        std::vector<bot_utils::Pos3D> spline_b;
-
-        //velocities for spline_b
 
         bot_utils::Pos3D vel_at_turtle;
-        bot_utils::Pos2D dir(h_pos.x - next_goal.x , h_pos.y - next_goal.x);
-        double heading = atan2(dir.y , dir.x);
-        vel_at_turtle.x = average_speed_ * std::cos(heading);
-        vel_at_turtle.y = average_speed_ * std::sin(heading);
-        vel_at_turtle.z = 0; //we dont use this, but for posterity's sake, lets just set this to 0
-        bot_utils::Pos3D vel_at_next(0,0,0);
+        bot_utils::Pos2D dir_curr(h_pos.x - current_goal.x , h_pos.y - current_goal.y);
+        bot_utils::Pos2D dir_next(current_goal.x - next_goal.x , current_goal.y - next_goal.y);
+
+        double dir_next_heading = atan2(dir_next.y , dir_next.x);
+        double dir_curr_heading = atan2(dir_curr.y , dir_curr.x);
+
+        double heading_at_turtle = (dir_next_heading + dir_curr_heading) / 2.0;
+        vel_at_turtle.x = average_speed_ * std::cos(heading_at_turtle);
+        vel_at_turtle.y = average_speed_ * std::sin(heading_at_turtle);
         
         ROS_WARN_COND(g_state == mission_states::GoalState::GOTO , "Something wrong with Trajectory State Machine!");
 
         if (g_state == mission_states::GoalState::PREDICTION)
         {
-            ROS_INFO("SPLINE FOR TURTLE PREDICTION");
-            spline_a = spline_gen_(current_goal , h_pos, vel_at_turtle , h_vel);
+            spline_a = SplineGenerator_(current_goal , h_pos, vel_at_turtle , h_vel);
         }
 
         else //(g_state == "CHASE")
         {
             spline_a = LinearPlanar(current_goal , h_pos);
         }
-
-        spline_b = spline_gen_(next_goal , current_goal , vel_at_next , vel_at_turtle);
-
-        //merge spline a with spline b
-        //spline_a.pop_back(); //pop the last one so we dont have close targets when merging
-
-        for (auto & tgt: spline_a)
-        {
-            spline_b.push_back(tgt);
-        }
-
-        ROS_INFO("SPLINE SUCCESSFULLY GENERATED");
         hspline.spline.clear();
-        hspline.spline = spline_b;
+        hspline.spline = spline_a;
         hspline.curr_spline_id++;
     }
 
-    else if (h_state == mission_states::HectorState::GOAL) //consider just extending the trajectory
+    else if (h_state == mission_states::HectorState::GOAL) 
     {
-        /*
-            there will be 1 possibilities here: 
-            1. Hector Position --> FinalGoal(GOTO) --> Start (GOTO)
-
-            Hence, the full trajectory of the turtlebot will be in 2 pieces
-            (a) FinalGoal(PosBegin) -- HectorPosition(PosEnd) : Higher Order Spline --> [FinalGoal,.....HectorPosition]
-            (b) StartGoal(PosBegin) -- FinalGoal(PosEnd) : Higher Order Spline --> [StartGoal, ......, FinalGoal)
-
-            Spline Combination: Spline B concatenated with Spline A --> [StartGoal, ......, FinalGoal) + [FinalGoal,.....,HectorPosition)
-        */
-
+        ROS_INFO("[DroneCommander]: SERVING GOAL");
         bot_utils::Pos3D vel_at_final;
-        bot_utils::Pos2D dir(h_pos.x - next_goal.x , h_pos.y - next_goal.x);
-        double heading = atan2(dir.y , dir.x);
-        vel_at_final.x = average_speed_ * std::cos(heading);
-        vel_at_final.y = average_speed_ * std::sin(heading);
-        vel_at_final.z = 0; //we dont use this, but for posterity's sake, lets just set this to 0
-        bot_utils::Pos3D vel_at_next(0,0,0);
+        bot_utils::Pos3D vel_at_start(0,0,0);
 
-        std::vector<bot_utils::Pos3D> spline_a = spline_gen_(current_goal , h_pos , vel_at_final , h_vel);
-        std::vector<bot_utils::Pos3D> spline_b = spline_gen_(next_goal , current_goal , vel_at_next , vel_at_final);
+        bot_utils::Pos2D dir_curr(h_pos.x - current_goal.x , h_pos.y - current_goal.y);
+        bot_utils::Pos2D dir_next(current_goal.x - next_goal.x , current_goal.y - next_goal.y);
+
+        double dir_next_heading = atan2(dir_next.y , dir_next.x);
+        double dir_curr_heading = atan2(dir_curr.y , dir_curr.x);
+
+        double heading_at_final = (dir_next_heading + dir_curr_heading) / 2.0;
+        vel_at_final.x = average_speed_ * std::cos(heading_at_final);
+        vel_at_final.y = average_speed_ * std::sin(heading_at_final);
+    
+        std::vector<bot_utils::Pos3D> spline_a = SplineGenerator_(current_goal , h_pos , vel_at_final , h_vel);
+        std::vector<bot_utils::Pos3D> spline_b = SplineGenerator_(next_goal, current_goal , vel_at_start , vel_at_final);
         
-        for (auto & tgt: spline_a)
+        for (auto &tgt : spline_a)
         {
             spline_b.push_back(tgt);
         }
-        
         hspline.spline.clear();
         hspline.spline = spline_b;
         hspline.curr_spline_id++;
@@ -253,7 +239,23 @@ void TrajectoryGenerator::trajectory_handler(bot_utils::Pos3D current_goal ,
 
     else if (h_state == mission_states::HectorState::START)
     {
-        ROS_ERROR("If I am here, something is wrong with the state machine. Check the trigggers!");
+        ROS_ERROR("Check statemachine. There is an issue if I am here");
+        // bot_utils::Pos3D vel_at_start;
+        
+        // bot_utils::Pos2D dir_curr(h_pos.x - current_goal.x , h_pos.y - current_goal.y);
+        // bot_utils::Pos2D dir_next(current_goal.x - next_goal.x , current_goal.y - next_goal.y);
+
+        // double dir_next_heading = atan2(dir_next.y , dir_next.x);
+        // double dir_curr_heading = atan2(dir_curr.y , dir_curr.x);
+
+        // double heading_at_start = (dir_next_heading + dir_curr_heading) / 2.0;
+        // vel_at_start.x = average_speed_ * std::cos(heading_at_start);
+        // vel_at_start.y = average_speed_ * std::sin(heading_at_start);
+
+        // std::vector<bot_utils::Pos3D> spline_a = SplineGenerator_(current_goal , h_pos , vel_at_start , h_vel);
+        // hspline.spline.clear();
+        // hspline.spline = spline_a;
+        // hspline.curr_spline_id++;
     }
 
     else if (h_state == mission_states::HectorState::FOLLOW || h_state == mission_states::HectorState::HOME)
@@ -268,7 +270,7 @@ void TrajectoryGenerator::trajectory_handler(bot_utils::Pos3D current_goal ,
             vel.x = average_speed_ * std::cos(heading);
             vel.y = average_speed_ * std::sin(heading);
             vel.z = 0;
-            spline_a = spline_gen_(current_goal , h_pos , vel , h_vel);
+            spline_a = SplineGenerator_(current_goal , h_pos , vel , h_vel);
             hspline.spline.clear();
             hspline.spline = spline_a;
             hspline.curr_spline_id++;
