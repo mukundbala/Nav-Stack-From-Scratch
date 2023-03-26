@@ -3,6 +3,7 @@
 #include <cmath>
 #include <limits>
 #include <errno.h>
+#include <vector>
 #include <geometry_msgs/PoseWithCovarianceStamped.h> // publish to pose topic
 #include <geometry_msgs/Vector3Stamped.h>            // subscribe to magnetic topic
 #include <sensor_msgs/Imu.h>                         // subscribe to imu topic
@@ -17,7 +18,7 @@
 #define NaN std::numeric_limits<double>::quiet_NaN()
 
 // global parameters to be read from ROS PARAMs
-bool verbose, use_ground_truth, enable_baro, enable_magnet, enable_sonar, enable_gps;
+bool verbose, use_ground_truth, enable_baro, enable_magnet, enable_sonar, enable_gps, variance;
 
 // others
 bool ready = false; // signal to topics to begin
@@ -41,9 +42,8 @@ cv::Matx21d U_x, U_y;
 cv::Matx<double, 1, 1> U_z, U_a;
 double ua = NaN, ux = NaN, uy = NaN, uz = NaN;
 double qa, qx, qy, qz;
-std::vector<double> var_x;
-std::vector<double> var_y; 
-std::vector<double> var_z;
+std::vector<double> var_x, var_y, var_z, var_a;
+
 // see https://docs.opencv.org/3.4/de/de1/classcv_1_1Matx.html
 void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
 {
@@ -224,6 +224,10 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
     NED = R_ECEF2NED.t() * (ECEF - initial_ECEF);
     GPS = (R_NED2GAZEBO * NED) + initial_pos;
 
+    var_x.push_back(GPS(0));
+    var_y.push_back(GPS(1));
+    var_z.push_back(GPS(2));
+
     //  EKF correction for x gps
     // Calculate Kalman gain
     K_x = (pred_P_x * H.t()) * (((H * pred_P_x * H.t()) + (V * r_gps_x * V)).inv());
@@ -252,16 +256,26 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
 // --------- Magnetic ----------
 double a_mgn = NaN;
 double r_mgn_a;
+cv::Matx21d K_a;
 void cbMagnet(const geometry_msgs::Vector3Stamped::ConstPtr &msg)
 {
     if (!ready)
         return;
     
-    /*
-    //// IMPLEMENT GPS ////
+    //// IMPLEMENT MAGNETMETER ////
     double mx = msg->vector.x;
     double my = msg->vector.y;
-    */
+    a_mgn = atan2(my, mx);
+
+    var_a.push_back(a_mgn);
+
+    // EKF Correction
+    // Kalman gain
+    K_a = pred_P_a * H.t() * ((H * pred_P_a * H.t() + V * r_mgn_a * V.t()).inv());
+    // Update state matrix
+    A = pred_A + (K_a * (a_mgn - pred_A(0)));
+    // Update state covariance matrix
+    P_a = pred_P_a - (K_a * H * pred_P_a);
 }
 
 // --------- Baro ----------
@@ -276,7 +290,7 @@ void cbBaro(const hector_uav_msgs::Altimeter::ConstPtr &msg)
     
     //// IMPLEMENT BARO ////
     z_bar = msg->altitude;
-    K_z = (pred_P_z * H.t()) * (((H * pred_P_z * H.t()) + (V * r_bar_z * V)).inv());
+    K_z = (pred_P_z * H.t()) * (((H * pred_P_z * H.t()) + (V * r_bar_z * V.t())).inv());
     Z = pred_Z + (K_z * (z_bar - pred_Z(0) - b_bar));
     P_z = pred_P_z - (K_z * H * pred_P_z);
          
@@ -285,15 +299,28 @@ void cbBaro(const hector_uav_msgs::Altimeter::ConstPtr &msg)
 // --------- Sonar ----------
 double z_snr = NaN;
 double r_snr_z;
+std::vector<double> var_snr;
 void cbSonar(const sensor_msgs::Range::ConstPtr &msg)
 {
-    if (!ready)
+    if (!ready && std::isnan(GPS(0)))
         return;
 
-    /*
     //// IMPLEMENT SONAR ////
     z_snr = msg->range;
-    */
+    
+    if (z_snr > 1.5) 
+    {
+        var_snr.push_back(z_snr);
+
+        // EKF Calculation
+        // Kalman gain
+        K_z = pred_P_z * H.t() * ((H * pred_P_z * H.t() + V * r_snr_z * V.t()).inv());
+        // Update state matrix
+        Z = pred_Z + (K_z * (z_bar - pred_Z(0)));
+        // Update state covariance matrix
+        P_z = pred_P_z - (K_z * H * pred_P_z);
+    }
+    return;
 }
 
 // --------- GROUND TRUTH ----------
@@ -301,6 +328,36 @@ nav_msgs::Odometry msg_true;
 void cbTrue(const nav_msgs::Odometry::ConstPtr &msg)
 {
     msg_true = *msg;
+}
+
+// ------ Calculate Variance --------
+double calc_variance(std::vector<double> & vec)
+{
+    int size = vec.size();
+    if (size < 100)
+    {
+        std::cout << "Less than 100 measurements collected" << std::endl;
+        return 0;
+    }
+    
+    // Add elements in the vector and calculate mean
+    double sum;
+    for (int i = 0; i < size; i++) 
+    {
+        sum += vec[i];
+    }
+    double mean = sum / size;
+
+    // Sum of mean squared errors
+    double err = 0, mse = 0, var;
+    for (int j = 0; j < size; j++)
+    {
+        err = vec[j] - mean;
+        mse += pow(err, 2);
+    }
+    var = mse / (size - 1);
+    vec.clear();
+    return var;
 }
 
 // --------- MEASUREMENT UPDATE WITH GROUND TRUTH ----------
@@ -352,6 +409,8 @@ int main(int argc, char **argv)
         ROS_WARN("HMOTION: Param enable_sonar not found, set to true");
     if (!nh.param("enable_gps", enable_gps, true))
         ROS_WARN("HMOTION: Param enable_gps not found, set to true");
+    if (!nh.param("variance", variance, true))
+        ROS_WARN("HMOTION: Param variance not found, set to true");
 
     // --------- Subscribers ----------
     ros::Subscriber sub_true = nh.subscribe<nav_msgs::Odometry>("ground_truth/state", 1, &cbTrue);
@@ -422,6 +481,17 @@ int main(int argc, char **argv)
             ROS_INFO("[HM]  BARO( ----- , ----- ,%7.3lf, ---- )", z_bar);
             ROS_INFO("[HM] BAROB( ----- , ----- ,%7.3lf, ---- )", Z(3));
             ROS_INFO("[HM] SONAR( ----- , ----- ,%7.3lf, ---- )", z_snr);
+        }
+
+        // Variance
+        if (variance) 
+        {
+            ROS_INFO("[HM] ---------------- VARIANCE --------------");
+            ROS_INFO("[HM] ---------X-------Y-------Z-------A------");
+            ROS_INFO("[HM]   GPS(%7.3lf,%7.3lf,%7.3lf, ---- )", calc_variance(var_x), calc_variance(var_y), calc_variance(var_z));
+            ROS_INFO("[HM] MAGNT( ----- , ----- , ----- ,%6.3lf)", calc_variance(var_a));
+            ROS_INFO("[HM]  BARO( ----- , ----- ,%7.3lf, ---- )", calc_variance(var_z));
+            ROS_INFO("[HM] SONAR( ----- , ----- ,%7.3lf, ---- )", calc_variance(var_z));
         }
 
         //  Publish pose and vel
