@@ -316,7 +316,7 @@ void cbSonar(const sensor_msgs::Range::ConstPtr &msg)
         // Kalman gain
         K_z = pred_P_z * H.t() * ((H * pred_P_z * H.t() + V * r_snr_z * V.t()).inv());
         // Update state matrix
-        Z = pred_Z + (K_z * (z_bar - pred_Z(0)));
+        Z = pred_Z + (K_z * (z_snr - pred_Z(0)));
         // Update state covariance matrix
         P_z = pred_P_z - (K_z * H * pred_P_z);
     }
