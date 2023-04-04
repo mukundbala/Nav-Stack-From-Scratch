@@ -72,8 +72,8 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             0, 1
           };
     W_x = {
-            -((imu_dt * imu_dt) * cos(A(0)))/2, ((imu_dt * imu_dt) * sin(A(0)))/2,
-            -(imu_dt * cos(A(0)))             , imu_dt * sin(A(0))
+            -0.5 * imu_dt * imu_dt * cos(A(0)), 0.5 * imu_dt * imu_dt * sin(A(0)),
+            -imu_dt * cos(A(0))               , imu_dt * sin(A(0))
           };
     U_x = {
             ux,
@@ -91,10 +91,15 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             1, imu_dt,
             0, 1
           };
+    // W_y = {
+    //         ((imu_dt * imu_dt) * sin(A(0)))/2, ((imu_dt * imu_dt) * cos(A(0)))/2,
+    //         (imu_dt * sin(A(0))), (imu_dt * cos(A(0)))
+        //   };
     W_y = {
-            ((imu_dt * imu_dt) * sin(A(0)))/2, ((imu_dt * imu_dt) * cos(A(0)))/2,
-            (imu_dt * sin(A(0))), (imu_dt * cos(A(0)))
+            -0.5 * imu_dt * imu_dt * sin(A(0)), -0.5 * imu_dt * imu_dt * cos(A(0)),
+            -imu_dt * sin(A(0))               , -imu_dt * cos(A(0))
           };
+
     U_y = {
             ux,
             uy
@@ -103,7 +108,8 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             qx, 0,
             0, qy
           };
-    pred_Y = (F_y * Y) - (W_y * U_y);
+    // pred_Y = (F_y * Y) - (W_y * U_y);
+    pred_Y = (F_y * Y) + (W_y * U_y);
     pred_P_y = (F_y * P_y * F_y.t()) + (W_y * Q_y * W_y.t());
 
     // Predicting z state
@@ -203,7 +209,7 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
 
     // Calculate rotation matrix R to transform from ECEF to NED
     R_ECEF2NED = {
-                    -(sin(lat) * cos(lon)), -sin(lon), -(cos(lat) * cos(lat)),
+                    -(sin(lat) * cos(lon)), -sin(lon), -(cos(lat) * cos(lon)),
                     -(sin(lat) * sin(lon)), cos(lon), -(cos(lat) * sin(lon)),
                     cos(lat)              , 0       , -sin(lat)
                  };
@@ -336,7 +342,7 @@ double calc_variance(std::vector<double> & vec)
     int size = vec.size();
     if (size < 100)
     {
-        std::cout << "Less than 100 measurements collected" << std::endl;
+        ROS_INFO("Less than 100 measurements collected");
         return 0;
     }
     
