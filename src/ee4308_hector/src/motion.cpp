@@ -94,7 +94,7 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
     // W_y = {
     //         ((imu_dt * imu_dt) * sin(A(0)))/2, ((imu_dt * imu_dt) * cos(A(0)))/2,
     //         (imu_dt * sin(A(0))), (imu_dt * cos(A(0)))
-        //   };
+    //       };
     W_y = {
             -0.5 * imu_dt * imu_dt * sin(A(0)), -0.5 * imu_dt * imu_dt * cos(A(0)),
             -imu_dt * sin(A(0))               , -imu_dt * cos(A(0))
@@ -118,7 +118,7 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             0, 1
           };
     W_z = {
-            (imu_dt * imu_dt)/2, 
+            0.5 * (imu_dt * imu_dt), 
             imu_dt
           };
     U_z = {uz - G};
@@ -201,8 +201,8 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
     ROS_INFO("[HM]  Altitude variance: %7.3lf", var_U);
 
     // Convert degree to radian
-    lat *= DEG2RAD;
-    lon *= DEG2RAD;
+    lat = lat * DEG2RAD;
+    lon = lon * DEG2RAD;
 
     // Calculate N(φ)
     N = primeVerticalRadius_calc(lat);
@@ -260,7 +260,7 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
 }
 
 // --------- Magnetic ----------
-double a_mgn = NaN;
+double a_mgn = NaN, intial_mgn;
 double r_mgn_a;
 cv::Matx21d K_a;
 void cbMagnet(const geometry_msgs::Vector3Stamped::ConstPtr &msg)
@@ -271,7 +271,13 @@ void cbMagnet(const geometry_msgs::Vector3Stamped::ConstPtr &msg)
     //// IMPLEMENT MAGNETMETER ////
     double mx = msg->vector.x;
     double my = msg->vector.y;
-    a_mgn = atan2(my, mx);
+
+    if (std::isnan(a_mgn))
+    {
+        intial_mgn = atan2(-my, mx);
+    }
+
+    a_mgn = atan2(-my, mx) - intial_mgn;
 
     var_a.push_back(a_mgn);
 
@@ -362,7 +368,7 @@ double calc_variance(std::vector<double> & vec)
         mse += pow(err, 2);
     }
     var = mse / (size - 1);
-    vec.clear();
+    // vec.clear();
     return var;
 }
 
