@@ -8,4 +8,5 @@ int main(int argc, char** argv)
     DroneCommander dcmder(nh);
     dcmder.run();
     ROS_INFO("[DroneCommander]: Halting DroneCommander Node!");
+    return 0;
 }

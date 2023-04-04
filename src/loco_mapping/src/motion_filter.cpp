@@ -70,7 +70,6 @@ void MotionFilter::run()
             speed_msg.data = odom_msg_.twist.twist.linear.x;
             pose_pub_.publish(robot_pose_odom_);
             speed_pub_.publish(speed_msg);
-
             spinrate.sleep();
         }
     }

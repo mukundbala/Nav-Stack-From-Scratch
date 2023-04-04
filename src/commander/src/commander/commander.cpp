@@ -204,6 +204,8 @@ void Commander::run()
 
             else
             {
+                ROS_WARN_STREAM("DANGER CLOSE: " << danger_close_);
+                ROS_WARN_STREAM("TID - BAD IDX: " << t_id - bad_idx);
                 if (t_id - bad_idx < danger_close_)
                 {
                     if (verbose_){ROS_WARN("[Commander]: Danger Close!");};

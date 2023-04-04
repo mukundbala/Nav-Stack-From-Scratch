@@ -14,7 +14,8 @@ enum class HectorState : unsigned short
     TURTLE,
     START,
     GOAL,
-    FOLLOW //FOLLOW, TAKEOFF and LAND apply to solo missions
+    FOLLOW, //FOLLOW, TAKEOFF , LAND , HOME apply to ONLY solo_flights
+    HOME
 };
             
 enum class GoalState : unsigned short

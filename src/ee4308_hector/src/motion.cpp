@@ -3,6 +3,7 @@
 #include <cmath>
 #include <limits>
 #include <errno.h>
+#include <vector>
 #include <geometry_msgs/PoseWithCovarianceStamped.h> // publish to pose topic
 #include <geometry_msgs/Vector3Stamped.h>            // subscribe to magnetic topic
 #include <sensor_msgs/Imu.h>                         // subscribe to imu topic
@@ -17,7 +18,7 @@
 #define NaN std::numeric_limits<double>::quiet_NaN()
 
 // global parameters to be read from ROS PARAMs
-bool verbose, use_ground_truth, enable_baro, enable_magnet, enable_sonar, enable_gps;
+bool verbose, use_ground_truth, enable_baro, enable_magnet, enable_sonar, enable_gps, variance;
 
 // others
 bool ready = false; // signal to topics to begin
@@ -41,6 +42,8 @@ cv::Matx21d U_x, U_y;
 cv::Matx<double, 1, 1> U_z, U_a;
 double ua = NaN, ux = NaN, uy = NaN, uz = NaN;
 double qa, qx, qy, qz;
+std::vector<double> var_x, var_y, var_z, var_a;
+
 // see https://docs.opencv.org/3.4/de/de1/classcv_1_1Matx.html
 void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
 {
@@ -69,8 +72,8 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             0, 1
           };
     W_x = {
-            -((imu_dt * imu_dt) * cos(A(0)))/2, ((imu_dt * imu_dt) * sin(A(0)))/2,
-            -(imu_dt * cos(A(0))), imu_dt * sin(A(0))
+            -0.5 * imu_dt * imu_dt * cos(A(0)), 0.5 * imu_dt * imu_dt * sin(A(0)),
+            -imu_dt * cos(A(0))               , imu_dt * sin(A(0))
           };
     U_x = {
             ux,
@@ -88,10 +91,15 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             1, imu_dt,
             0, 1
           };
+    // W_y = {
+    //         ((imu_dt * imu_dt) * sin(A(0)))/2, ((imu_dt * imu_dt) * cos(A(0)))/2,
+    //         (imu_dt * sin(A(0))), (imu_dt * cos(A(0)))
+    //       };
     W_y = {
-            ((imu_dt * imu_dt) * sin(A(0)))/2, ((imu_dt * imu_dt) * cos(A(0)))/2,
-            (imu_dt * sin(A(0))), (imu_dt * cos(A(0)))
+            -0.5 * imu_dt * imu_dt * sin(A(0)), -0.5 * imu_dt * imu_dt * cos(A(0)),
+            -imu_dt * sin(A(0))               , -imu_dt * cos(A(0))
           };
+
     U_y = {
             ux,
             uy
@@ -100,6 +108,7 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             qx, 0,
             0, qy
           };
+    // pred_Y = (F_y * Y) - (W_y * U_y);
     pred_Y = (F_y * Y) + (W_y * U_y);
     pred_P_y = (F_y * P_y * F_y.t()) + (W_y * Q_y * W_y.t());
 
@@ -109,11 +118,11 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
             0, 1
           };
     W_z = {
-            (imu_dt * imu_dt)/2, 
+            0.5 * (imu_dt * imu_dt), 
             imu_dt
           };
     U_z = {uz - G};
-    Q_z = {qx};
+    Q_z = {qz};
     pred_Z = (F_z * Z) + (W_z * U_z);
     pred_P_z = (F_z * P_z * F_z.t()) + (W_z * Q_z * W_z.t());
 
@@ -132,15 +141,19 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
     pred_P_a = (F_a * P_a * F_a.t()) + (W_a * Q_a * W_a.t());
     
     // If no measurement data from sensors => No correction
-    // Update previous filtered position and velocity 
-    X = pred_X;
-    P_x = pred_P_x;
-    Y = pred_Y;
-    P_y = pred_P_y;
-    Z = pred_Z;
-    P_z = pred_P_z;
-    A = pred_A;
-    P_a = pred_P_a;
+    if (!enable_gps && !enable_baro && !enable_magnet && !enable_sonar)
+    {
+        // Update previous filtered position and velocity with prediction
+        X = pred_X;
+        P_x = pred_P_x;
+        Y = pred_Y;
+        P_y = pred_P_y;
+        Z = pred_Z;
+        P_z = pred_P_z;
+        A = pred_A;
+        P_a = pred_P_a;
+    }
+
 }
 
 // --------- GPS ----------
@@ -160,14 +173,14 @@ cv::Matx<double, 1, 1> V = {1};
 const double DEG2RAD = M_PI / 180;
 const double RAD_POLAR = 6356752.3;
 const double RAD_EQUATOR = 6378137;
-double e = 1 - (pow(RAD_POLAR, 2)/pow(RAD_EQUATOR, 2)); // First numerical eccentricity
+double e_sq = 1 - (pow(RAD_POLAR/RAD_EQUATOR, 2)); // First numerical eccentricity, e^2
 double r_gps_x, r_gps_y, r_gps_z;
 double N;   // prime_radius, N(φ)
 
-double tf_to_ecef(double lat_measurement)
+double primeVerticalRadius_calc(double lat_measurement)
 {
     double prime_rad;
-    prime_rad = RAD_EQUATOR/(sqrt(1 - (pow(e, 2) * (sin(lat_measurement) * sin(lat_measurement)))));
+    prime_rad = RAD_EQUATOR/(sqrt(1 - (e_sq * (sin(lat_measurement) * sin(lat_measurement)))));
     return prime_rad;
 }
 void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
@@ -180,41 +193,46 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
     double lat = msg->latitude;  // φ   
     double lon = msg->longitude; // λ
     double alt = msg->altitude;  // h
+    double var_E = msg->position_covariance[0];
+    ROS_INFO("[HM]  Longitude variance: %7.3lf", var_E);
+    double var_N = msg->position_covariance[4];
+    ROS_INFO("[HM]  Latitude variance: %7.3lf", var_N);
+    double var_U = msg->position_covariance[8];
+    ROS_INFO("[HM]  Altitude variance: %7.3lf", var_U);
 
     // Convert degree to radian
-    lat *= DEG2RAD;
-    lon *= DEG2RAD;
+    lat = lat * DEG2RAD;
+    lon = lon * DEG2RAD;
 
     // Calculate N(φ)
-    N = tf_to_ecef(lat);
+    N = primeVerticalRadius_calc(lat);
 
     // Calculate rotation matrix R to transform from ECEF to NED
     R_ECEF2NED = {
-                    -(sin(lat) * cos(lon)), -sin(lon), -(cos(lat) * cos(lat)),
+                    -(sin(lat) * cos(lon)), -sin(lon), -(cos(lat) * cos(lon)),
                     -(sin(lat) * sin(lon)), cos(lon), -(cos(lat) * sin(lon)),
                     cos(lat)              , 0       , -sin(lat)
                  };
-    
-    // for initial message -- you may need this:
-    if (std::isnan(initial_ECEF(0)))
-    {   // calculates initial ECEF and returns
-        initial_ECEF = {
-                        (N + alt) * cos(lat) * cos(lon),
-                        (N + alt) * cos(lat) * sin(lon),
-                        (((1 - e) * N) + alt) * sin(lat)
-                       };
-        initial_ECEF = ECEF;
-        return;
-    }
 
     ECEF = {
             (N + alt) * cos(lat) * cos(lon),
             (N + alt) * cos(lat) * sin(lon),
-            (((1 - e) * N) + alt) * sin(lat)
+            (((RAD_POLAR/RAD_EQUATOR) * (RAD_POLAR/RAD_EQUATOR) * N) + alt) * sin(lat)
            };
+
+    // for initial message -- you may need this:
+    if (std::isnan(initial_ECEF(0)))
+    {   // calculates initial ECEF and returns
+        initial_ECEF = ECEF;
+        return;
+    }
 
     NED = R_ECEF2NED.t() * (ECEF - initial_ECEF);
     GPS = (R_NED2GAZEBO * NED) + initial_pos;
+
+    var_x.push_back(GPS(0));
+    var_y.push_back(GPS(1));
+    var_z.push_back(GPS(2));
 
     //  EKF correction for x gps
     // Calculate Kalman gain
@@ -242,46 +260,79 @@ void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
 }
 
 // --------- Magnetic ----------
-double a_mgn = NaN;
+double a_mgn = NaN, intial_mgn;
 double r_mgn_a;
+cv::Matx21d K_a;
 void cbMagnet(const geometry_msgs::Vector3Stamped::ConstPtr &msg)
 {
     if (!ready)
         return;
     
-    /*
-    //// IMPLEMENT GPS ////
+    //// IMPLEMENT MAGNETMETER ////
     double mx = msg->vector.x;
     double my = msg->vector.y;
-    */
+
+    if (std::isnan(a_mgn))
+    {
+        intial_mgn = atan2(-my, mx);
+    }
+
+    a_mgn = atan2(-my, mx) - intial_mgn;
+
+    var_a.push_back(a_mgn);
+
+    // EKF Correction
+    // Kalman gain
+    K_a = pred_P_a * H.t() * ((H * pred_P_a * H.t() + V * r_mgn_a * V.t()).inv());
+    // Update state matrix
+    A = pred_A + (K_a * (a_mgn - pred_A(0)));
+    // Update state covariance matrix
+    P_a = pred_P_a - (K_a * H * pred_P_a);
 }
 
 // --------- Baro ----------
 double z_bar = NaN;
 double r_bar_z;
+double b_bar;
 void cbBaro(const hector_uav_msgs::Altimeter::ConstPtr &msg)
 {
     if (!ready)
         return;
 
-    /*
+    
     //// IMPLEMENT BARO ////
-     z_bar = msg->altitude;
-    */
+    z_bar = msg->altitude;
+    K_z = (pred_P_z * H.t()) * (((H * pred_P_z * H.t()) + (V * r_bar_z * V.t())).inv());
+    Z = pred_Z + (K_z * (z_bar - pred_Z(0) - b_bar));
+    P_z = pred_P_z - (K_z * H * pred_P_z);
+         
 }
 
 // --------- Sonar ----------
 double z_snr = NaN;
 double r_snr_z;
+std::vector<double> var_snr;
 void cbSonar(const sensor_msgs::Range::ConstPtr &msg)
 {
-    if (!ready)
+    if (!ready && std::isnan(GPS(0)))
         return;
 
-    /*
     //// IMPLEMENT SONAR ////
     z_snr = msg->range;
-    */
+    
+    if (z_snr > 1.5) 
+    {
+        var_snr.push_back(z_snr);
+
+        // EKF Calculation
+        // Kalman gain
+        K_z = pred_P_z * H.t() * ((H * pred_P_z * H.t() + V * r_snr_z * V.t()).inv());
+        // Update state matrix
+        Z = pred_Z + (K_z * (z_snr - pred_Z(0)));
+        // Update state covariance matrix
+        P_z = pred_P_z - (K_z * H * pred_P_z);
+    }
+    return;
 }
 
 // --------- GROUND TRUTH ----------
@@ -289,6 +340,36 @@ nav_msgs::Odometry msg_true;
 void cbTrue(const nav_msgs::Odometry::ConstPtr &msg)
 {
     msg_true = *msg;
+}
+
+// ------ Calculate Variance --------
+double calc_variance(std::vector<double> & vec)
+{
+    int size = vec.size();
+    if (size < 100)
+    {
+        ROS_INFO("Less than 100 measurements collected");
+        return 0;
+    }
+    
+    // Add elements in the vector and calculate mean
+    double sum;
+    for (int i = 0; i < size; i++) 
+    {
+        sum += vec[i];
+    }
+    double mean = sum / size;
+
+    // Sum of mean squared errors
+    double err = 0, mse = 0, var;
+    for (int j = 0; j < size; j++)
+    {
+        err = vec[j] - mean;
+        mse += pow(err, 2);
+    }
+    var = mse / (size - 1);
+    // vec.clear();
+    return var;
 }
 
 // --------- MEASUREMENT UPDATE WITH GROUND TRUTH ----------
@@ -340,6 +421,8 @@ int main(int argc, char **argv)
         ROS_WARN("HMOTION: Param enable_sonar not found, set to true");
     if (!nh.param("enable_gps", enable_gps, true))
         ROS_WARN("HMOTION: Param enable_gps not found, set to true");
+    if (!nh.param("variance", variance, true))
+        ROS_WARN("HMOTION: Param variance not found, set to true");
 
     // --------- Subscribers ----------
     ros::Subscriber sub_true = nh.subscribe<nav_msgs::Odometry>("ground_truth/state", 1, &cbTrue);
@@ -410,6 +493,17 @@ int main(int argc, char **argv)
             ROS_INFO("[HM]  BARO( ----- , ----- ,%7.3lf, ---- )", z_bar);
             ROS_INFO("[HM] BAROB( ----- , ----- ,%7.3lf, ---- )", Z(3));
             ROS_INFO("[HM] SONAR( ----- , ----- ,%7.3lf, ---- )", z_snr);
+        }
+
+        // Variance
+        if (variance) 
+        {
+            ROS_INFO("[HM] ---------------- VARIANCE --------------");
+            ROS_INFO("[HM] ---------X-------Y-------Z-------A------");
+            ROS_INFO("[HM]   GPS(%7.3lf,%7.3lf,%7.3lf, ---- )", calc_variance(var_x), calc_variance(var_y), calc_variance(var_z));
+            ROS_INFO("[HM] MAGNT( ----- , ----- , ----- ,%6.3lf)", calc_variance(var_a));
+            ROS_INFO("[HM]  BARO( ----- , ----- ,%7.3lf, ---- )", calc_variance(var_z));
+            ROS_INFO("[HM] SONAR( ----- , ----- ,%7.3lf, ---- )", calc_variance(var_z));
         }
 
         //  Publish pose and vel

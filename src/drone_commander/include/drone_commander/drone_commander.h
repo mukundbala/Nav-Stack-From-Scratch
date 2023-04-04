@@ -6,13 +6,16 @@
 #include "nav_msgs/Path.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "geometry_msgs/PoseStamped.h"
-#include <geometry_msgs/PointStamped.h>
+#include "geometry_msgs/PointStamped.h"
 #include "geometry_msgs/Twist.h"
 #include "std_msgs/Bool.h"
+#include "std_msgs/Float64.h"
+#include "std_msgs/Int64.h"
 #include "xmlrpcpp/XmlRpc.h"
 #include "bot_utils/bot_utils.h"
 #include "bot_utils/spline_data.h"
 #include "tmsgs/TurtleSpline.h"
+#include "hmsgs/Goal.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,7 +38,10 @@ private:
     //state machine states
     mission_states::HectorState h_state_;
     mission_states::GoalState g_state_;
-
+    
+    //solo flight goals
+    std::vector<bot_utils::Pos3D> solo_goals_;
+    int solo_goal_id_;
     //#############Hector Data########################
 
     //hector robot position and heading in WORLD FRAME
@@ -45,19 +51,22 @@ private:
     //hector robot linear and angular velocity in ROBOT FRAME
     bot_utils::Pos3D hector_lin_vel_;
     double hector_ang_vel_;
+    double hector_vel_mag_;
 
     //hector spline
     bot_utils::SplineData3D hector_spline_;
     
     //hector goals in WORLD FRAME
     bot_utils::Pos3D current_goal_; //store for current goal
-    bot_utils::Pos3D next_goal_; //store for next goal
+    bot_utils::Pos3D next_goal_; //store for the next goal
 
+    //stores for the various goals the hector moves to
     bot_utils::Pos3D hector_initial_pos_; //store for initial hector position
-    bot_utils::Pos3D hector_takeoff_goal_;
+    bot_utils::Pos3D hector_takeoff_goal_; //store for the takeoff goal for the hector
     bot_utils::Pos3D hector_land_goal_; //store for hector's land goals
-    bot_utils::Pos3D hector_start_goal_; //store for start goal. Also the takeoff goal
-    bot_utils::Pos3D hector_end_goal_;
+    bot_utils::Pos3D hector_start_goal_; //store for start goal
+    bot_utils::Pos3D hector_end_goal_; //store for the end goal, which is the last waypoint of the turtlebot
+    bot_utils::Pos3D hector_home_goal_; //store for the home goal of the hector
     bot_utils::Pos2D hector_pred_goal_; //store for hector's prediction of Tbot position
     double pred_id_; //store for the hector's prediction of the TRAJECTORY ID the turtlebot is on
     
@@ -88,7 +97,6 @@ private:
     double thresh_cruise_planar_;
 
     int look_ahead_;
-    double head_start_;
 
     //trajectory generator params
     double target_dt_;
@@ -116,6 +124,11 @@ private:
     ros::Publisher target_pub_;
     ros::Publisher rotate_pub_;
     ros::Publisher vel_pub_;
+    ros::Publisher vel_mag_pub_;    
+    ros::Publisher goal_pub_;
+    ros::Publisher goal_full_pub_;
+    ros::Publisher error_pub_;
+    ros::Publisher error_vec_pub_;
 
     //Subscribers
     ros::Subscriber sub_h_pose_;
@@ -129,6 +142,11 @@ private:
     geometry_msgs::PointStamped target_msg_;
     std_msgs::Bool rotate_msg_;
     geometry_msgs::Twist vel_msg_;
+    std_msgs::Float64 vel_mag_msg_;
+    geometry_msgs::PointStamped goal_msg_;
+    hmsgs::Goal goal_full_msg_;
+    std_msgs::Float64 error_msg_;
+    geometry_msgs::Point error_vec_msg;
 
     //setup service call to trigger motor
     ros::ServiceClient motor_switch_client_;

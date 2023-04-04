@@ -27,7 +27,7 @@ int bot_utils::SplineData2D::find_pos_id(bot_utils::Pos2D &pos) //this works
             break;
         }
     }
-
+    
     return best_id;
 }
 
