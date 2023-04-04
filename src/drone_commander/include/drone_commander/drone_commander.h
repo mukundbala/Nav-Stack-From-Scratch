@@ -58,15 +58,15 @@ private:
     
     //hector goals in WORLD FRAME
     bot_utils::Pos3D current_goal_; //store for current goal
-    bot_utils::Pos3D next_goal_;
+    bot_utils::Pos3D next_goal_; //store for the next goal
 
     //stores for the various goals the hector moves to
     bot_utils::Pos3D hector_initial_pos_; //store for initial hector position
-    bot_utils::Pos3D hector_takeoff_goal_;
+    bot_utils::Pos3D hector_takeoff_goal_; //store for the takeoff goal for the hector
     bot_utils::Pos3D hector_land_goal_; //store for hector's land goals
-    bot_utils::Pos3D hector_start_goal_; //store for start goal. Also the takeoff goal
-    bot_utils::Pos3D hector_end_goal_;
-    bot_utils::Pos3D hector_home_goal_;
+    bot_utils::Pos3D hector_start_goal_; //store for start goal
+    bot_utils::Pos3D hector_end_goal_; //store for the end goal, which is the last waypoint of the turtlebot
+    bot_utils::Pos3D hector_home_goal_; //store for the home goal of the hector
     bot_utils::Pos2D hector_pred_goal_; //store for hector's prediction of Tbot position
     double pred_id_; //store for the hector's prediction of the TRAJECTORY ID the turtlebot is on
     

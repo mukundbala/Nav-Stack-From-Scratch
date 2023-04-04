@@ -120,10 +120,10 @@ std::vector<bot_utils::Pos3D> TrajectoryGenerator::Quintic(bot_utils::Pos3D &pos
 
     M_inv << 1.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0,
              0.0 , 1.0 , 0.0 , 0.0 , 0.0 , 0.0,
-             0.0 , 0.0 , 0.5, 0.0 , 0.0 , 0.0,
-             -10.0/(d*d*d) , -6.0/(d*d) , -3.0/(2.0*d) , 10.0/(d*d*d) , -4.0/(d*d), 1.0/(2.0*d),
-             15.0/(d*d*d*d) , 8.0/(d*d*d) , 3.0/(2.0*d*d) , -15.0/(d*d*d*d) , 7.0/(d*d*d) , -1.0/(d*d),
-             -6.0/(d*d*d*d*d) , -3.0/(d*d*d*d) , -1.0/(2.0*d*d*d) , 6.0/(d*d*d*d*d) , -3.0/(d*d*d*d) , 1.0/(2.0*d*d*d);
+             0.0 , 0.0 , 0.5,  0.0 , 0.0 , 0.0,
+             -10.0/(d*d*d),    -6.0/(d*d),     -3.0/(2.0*d),    10.0/(d*d*d),      -4.0/(d*d),      1.0/(2.0*d),
+             15.0/(d*d*d*d),    8.0/(d*d*d),    3.0/(2.0*d*d), -15.0/(d*d*d*d),     7.0/(d*d*d) ,  -1.0/(d*d),
+             -6.0/(d*d*d*d*d), -3.0/(d*d*d*d), -1.0/(2.0*d*d*d), 6.0/(d*d*d*d*d),  -3.0/(d*d*d*d),  1.0/(2.0*d*d*d);
     
     Eigen::VectorXd in_x(6);
     in_x << pos_begin.x , vel_begin.x , 0 , pos_end.x , vel_end.x , 0;
@@ -158,7 +158,6 @@ void TrajectoryGenerator::trajectory_handler(
 {
     if (h_state == mission_states::HectorState::TAKEOFF)
     {
-        ROS_INFO("[DroneCommander]: SERVING TAKEOFF");
         hspline.spline.clear();
         hspline.spline = LinearVertTakeOff(current_goal,h_pos);
         hspline.curr_spline_id++;
@@ -166,7 +165,6 @@ void TrajectoryGenerator::trajectory_handler(
 
     else if (h_state == mission_states::HectorState::LAND)
     {
-        ROS_INFO("[DroneCommander]: SERVING LAND");
         hspline.spline.clear();
         hspline.spline = LinearVertLand(current_goal,h_pos);
         hspline.curr_spline_id++;
@@ -174,12 +172,6 @@ void TrajectoryGenerator::trajectory_handler(
 
     else if (h_state == mission_states::HectorState::TURTLE)
     {
-        ROS_INFO("[DroneCommander]: SERVING TURTLE");
-        /*
-            there will be 2 possibilities here: 
-            1. Hector Position --> TurtlePosition(PREDICTION)
-            2. Hector Position --> TurtlePosition(CHASE)
-        */
         std::vector<bot_utils::Pos3D> spline_a;
 
         bot_utils::Pos3D vel_at_turtle;

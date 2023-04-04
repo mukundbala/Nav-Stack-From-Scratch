@@ -116,6 +116,8 @@ std::array<double,4> VelocityController::generate_velocities(bot_utils::Pos3D &h
         ROS_INFO_STREAM("CMD_VEL_X: " << cmd_vel_x_);
         ROS_INFO_STREAM("CMD_VEL_Y: " << cmd_vel_y_);
         ROS_INFO_STREAM("CMD_VEL_Z: " << cmd_vel_z_);
+        ROS_INFO_STREAM("CMD LINEAR MAGNITUDE" << sqrt((cmd_vel_x_ * cmd_vel_x_)+(cmd_vel_y_+cmd_vel_y_)));
+        ROS_INFO_STREAM("CMD VERTICAL MAGNTUDE" << std::abs(cmd_vel_z_));
         ROS_INFO_STREAM("CMD_ANG_VEL: " << cmd_vel_ang_);
     }
     std::array<double,4> vels = {cmd_vel_x_ , cmd_vel_y_ , cmd_vel_z_ , cmd_vel_ang_};

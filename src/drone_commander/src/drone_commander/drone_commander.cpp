@@ -226,11 +226,9 @@ std::pair<bot_utils::Pos2D,int> DroneCommander::predict_turtle_pos()
             res = {turtle_spline_.spline.at(i+1) , i+1};
             if (verbose_)
             {
-                ROS_INFO("Found a prediction!##");
+                ROS_INFO("[DroneCommander]: Found a prediction!");
                 res.first.print();
-                ROS_INFO_STREAM("ID: "<<res.second);
-                ROS_INFO("###");
-                
+                ROS_INFO_STREAM("[DroneCommander]: ID: "<<res.second);
             }
             return res;
         }
@@ -241,9 +239,8 @@ std::pair<bot_utils::Pos2D,int> DroneCommander::predict_turtle_pos()
    res = {turtle_spline_.spline.at(turtle_spline_.spline.size()-1) , turtle_spline_.spline.size()- 1};
    if (verbose_)
    {
-        ROS_INFO("Returning last target##");
+        ROS_INFO("[DroneCommander]: Prediction returning last target");
         res.first.print();
-        ROS_INFO("###");
    }
    return res; //return the last value in the spline
 }
@@ -274,10 +271,10 @@ void DroneCommander::run()
         }
     }
 
-    // signal(SIGINT,sigintHandler);                                  
+                                     
     ROS_INFO("[DroneCommander]: Starting Drone Commander!");
-
     ROS_INFO("[DroneCommander]: Starting Motors");
+    
     bool allOk = armMotor();
 
     if (!allOk)
@@ -288,7 +285,9 @@ void DroneCommander::run()
 
     double now = ros::Time::now().toSec();
     velocity_controller.prepareController(now);
-
+    
+    ROS_INFO("[DroneCommander]: Taking Off!");
+    
     while (ros::ok() && nh_.param("run" , true))
     {
         ros::spinOnce();
@@ -309,13 +308,12 @@ void DroneCommander::run()
         {
             rotate_msg_.data = false;
             gen_traj_turtle_ = false; //set this to false to counter callback demands due to new TSpline arriving
-            ROS_INFO("IN TAKEOFF: ");
             if (bot_utils::dist_euc(hector_position_.x , hector_position_.y , current_goal_.x , current_goal_.y) < thresh_cruise_planar_ && std::abs(hector_position_.z - takeoff_height_) < 0.05)
             {
                 if (verbose_)
                 {
-                    ROS_INFO_COND(co_op_ , "TRANSITION FROM TAKEOFF TO TURTLE");
-                    ROS_INFO_COND(!co_op_, "TRANSITION FROM TAKEOFF TO FOLLOW");
+                    ROS_INFO_COND(co_op_ , "[DroneCommander]: TRANSITION FROM TAKEOFF TO TURTLE");
+                    ROS_INFO_COND(!co_op_, "[DroneCommander]: TRANSITION FROM TAKEOFF TO FOLLOW");
                 }
 
                 if (co_op_)
@@ -354,7 +352,7 @@ void DroneCommander::run()
             if (hector_reached_turtle_planar && hector_at_target_height) //base check if we are close enough to the turtle
             {
                 //transition state
-                ROS_INFO("TRANSITION FROM TURTLE TO GOAL");
+                ROS_INFO("[DroneCommander]:TRANSITION FROM TURTLE TO GOAL");
                 h_state_ = mission_states::HectorState::GOAL;
                 g_state_ = mission_states::GoalState::GOTO;
                 current_goal_ = hector_end_goal_; //current_goal: final waypoint of turtlebot
@@ -417,8 +415,8 @@ void DroneCommander::run()
                                 g_state_ = mission_states::GoalState::PREDICTION;
                                 gen_traj_turtle_ = true;
                             }
-                            ROS_WARN_STREAM("INITIAL_PRED: " << initial_pred);
-                            ROS_WARN_STREAM("NEW_PRED: " << new_pred_id);
+                            // ROS_WARN_STREAM("INITIAL_PRED: " << initial_pred);
+                            // ROS_WARN_STREAM("NEW_PRED: " << new_pred_id);
                         }
                     }
                     
@@ -426,7 +424,7 @@ void DroneCommander::run()
                     {
                         if (bot_utils::dist_euc(hector_position_.x , hector_position_.y , turtle_position_.x , turtle_position_.y) < thresh_cruise_planar_ && std::abs(hector_position_.z-cruise_height_) < thresh_cruise_height_)
                         {
-                            ROS_INFO("TRANSITION FROM TURTLE TO GOAL");
+                            ROS_INFO("[DroneCommander]: TRANSITION FROM TURTLE TO GOAL");
                             h_state_ = mission_states::HectorState::GOAL;
                             g_state_ = mission_states::GoalState::GOTO;
                             current_goal_ = hector_end_goal_;
@@ -459,7 +457,7 @@ void DroneCommander::run()
             if (hector_reached_end_goal && hector_reached_end_height)
             {
                 //state transition to START
-                ROS_INFO("TRANSITION FROM GOAL TO START");
+                ROS_INFO("[DroneCommander]: TRANSITION FROM GOAL TO START");
                 h_state_ = mission_states::HectorState::START;
                 g_state_ = mission_states::GoalState::GOTO;
                 current_goal_ = hector_start_goal_;
@@ -482,7 +480,7 @@ void DroneCommander::run()
                 if (hector_reached_start_planar && hector_reached_start_height)
                 {
                     //transition to landing
-                    ROS_INFO("TRANSITION FROM START TO LAND");
+                    ROS_INFO("[DroneCommander]: TRANSITION FROM START TO LAND");
                     h_state_ = mission_states::HectorState::LAND;
                     g_state_ = mission_states::GoalState::CHASE;
                     current_goal_ = hector_land_goal_;
@@ -497,7 +495,7 @@ void DroneCommander::run()
                 if (hector_reached_start_planar && hector_reached_start_height)
                 {
                     //state transition
-                    ROS_INFO("TRANSITION FROM START TO TURTLE");
+                    ROS_INFO("[DroneCommander]: TRANSITION FROM START TO TURTLE");
                     h_state_ = mission_states::HectorState::TURTLE;
                     g_state_ = mission_states::GoalState::PREDICTION;
                     std::tie(hector_pred_goal_,pred_id_) = predict_turtle_pos();
@@ -539,7 +537,7 @@ void DroneCommander::run()
                 if (solo_goal_id_ == solo_goals_.size() - 1)
                 {
                     //this means that we have reached out last goal
-                    ROS_INFO("TRANSITION FROM FOLLOW TO HOME");
+                    ROS_INFO("[DroneCommander]: TRANSITION FROM FOLLOW TO HOME");
                     h_state_ = mission_states::HectorState::HOME;
                     g_state_ = mission_states::GoalState::GOTO;
                     current_goal_ = hector_home_goal_;
@@ -567,7 +565,7 @@ void DroneCommander::run()
 
             if (hector_reached_home_planar && hector_reached_home_height)
             {
-                ROS_INFO("TRANSITION FROM HOME TO LAND");
+                ROS_INFO("[DroneCommander]:TRANSITION FROM HOME TO LAND");
                 h_state_ = mission_states::HectorState::LAND;
                 g_state_ = mission_states::GoalState::CHASE;
                 current_goal_ = hector_land_goal_;
@@ -611,19 +609,15 @@ void DroneCommander::run()
         else if (h_state_ == mission_states::HectorState::LAND)
         {
             hector_reached_target_height = std::abs(hector_position_.z - current_target_.z) < thresh_land_height_;
-            ROS_INFO("HERE2");
         }
 
         else
         {
             hector_reached_target_height = std::abs(hector_position_.z - current_target_.z) < thresh_cruise_height_;
-            ROS_INFO("HERE3");
         }
 
         if (hector_reached_target_planer && hector_reached_target_height)
         {
-            ROS_WARN_STREAM("Hector Reached Target!");
-            ROS_WARN_STREAM("Current Target: " << h_id_);
             if (h_id_ == 0)
             {
                 current_target_ = hector_spline_.spline.at(0);
@@ -633,10 +627,10 @@ void DroneCommander::run()
                 h_id_--;
                 current_target_ = hector_spline_.spline.at(h_id_);
             }
-            ROS_WARN_STREAM("Next Target: " << h_id_);
         }
         
-        ROS_WARN_COND(std::isnan(current_target_.x) || std::isnan(current_target_.y),"[DroneCommander]: Warning! Current target is NAN");
+        ROS_ERROR_COND(std::isnan(current_target_.x) || std::isnan(current_target_.y),"[DroneCommander]: Warning! Current target is NAN");
+        
         std::array<double,4> curr_vels = velocity_controller.generate_velocities(hector_position_ , hector_heading_ , current_target_ , rotate_msg_.data);
         
         
@@ -676,12 +670,15 @@ void DroneCommander::run()
         
         if (verbose_)
         {
-            ROS_INFO_STREAM("Current Goal: (" << current_goal_.x << "," << current_goal_.y << "," << current_goal_.z << ")");
-            ROS_INFO_STREAM("Next Goal: (" << next_goal_.x << "," << next_goal_.y << "," << next_goal_.z << ")");
-            ROS_INFO_STREAM("Current Target: " << current_target_.x << "," << current_target_.y << "," << current_target_.z << ")");
-            ROS_INFO_STREAM("H STATE: " << mission_states::unpack_h_state(h_state_));
-            ROS_INFO_STREAM("G_STATE: " << mission_states::unpack_g_state(g_state_));
-            ROS_WARN_STREAM("AVERAGE HECTOR VELOCITY: " << hector_vel_mag_);
+            
+            ROS_INFO_STREAM("[DroneCommander]: H STATE: " << mission_states::unpack_h_state(h_state_));
+            ROS_INFO_STREAM("[DroneCommander]: G_STATE: " << mission_states::unpack_g_state(g_state_));
+            ROS_INFO_STREAM("[DroneCommander]: CURRENT GOAL: (" << current_goal_.x << "," << current_goal_.y << "," << current_goal_.z << ")");
+            ROS_INFO_STREAM("[DroneCommander]: NEXT GOAL: (" << next_goal_.x << "," << next_goal_.y << "," << next_goal_.z << ")");
+            ROS_INFO_STREAM("[DroneCommander]: CURRENT TARGET: " << current_target_.x << "," << current_target_.y << "," << current_target_.z << ")");
+            ROS_WARN_STREAM("[DroneCommander]: LINEAR VELOCITY: " << hector_lin_vel_.x << "," << hector_lin_vel_.y << "," << hector_lin_vel_.z << ")");
+            ROS_WARN_STREAM("[DroneCommander]: PLANAR X-Y VELOCITY MAGNITUDE" << hector_vel_mag_);
+            ROS_WARN_STREAM("[DroneCommander]: VERTICAL Z VELOCITY MAGNITUDE" << std::abs(hector_lin_vel_.z));
             ROS_INFO("#######################################################");
         }
 
