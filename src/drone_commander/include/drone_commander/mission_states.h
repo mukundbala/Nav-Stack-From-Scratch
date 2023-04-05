@@ -20,7 +20,6 @@ enum class HectorState : unsigned short
             
 enum class GoalState : unsigned short
 {
-    PREDICTION,
     CHASE,
     GOTO
 };

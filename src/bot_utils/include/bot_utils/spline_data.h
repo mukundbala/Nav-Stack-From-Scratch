@@ -26,6 +26,7 @@ namespace bot_utils
         int curr_spline_id = -1;
         double avg_speed = NaN;
         double target_dt = NaN;
+        double spline_duration_ = NaN;
         int get_num_targets();
 
         int find_pos_id(bot_utils::Pos3D &pos);

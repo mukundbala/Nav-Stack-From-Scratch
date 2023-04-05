@@ -96,7 +96,8 @@ private:
     double thresh_land_height_;
     double thresh_cruise_planar_;
 
-    int look_ahead_;
+    double look_ahead_;
+    int look_ahead_targets_;
 
     //trajectory generator params
     double target_dt_;

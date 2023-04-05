@@ -40,17 +40,22 @@ std::vector<bot_utils::Pos3D> TrajectoryGenerator::LinearVertLand(bot_utils::Pos
 {
     std::vector<bot_utils::Pos3D> segment_traj = {pos_begin}; //landing position
     
-    for (int i = 0 ; i < 30 ; ++i)
+    for (int i = 0 ; i < 100 ; ++i)
+    {
+        segment_traj.emplace_back(pos_begin.x , pos_begin.y , 0.18);
+    }
+
+    for (int i = 0 ; i < 100 ; ++i)
     {
         segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_end.z / 8);
     }
 
-    for (int i = 0 ; i < 30 ; ++i)
+    for (int i = 0 ; i < 60 ; ++i)
     {
         segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_end.z / 4);
     }
 
-    for (int i = 0 ; i < 30 ; ++i)
+    for (int i = 0 ; i < 60 ; ++i)
     {
         segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_end.z / 2);
     }
@@ -185,17 +190,11 @@ void TrajectoryGenerator::trajectory_handler(
         vel_at_turtle.x = average_speed_ * std::cos(heading_at_turtle);
         vel_at_turtle.y = average_speed_ * std::sin(heading_at_turtle);
         
-        ROS_WARN_COND(g_state == mission_states::GoalState::GOTO , "Something wrong with Trajectory State Machine!");
+        ROS_ERROR_COND(g_state == mission_states::GoalState::CHASE , "Something wrong with Trajectory State Machine!");
 
-        if (g_state == mission_states::GoalState::PREDICTION)
-        {
-            spline_a = SplineGenerator_(current_goal , h_pos, vel_at_turtle , h_vel);
-        }
+        
+        spline_a = SplineGenerator_(current_goal , h_pos, vel_at_turtle , h_vel);
 
-        else //(g_state == "CHASE")
-        {
-            spline_a = LinearPlanar(current_goal , h_pos);
-        }
         hspline.spline.clear();
         hspline.spline = spline_a;
         hspline.curr_spline_id++;
@@ -205,7 +204,7 @@ void TrajectoryGenerator::trajectory_handler(
     {
         ROS_INFO("[DroneCommander]: SERVING GOAL");
         bot_utils::Pos3D vel_at_final;
-        bot_utils::Pos3D vel_at_start(0,0,0);
+        bot_utils::Pos3D vel_at_start(sqrt(average_speed_),sqrt(average_speed_),0);
 
         bot_utils::Pos2D dir_curr(h_pos.x - current_goal.x , h_pos.y - current_goal.y);
         bot_utils::Pos2D dir_next(current_goal.x - next_goal.x , current_goal.y - next_goal.y);
@@ -232,6 +231,8 @@ void TrajectoryGenerator::trajectory_handler(
     else if (h_state == mission_states::HectorState::START)
     {
         ROS_ERROR("Check statemachine. There is an issue if I am here");
+        //We dont need to plan trajectory for this state because it is already done in the previous state
+
         // bot_utils::Pos3D vel_at_start;
         
         // bot_utils::Pos2D dir_curr(h_pos.x - current_goal.x , h_pos.y - current_goal.y);
@@ -250,6 +251,7 @@ void TrajectoryGenerator::trajectory_handler(
         // hspline.curr_spline_id++;
     }
 
+///####################################SOLO FLIGHT ONLY################################################################
     else if (h_state == mission_states::HectorState::FOLLOW || h_state == mission_states::HectorState::HOME)
     {
         std::vector<bot_utils::Pos3D> spline_a;

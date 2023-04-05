@@ -21,7 +21,6 @@ DroneCommander::DroneCommander(ros::NodeHandle &nh)
     hector_spline_.curr_spline_id = -1;
     hector_vel_mag_ = 0.35;
 
-
     turtle_position_.setCoords(NaN,NaN); //set turtle pos, heading to Nan. Set spline to -1. 
     turtle_heading_ = NaN;
     turtle_spline_.curr_spline_id = -1;
@@ -35,9 +34,9 @@ DroneCommander::DroneCommander(ros::NodeHandle &nh)
     //initialise target
     current_target_.setCoords(NaN,NaN,NaN);
     h_id_ = -1;
+    look_ahead_targets_ = 15; //just set this to 15 initially
 
     // At this point, hector_initial_pos has already been set under loadCommanderParams
-
     hector_takeoff_goal_.setCoords(hector_initial_pos_.x , hector_initial_pos_.y , takeoff_height_);
     hector_land_goal_.setCoords(hector_initial_pos_.x , hector_initial_pos_.y , land_height_);
     hector_start_goal_.setCoords(NaN,NaN,NaN);
@@ -319,7 +318,7 @@ void DroneCommander::run()
                 if (co_op_)
                 {
                     h_state_ = mission_states::HectorState::TURTLE;
-                    g_state_ = mission_states::GoalState::PREDICTION;
+                    g_state_ = mission_states::GoalState::GOTO;
                     std::tie(hector_pred_goal_,pred_id_) = predict_turtle_pos();
                     current_goal_.setCoords(hector_pred_goal_.x , hector_pred_goal_.y , cruise_height_); //current_goal: turtlebot's predicted position
                     next_goal_.setCoords(hector_end_goal_.x , hector_end_goal_.y , cruise_height_); //next_goal: final waypoint of turtlebot
@@ -360,6 +359,7 @@ void DroneCommander::run()
                 gen_traj_turtle_ = false;
                 gen_traj_passthrough_ = true;
             }
+            
             else //if we are nowhere close to the turtle yet
             {
                 if (gen_traj_turtle_)
@@ -368,78 +368,55 @@ void DroneCommander::run()
                     std::tie(hector_pred_goal_,pred_id_) = predict_turtle_pos();
                     current_goal_.setCoords(hector_pred_goal_.x , hector_pred_goal_.y , cruise_height_); //current_goal: Predictied position of turtle
                     next_goal_ = hector_end_goal_; //next_goal: End point of hector
-                    g_state_ = mission_states::GoalState::PREDICTION;
+                    g_state_ = mission_states::GoalState::GOTO;
+                    gen_traj_turtle_ = true; //we use this to catch a new spline that arrives from the callback
+                    gen_traj_passthrough_ = false;
                 }
 
                 else //!generate_trajectory_turtle
                 {
                     //we have received no new trajectories.
-                    if (g_state_ == mission_states::GoalState::PREDICTION)
+                    bool turtle_reached_pred = ts_id_ >= pred_id_;
+                    bool hector_reached_pred = bot_utils::dist_euc(hector_position_.x , hector_position_.y , hector_pred_goal_.x , hector_pred_goal_.y) < thresh_cruise_planar_;
+
+                    if (turtle_reached_pred && !hector_reached_pred)
                     {
-                        bool turtle_reached_pred = ts_id_ >= pred_id_;
-                        bool hector_reached_pred = bot_utils::dist_euc(hector_position_.x , hector_position_.y , hector_pred_goal_.x , hector_pred_goal_.y) < thresh_cruise_planar_;
-
-                        if (turtle_reached_pred && !hector_reached_pred)
-                        {
-                            //if the turtle reached the predicted position BEFORE the hector, we run the prediction again
-                            std::tie(hector_pred_goal_,pred_id_) = predict_turtle_pos();
-                            current_goal_.setCoords(hector_pred_goal_.x , hector_pred_goal_.y , cruise_height_); //current_goal: Predicted position of turtle
-                            next_goal_ = hector_end_goal_; //next_goal: Final waypoint of hector
-                            g_state_ = mission_states::GoalState::PREDICTION;
-                            gen_traj_turtle_ = true;
-                        }
-
-                        else if (hector_reached_pred & !turtle_reached_pred)
-                        {
-                            //if the hector reached the predicted position BEFORE the turtle, we just switch to chasing the turtle
-                            hector_pred_goal_ = turtle_position_;
-                            pred_id_ = -2; //set this to signal that we are chasing the turtlebot
-                            current_goal_.setCoords(turtle_position_.x , turtle_position_.y , cruise_height_); //current_goal: Actual position of turtle
-                            next_goal_ = hector_end_goal_; //next_goal: Final waypoint of turtle
-                            g_state_ = mission_states::GoalState::CHASE;
-                            gen_traj_turtle_ = true;
-                        }
-
-                        else if (!hector_reached_pred && !turtle_reached_pred)
-                        {
-                            //if neither has reached the prediction, we can run the prediction again
-                            int initial_pred = pred_id_;
-                            int new_pred_id;
-                            bot_utils::Pos2D new_pred_goal;
-                            std::tie(new_pred_goal,new_pred_id) = predict_turtle_pos();
-                            if (new_pred_id != initial_pred)
-                            {
-                                hector_pred_goal_.setCoords(new_pred_goal.x,new_pred_goal.y);
-                                current_goal_.setCoords(hector_pred_goal_.x , hector_pred_goal_.y , cruise_height_);
-                                next_goal_ = hector_end_goal_;
-                                g_state_ = mission_states::GoalState::PREDICTION;
-                                gen_traj_turtle_ = true;
-                            }
-                            // ROS_WARN_STREAM("INITIAL_PRED: " << initial_pred);
-                            // ROS_WARN_STREAM("NEW_PRED: " << new_pred_id);
-                        }
+                        //if the turtle reached the predicted position BEFORE the hector, we run the prediction again
+                        std::tie(hector_pred_goal_,pred_id_) = predict_turtle_pos();
+                        current_goal_.setCoords(hector_pred_goal_.x , hector_pred_goal_.y , cruise_height_); //current_goal: Predicted position of turtle
+                        next_goal_ = hector_end_goal_; //next_goal: Final waypoint of hector
+                        g_state_ = mission_states::GoalState::GOTO;
+                        gen_traj_turtle_ = false;
+                        gen_traj_passthrough_ = true;
                     }
-                    
-                    else if (g_state_ == mission_states::GoalState::CHASE)
+
+                    else if (hector_reached_pred & !turtle_reached_pred)
                     {
-                        if (bot_utils::dist_euc(hector_position_.x , hector_position_.y , turtle_position_.x , turtle_position_.y) < thresh_cruise_planar_ && std::abs(hector_position_.z-cruise_height_) < thresh_cruise_height_)
+                        //if the hector reached the predicted position BEFORE the turtle, we just switch to chasing the turtle
+                        hector_pred_goal_ = turtle_position_;
+                        pred_id_ = -2; //set this to signal that we are chasing the turtlebot
+                        current_goal_.setCoords(turtle_position_.x , turtle_position_.y , cruise_height_); //current_goal: Actual position of turtle
+                        next_goal_ = hector_end_goal_; //next_goal: Final waypoint of turtle
+                        g_state_ = mission_states::GoalState::GOTO;
+                        gen_traj_turtle_ = false;
+                        gen_traj_passthrough_ = true;
+                    }
+
+                    else if (!hector_reached_pred && !turtle_reached_pred)
+                    {
+                        //if neither has reached the prediction, we can run the prediction again
+                        int initial_pred = pred_id_;
+                        int new_pred_id;
+                        bot_utils::Pos2D new_pred_goal;
+                        std::tie(new_pred_goal,new_pred_id) = predict_turtle_pos();
+                        if (new_pred_id != initial_pred)
                         {
-                            ROS_INFO("[DroneCommander]: TRANSITION FROM TURTLE TO GOAL");
-                            h_state_ = mission_states::HectorState::GOAL;
+                            hector_pred_goal_.setCoords(new_pred_goal.x,new_pred_goal.y);
+                            current_goal_.setCoords(hector_pred_goal_.x , hector_pred_goal_.y , cruise_height_);
+                            next_goal_ = hector_end_goal_;
                             g_state_ = mission_states::GoalState::GOTO;
-                            current_goal_ = hector_end_goal_;
-                            next_goal_ = hector_takeoff_goal_;
                             gen_traj_turtle_ = false;
                             gen_traj_passthrough_ = true;
-                        }
-                        else
-                        {
-                            hector_pred_goal_ = turtle_position_;
-                            pred_id_ = -2;
-                            current_goal_.setCoords(turtle_position_.x , turtle_position_.y , cruise_height_);
-                            next_goal_ = hector_end_goal_;
-                            g_state_ = mission_states::GoalState::CHASE;
-                            gen_traj_turtle_ = true;
                         }
                     }
                 }
@@ -462,8 +439,6 @@ void DroneCommander::run()
                 g_state_ = mission_states::GoalState::GOTO;
                 current_goal_ = hector_start_goal_;
                 next_goal_.setCoords(turtle_position_.x , turtle_position_.y , cruise_height_);
-                // gen_traj_turtle_ = false;
-                // gen_traj_passthrough_ =true;
             }
         }
 
@@ -497,7 +472,7 @@ void DroneCommander::run()
                     //state transition
                     ROS_INFO("[DroneCommander]: TRANSITION FROM START TO TURTLE");
                     h_state_ = mission_states::HectorState::TURTLE;
-                    g_state_ = mission_states::GoalState::PREDICTION;
+                    g_state_ = mission_states::GoalState::GOTO;
                     std::tie(hector_pred_goal_,pred_id_) = predict_turtle_pos();
                     current_goal_.setCoords(hector_pred_goal_.x , hector_pred_goal_.y , cruise_height_);
                     next_goal_ = hector_end_goal_;
@@ -588,23 +563,35 @@ void DroneCommander::run()
             trajectory_generator.trajectory_handler(current_goal_ , next_goal_ ,hector_position_ , hector_lin_vel_ , hector_spline_ , h_state_ , g_state_);
             h_id_ = hector_spline_.spline.size() - 1;
 
-            if (hector_spline_.spline.size() > look_ahead_)
+            hector_spline_.spline_duration_ = bot_utils::dist_euc(hector_position_.x , hector_position_.y , current_goal_.x , current_goal_.y) / average_speed_;
+            hector_spline_.target_dt = target_dt_;
+
+            double look_ahead_time = std::min(look_ahead_ , hector_spline_.spline_duration_);
+            look_ahead_targets_ = look_ahead_time / target_dt_;
+            ROS_INFO_STREAM("LOOK AHEAD TARGET: " << look_ahead_targets_);
+
+            if (hector_spline_.spline.size() > look_ahead_targets_)
             {
-                h_id_ -= look_ahead_;
+                h_id_ -= look_ahead_targets_;
             }
+
+            else
+            {
+                h_id_ = 0;
+            }
+            
             gen_traj_passthrough_ = false;
             gen_traj_turtle_ = false;
         }
 
         current_target_ = hector_spline_.spline.at(h_id_);
 
-        bool hector_reached_target_planer = bot_utils::dist_euc(hector_position_.x , hector_position_.y, current_target_.x , current_target_.y) < thresh_cruise_planar_;
+        bool hector_reached_target_planar = bot_utils::dist_euc(hector_position_.x , hector_position_.y, current_target_.x , current_target_.y) < thresh_cruise_planar_;
         bool hector_reached_target_height = false;
 
         if (h_state_ == mission_states::HectorState::TAKEOFF)
         {
             hector_reached_target_height = std::abs(hector_position_.z - current_target_.z) < thresh_takeoff_height_;
-            ROS_INFO("HERE1");
         }
         else if (h_state_ == mission_states::HectorState::LAND)
         {
@@ -616,7 +603,7 @@ void DroneCommander::run()
             hector_reached_target_height = std::abs(hector_position_.z - current_target_.z) < thresh_cruise_height_;
         }
 
-        if (hector_reached_target_planer && hector_reached_target_height)
+        if (hector_reached_target_planar && hector_reached_target_height)
         {
             if (h_id_ == 0)
             {
@@ -624,7 +611,7 @@ void DroneCommander::run()
             }
             else
             {
-                h_id_--;
+                h_id_ = std::max(h_id_ - look_ahead_targets_ , 0);
                 current_target_ = hector_spline_.spline.at(h_id_);
             }
         }
@@ -866,9 +853,9 @@ bool DroneCommander::loadCommanderParams()
         status = false;
     }
 
-    if (!nh_.param("look_ahead", look_ahead_, 10))
+    if (!nh_.param("look_ahead", look_ahead_, 1.0))
     {
-        ROS_WARN("[DroneCommander]: Param look_ahead not found, set to 10");
+        ROS_WARN("[DroneCommander]: Param look_ahead not found, set to 1.0");
         status = false;
     }
 
