@@ -7,10 +7,10 @@ qx: 1
 qy: 1
 qz: 1
 enable_gps: true
-r_gps_x: 5 #1 
-r_gps_y: 5 #1
-r_gps_z: 5 #1
-enable_ma#gnet: true
+r_gps_x: 1 
+r_gps_y: 1
+r_gps_z: 1
+enable_magnet: true
 r_mgn_a: 1.0e-1
 enable_baro: false
 r_bar_z: 1.0e-1
