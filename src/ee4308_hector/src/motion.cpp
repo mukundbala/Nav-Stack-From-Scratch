@@ -3,6 +3,7 @@
 #include <cmath>
 #include <limits>
 #include <errno.h>
+#include <vector>
 #include <geometry_msgs/PoseWithCovarianceStamped.h> // publish to pose topic
 #include <geometry_msgs/Vector3Stamped.h>            // subscribe to magnetic topic
 #include <sensor_msgs/Imu.h>                         // subscribe to imu topic
@@ -17,7 +18,7 @@
 #define NaN std::numeric_limits<double>::quiet_NaN()
 
 // global parameters to be read from ROS PARAMs
-bool verbose, use_ground_truth, enable_baro, enable_magnet, enable_sonar, enable_gps;
+bool verbose, use_ground_truth, enable_baro, enable_magnet, enable_sonar, enable_gps, variance;
 
 // others
 bool ready = false; // signal to topics to begin
@@ -26,13 +27,25 @@ bool ready = false; // signal to topics to begin
 const double G = 9.8;
 double prev_imu_t = 0;
 cv::Matx21d X = {0, 0}, Y = {0, 0}; // see intellisense. This is equivalent to cv::Matx<double, 2, 1>
-cv::Matx21d A = {0, 0};
-cv::Matx21d Z = {0, 0};
+cv::Matx21d A = {0, 0};                                    
+// cv::Matx21d Z = {0, 0};
+cv::Matx31d Z = {0, 0, 0}; // To account for bias in barometer                                
 cv::Matx22d P_x = cv::Matx22d::ones(), P_y = cv::Matx22d::zeros();
 cv::Matx22d P_a = cv::Matx22d::ones();
-cv::Matx22d P_z = cv::Matx22d::ones();
+// cv::Matx22d P_z = cv::Matx22d::ones();     
+cv::Matx33d P_z = cv::Matx33d::ones();  // To account for barometer correction
+
+cv::Matx22d Q_x, Q_y;
+cv::Matx<double, 1, 1> Q_z, Q_a;
+cv::Matx22d F_x, W_x, F_y, W_y, F_a; // Changed F_z size to 3x3 from 2x2
+cv::Matx33d F_z;
+cv::Matx21d W_a; // Changed W_z size to 3x1 from 2x1
+cv::Matx31d W_z;
+cv::Matx21d U_x, U_y;
+cv::Matx<double, 1, 1> U_z, U_a;
 double ua = NaN, ux = NaN, uy = NaN, uz = NaN;
 double qa, qx, qy, qz;
+
 // see https://docs.opencv.org/3.4/de/de1/classcv_1_1Matx.html
 void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
 {
@@ -52,79 +65,381 @@ void cbImu(const sensor_msgs::Imu::ConstPtr &msg)
     ux = msg->linear_acceleration.x;
     uy = msg->linear_acceleration.y;
     uz = msg->linear_acceleration.z;
-    
+
     //// IMPLEMENT IMU ////
+
+    // Predicting x state
+    F_x = {
+            1, imu_dt,
+            0, 1
+          };
+    W_x = {
+            -0.5 * imu_dt * imu_dt * cos(A(0)), 0.5 * imu_dt * imu_dt * sin(A(0)),
+            -imu_dt * cos(A(0))               , imu_dt * sin(A(0))
+          };
+    U_x = {
+            ux,
+            uy
+          };
+    Q_x = {
+            qx, 0,
+            0, qy
+          };
+    X = (F_x * X) + (W_x * U_x);
+    P_x = (F_x * P_x * (F_x.t())) + (W_x * Q_x * (W_x.t()));
+    
+    // Predicting y state
+    F_y = {
+            1, imu_dt,
+            0, 1
+          };
+
+    W_y = {
+            -0.5 * imu_dt * imu_dt * sin(A(0)), -0.5 * imu_dt * imu_dt * cos(A(0)),
+            -imu_dt * sin(A(0))               , -imu_dt * cos(A(0))
+          };
+
+    U_y = {
+            ux,
+            uy
+          };
+    Q_y = {
+            qx, 0,
+            0, qy
+          };
+
+    Y = (F_y * Y) + (W_y * U_y);
+    P_y = (F_y * P_y * (F_y.t())) + (W_y * Q_y * (W_y.t()));
+
+    // Predicting z state
+    F_z = {
+            1, imu_dt, 0,
+            0, 1, 0,
+            0, 0, 1
+          };
+    W_z = {
+            0.5 * (imu_dt * imu_dt), 
+            imu_dt,
+            0
+          };
+    U_z = {uz - G};
+    Q_z = {qz};
+    Z = (F_z * Z) + (W_z * U_z);
+    P_z = (F_z * P_z * (F_z.t())) + (W_z * Q_z * (W_z.t()));
+
+    // Predicting ang state
+    F_a = {
+            1, 0,
+            0, 0
+          };
+    W_a = {
+            imu_dt,
+            1
+          };
+    U_a = {ua};
+    Q_a = {qa};
+    A = (F_a * A) + (W_a * U_a);
+    P_a = (F_a * P_a * (F_a.t())) + (W_a * Q_a * (W_a.t()));
+    
+}
+
+// ------ Function to Calculate Variance --------
+double calc_variance(std::vector<double> & vec)
+{
+    int size = vec.size();
+    
+    // Add elements in the vector and calculate mean
+    double sum;
+    for (int i = 0; i < size; i++) 
+    {
+        sum += vec[i];
+    }
+    double mean = sum / size;
+
+    // Sum of mean squared errors
+    double err = 0, mse = 0, var;
+    for (int j = 0; j < size; j++)
+    {
+        err = vec[j] - mean;
+        mse += pow(err, 2);
+    }
+    var = mse / (size - 1);
+    // vec.clear();
+    return var;
 }
 
 // --------- GPS ----------
 // https://docs.ros.org/en/api/sensor_msgs/html/msg/NavSatFix.html
 cv::Matx31d GPS = {NaN, NaN, NaN};
 cv::Matx31d initial_pos = {NaN, NaN, NaN}; // written below in main. no further action needed.
+cv::Matx31d ECEF, initial_ECEF = {NaN, NaN, NaN}, NED;
+cv::Matx33d R_ECEF2NED;
+cv::Matx33d R_NED2GAZEBO = {
+                            1, 0, 0,
+                            0, -1, 0,
+                            0, 0, -1
+                           };
+cv::Matx21d K_gps_x, K_gps_y; // Kalman gain for GPS x and y axis
+cv::Matx31d K_gps_z;          // Kalman gain for GPS z axis
+cv::Matx12d H = {1.0, 0};     // Used for x and y axis
+cv::Matx13d H_z = {1.0, 0, 0}; // Used for z axis
+cv::Matx<double, 1, 1> V = {1.0};
+
 const double DEG2RAD = M_PI / 180;
 const double RAD_POLAR = 6356752.3;
 const double RAD_EQUATOR = 6378137;
+double e_sq = 1 - (pow(RAD_POLAR/RAD_EQUATOR, 2)); // First numerical eccentricity, e^2
 double r_gps_x, r_gps_y, r_gps_z;
+
+cv::Matx<double, 1, 1> r_x = {r_gps_x}, r_y = {r_gps_y}, r_z = {r_gps_z};
+cv::Matx<double, 1, 1> gps_x, gps_y, gps_z;         
+cv::Matx<double, 1, 1> state_x, state_y, state_z;   
+double N;   // prime_radius, N(φ)
+std::vector<double> var_x, var_y, var_z;
+
+double primeVerticalRadius_calc(double lat_measurement)
+{
+    double prime_rad;
+    prime_rad = RAD_EQUATOR/(sqrt(1 - (e_sq * (sin(lat_measurement) * sin(lat_measurement)))));
+    return prime_rad;
+}
 void cbGps(const sensor_msgs::NavSatFix::ConstPtr &msg)
 {
-    if (!ready)
+    if (!ready && std::isnan(GPS(0)))
         return;
 
-    /*
-    //// IMPLEMENT GPS /////
-    double lat = msg->latitude;
-    double lon = msg->longitude;
-    double alt = msg->altitude;
     
+    //// IMPLEMENT GPS /////
+    double lat = msg->latitude;  // φ   
+    double lon = msg->longitude; // λ
+    double alt = msg->altitude;  // h
+    // double var_E = msg->position_covariance[0];
+    // ROS_INFO("[HM]  Longitude variance: %7.3lf", var_E);
+    // double var_N = msg->position_covariance[4];
+    // ROS_INFO("[HM]  Latitude variance: %7.3lf", var_N);
+    // double var_U = msg->position_covariance[8];
+    // ROS_INFO("[HM]  Altitude variance: %7.3lf", var_U);
+
+    // Convert degree to radian
+    lat *= DEG2RAD;
+    lon *= DEG2RAD;
+
+    // Calculate N(φ)
+    N = primeVerticalRadius_calc(lat);
+
+    // Calculate rotation matrix R to transform from ECEF to NED
+    R_ECEF2NED = {
+                    -(sin(lat) * cos(lon)), -sin(lon), -(cos(lat) * cos(lon)),
+                    -(sin(lat) * sin(lon)), cos(lon), -(cos(lat) * sin(lon)),
+                    cos(lat)              , 0       , -sin(lat)
+                 };
+
+    ECEF = {
+            (N + alt) * cos(lat) * cos(lon),
+            (N + alt) * cos(lat) * sin(lon),
+            (((RAD_POLAR/RAD_EQUATOR) * (RAD_POLAR/RAD_EQUATOR) * N) + alt) * sin(lat)
+           };
+
     // for initial message -- you may need this:
     if (std::isnan(initial_ECEF(0)))
     {   // calculates initial ECEF and returns
         initial_ECEF = ECEF;
         return;
     }
-    */
+
+    NED = (R_ECEF2NED.t()) * (ECEF - initial_ECEF);
+    GPS = (R_NED2GAZEBO * NED) + initial_pos;
+
+    var_x.push_back(GPS(0));
+    var_y.push_back(GPS(1));
+    var_z.push_back(GPS(2));
+
+    // --- EKF correction for x gps ---
+
+    // Measurement matrix and predicted state matrix 
+    gps_x = {GPS(0)};
+    state_x = {X(0)};
+
+    // Calculate Kalman gain
+    K_gps_x = (P_x * (H.t())) * (((H * P_x * (H.t())) + (V * r_x * V)).inv());
+
+    // Update state matrix
+    X = X + (K_gps_x * (gps_x - state_x));
+
+    // Update state covariance matrix
+    P_x = P_x - (K_gps_x * H * P_x);
+
+    // --- EKF correction for y gps ---
+
+    // Measurement matrix and predicted state matrix 
+    gps_y = {GPS(1)};
+    state_y = {Y(0)};
+
+    // Calculate Kalman gain
+    K_gps_y = (P_y * (H.t())) * (((H * P_y * (H.t())) + (V * r_y * V)).inv());
+
+    // Update state matrix
+    Y = Y + (K_gps_y * (gps_y - state_y));
+
+    // Update state covariance matrix
+    P_y = P_y - (K_gps_y * H * P_y);
+
+    // --- EKF correction for z gps ---
+
+    // Measurement matrix and predicted state matrix 
+    gps_z = {GPS(2)};
+    state_z = {Z(0)};
+
+    // Calculate Kalman gain
+    K_gps_z = (P_z * (H_z.t())) * (((H_z * P_z * (H_z.t())) + (V * r_z * V)).inv());
+
+    // Update state matrix
+    Z = Z + (K_gps_z * (gps_z - state_z));
+
+    // Update state covariance matrix
+    P_z = P_z - (K_gps_z * H_z * P_z);
 }
 
 // --------- Magnetic ----------
-double a_mgn = NaN;
+double a_mgn = NaN, intial_mgn;
 double r_mgn_a;
+cv::Matx<double, 1, 1> r_a = {r_mgn_a}, a_mgn_m, a_mgn_s;
+cv::Matx21d K_magn_a;   // Kalman gain for magnetometer
+std::vector<double> var_magn;
 void cbMagnet(const geometry_msgs::Vector3Stamped::ConstPtr &msg)
 {
     if (!ready)
         return;
     
-    /*
-    //// IMPLEMENT GPS ////
+    //// IMPLEMENT MAGNETMETER ////
     double mx = msg->vector.x;
     double my = msg->vector.y;
-    */
+
+    // if (std::isnan(a_mgn))
+    // {
+    //     intial_mgn = atan2(-my, mx);
+    // }
+
+    a_mgn = atan2(-my, mx);
+
+    // --- EKF Correction ---
+
+    // Measurement matrix and predicted state matrix 
+    a_mgn_m = {a_mgn}; 
+    a_mgn_s = {A(0)};
+
+    // Kalman gain
+    K_magn_a = P_a * (H.t()) * ((H * P_a * (H.t()) + V * r_a * V).inv());
+
+    // Update state matrix
+    A = A + (K_magn_a * (a_mgn_m - a_mgn_s));
+
+    // Update state covariance matrix
+    P_a = P_a - (K_magn_a * H * P_a);
+
+    if (variance)
+    {
+        var_magn.push_back(a_mgn);
+        if (var_magn.size() < 100)
+        {
+        return;
+        }
+        double var = calc_variance(var_magn);
+        ROS_INFO("[HM] MAGNETOMETER VARIANCE: (%6.3lf)", var);
+    }
 }
 
 // --------- Baro ----------
 double z_bar = NaN;
 double r_bar_z;
+double b_bar = NaN;
+cv::Matx<double, 1, 1> R_bar_z = {r_bar_z}, z_bar_m, z_bar_s, z_bar_b;
+cv::Matx31d K_bar_z;
+std::vector<double> var_bar;
 void cbBaro(const hector_uav_msgs::Altimeter::ConstPtr &msg)
 {
     if (!ready)
         return;
+ 
+    // IMPLEMENT BARO ////
+    z_bar = msg->altitude;
 
-    /*
-    //// IMPLEMENT BARO ////
-     z_bar = msg->altitude;
-    */
+    if (std::isnan(b_bar))
+    {
+        b_bar = z_bar - Z(0);
+        Z(2) = b_bar;
+    }
+
+    // Measurement matrix and predicted state matrix and bias matrix
+    z_bar_m = {z_bar};
+    z_bar_s = {Z(0)};
+    z_bar_b = {Z(2)};
+    
+    // Kalman gain
+    K_bar_z = (P_z * (H_z.t())) * (((H_z * P_z * (H_z.t())) + (V * R_bar_z * V)).inv());
+
+    // Update state matrix
+    Z = Z + (K_bar_z * (z_bar_m - z_bar_s - z_bar_b));
+
+    // Update state covariance matrix
+    P_z = P_z - (K_bar_z * H_z * P_z);
+
+    if (variance)
+    {
+        var_bar.push_back(z_bar);
+        if (var_bar.size() < 100)
+        {
+        return;
+        }
+        double var = calc_variance(var_bar);
+        ROS_INFO("[HM] BAROMETER VARIANCE: (%6.3lf)", var);
+    }
+         
 }
 
 // --------- Sonar ----------
 double z_snr = NaN;
 double r_snr_z;
+cv::Matx<double, 1, 1> r_snr = {r_snr_z}, z_snr_m, z_snr_s;
+cv::Matx31d K_snr_z;    // Kalman gain for sonar
+std::vector<double> var_snr;
 void cbSonar(const sensor_msgs::Range::ConstPtr &msg)
 {
-    if (!ready)
+    if (!ready && std::isnan(GPS(0)))
         return;
 
-    /*
     //// IMPLEMENT SONAR ////
     z_snr = msg->range;
-    */
+    
+    if (z_snr > 1.5) 
+    {
+        // --- EKF Calculation ---
+
+        // Measurement matrix and predicted state matrix
+        z_snr_m = {z_snr};
+        z_snr_s = {Z(0)};
+
+        // Kalman gain
+        K_snr_z = P_z * (H_z.t()) * ((H_z * P_z * (H_z.t()) + V * r_snr * V).inv());
+
+        // Update state matrix
+        Z = Z + (K_snr_z * (z_snr_m - z_snr_s));
+
+        // Update state covariance matrix
+        P_z = P_z - (K_snr_z * H_z * P_z);
+    }
+
+    if (variance)
+    {
+        var_snr.push_back(z_snr);
+        if (var_snr.size() < 100)
+        {
+        return;
+        }
+        double var = calc_variance(var_snr);
+        ROS_INFO("[HM] SONAR VARIANCE: (%6.3lf)", var);
+    }
+    return;
 }
 
 // --------- GROUND TRUTH ----------
@@ -183,6 +498,8 @@ int main(int argc, char **argv)
         ROS_WARN("HMOTION: Param enable_sonar not found, set to true");
     if (!nh.param("enable_gps", enable_gps, true))
         ROS_WARN("HMOTION: Param enable_gps not found, set to true");
+    if (!nh.param("variance", variance, true))
+        ROS_WARN("HMOTION: Param variance not found, set to true");
 
     // --------- Subscribers ----------
     ros::Subscriber sub_true = nh.subscribe<nav_msgs::Odometry>("ground_truth/state", 1, &cbTrue);
@@ -254,7 +571,6 @@ int main(int argc, char **argv)
             ROS_INFO("[HM] BAROB( ----- , ----- ,%7.3lf, ---- )", Z(3));
             ROS_INFO("[HM] SONAR( ----- , ----- ,%7.3lf, ---- )", z_snr);
         }
-
         //  Publish pose and vel
         if (use_ground_truth)
         {
