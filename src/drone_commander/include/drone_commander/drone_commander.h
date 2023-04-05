@@ -37,7 +37,6 @@ private:
 
     //state machine states
     mission_states::HectorState h_state_;
-    mission_states::GoalState g_state_;
     
     //solo flight goals
     std::vector<bot_utils::Pos3D> solo_goals_;
@@ -98,6 +97,12 @@ private:
 
     double look_ahead_;
     int look_ahead_targets_;
+    bool enable_prediction_;
+
+    //For data collection only
+    int total_traj_length;
+    double avg_traj_length;
+    int trajs;
 
     //trajectory generator params
     double target_dt_;

@@ -18,16 +18,8 @@ enum class HectorState : unsigned short
     HOME
 };
             
-enum class GoalState : unsigned short
-{
-    CHASE,
-    GOTO
-};
-
 //converting Hector State into a string
 std::string_view unpack_h_state(HectorState state);
-//converting Goal State into a string
-std::string_view unpack_g_state(GoalState state);
 
 }
 

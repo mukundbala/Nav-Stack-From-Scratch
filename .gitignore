@@ -7,3 +7,4 @@ hector/
 .catkin_workspace
 bagfiles/*
 data/*
+rosbag_to_csv/

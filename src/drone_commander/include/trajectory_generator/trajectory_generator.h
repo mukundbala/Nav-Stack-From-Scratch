@@ -31,8 +31,7 @@ public:
                             bot_utils::Pos3D h_pos , 
                             bot_utils::Pos3D h_vel ,
                             bot_utils::SplineData3D& hspline,
-                            mission_states::HectorState h_state,
-                            mission_states::GoalState g_state);
+                            mission_states::HectorState h_state);
 
     std::vector<bot_utils::Pos3D> LinearVertTakeOff(bot_utils::Pos3D &pos_begin , bot_utils::Pos3D &pos_end);
 

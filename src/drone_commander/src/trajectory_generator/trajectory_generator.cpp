@@ -158,8 +158,7 @@ void TrajectoryGenerator::trajectory_handler(
                         bot_utils::Pos3D h_pos, 
                         bot_utils::Pos3D h_vel,
                         bot_utils::SplineData3D &hspline,
-                        mission_states::HectorState h_state,
-                        mission_states::GoalState g_state)
+                        mission_states::HectorState h_state)
 {
     if (h_state == mission_states::HectorState::TAKEOFF)
     {
@@ -189,9 +188,6 @@ void TrajectoryGenerator::trajectory_handler(
         double heading_at_turtle = (dir_next_heading + dir_curr_heading) / 2.0;
         vel_at_turtle.x = average_speed_ * std::cos(heading_at_turtle);
         vel_at_turtle.y = average_speed_ * std::sin(heading_at_turtle);
-        
-        ROS_ERROR_COND(g_state == mission_states::GoalState::CHASE , "Something wrong with Trajectory State Machine!");
-
         
         spline_a = SplineGenerator_(current_goal , h_pos, vel_at_turtle , h_vel);
 
@@ -256,26 +252,17 @@ void TrajectoryGenerator::trajectory_handler(
     {
         std::vector<bot_utils::Pos3D> spline_a;
 
-        if (g_state == mission_states::GoalState::GOTO)
-        {
-            bot_utils::Pos2D dir(h_pos.x - current_goal.x , h_pos.y - current_goal.x);
-            bot_utils::Pos3D vel;
-            double heading = atan2(dir.y , dir.x);
-            vel.x = average_speed_ * std::cos(heading);
-            vel.y = average_speed_ * std::sin(heading);
-            vel.z = 0;
-            spline_a = SplineGenerator_(current_goal , h_pos , vel , h_vel);
-            hspline.spline.clear();
-            hspline.spline = spline_a;
-            hspline.curr_spline_id++;
-        }
+        bot_utils::Pos2D dir(h_pos.x - current_goal.x , h_pos.y - current_goal.x);
+        bot_utils::Pos3D vel;
+        double heading = atan2(dir.y , dir.x);
+        vel.x = average_speed_ * std::cos(heading);
+        vel.y = average_speed_ * std::sin(heading);
+        vel.z = 0;
+        spline_a = SplineGenerator_(current_goal , h_pos , vel , h_vel);
+        hspline.spline.clear();
+        hspline.spline = spline_a;
+        hspline.curr_spline_id++;
+        
 
-        else if (g_state == mission_states::GoalState::CHASE)
-        {
-            spline_a = LinearPlanar(current_goal , h_pos);
-            hspline.spline.clear();
-            hspline.spline = spline_a;
-            hspline.curr_spline_id++;
-        }
     }
 }
