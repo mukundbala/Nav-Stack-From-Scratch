@@ -561,6 +561,10 @@ void DroneCommander::run()
 
         else if (h_state_ == mission_states::HectorState::HOME)
         {
+            rotate_msg_.data = true;
+            gen_traj_turtle_ = false;
+            gen_traj_passthrough_ = false;
+            
             bool hector_reached_home_planar = bot_utils::dist_euc(hector_position_.x , hector_position_.y , hector_home_goal_.x , hector_home_goal_.y) < thresh_cruise_planar_;
             bool hector_reached_home_height = std::abs(hector_position_.z - cruise_height_) < thresh_cruise_height_;
 

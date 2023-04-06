@@ -68,7 +68,7 @@ std::vector<bot_utils::Pos3D> TrajectoryGenerator::LinearPlanar(bot_utils::Pos3D
 {
     double Dx = pos_end.x - pos_begin.x;
     double Dy = pos_end.y - pos_begin.y;
-    double d = sqrt ((Dx * Dx) + (Dy * Dy));
+    double d = sqrt((Dx * Dx) + (Dy * Dy))/average_speed_;
 
     std::vector<bot_utils::Pos3D> segment_traj = {pos_begin};
 
@@ -90,17 +90,17 @@ std::vector<bot_utils::Pos3D> TrajectoryGenerator::Cubic(bot_utils::Pos3D &pos_b
 
     std::vector<bot_utils::Pos3D> traj = {pos_begin};
 
-    Eigen::MatrixXd M(4,4);
-    M << 1.0, 0.0 , 0.0 , 0.0,
-         0.0, 1.0 , 0.0 , 0.0,
-         1.0, d , d*d , d*d*d,
-         0.0, 1.0, 2.0*d, 3*d*d;
+    Eigen::MatrixXd M_inv(4,4);
+    M_inv <<  1.0,           0.0 ,      0.0 ,        0.0,
+              0.0,           1.0 ,      0.0 ,        0.0,
+             -3.0/(d*d),    -2.0/d ,    3.0/(d*d),  -1.0/d,
+              2.0/(d*d*d),  1.0/(d*d), -2.0/(d*d*d), 1.0/(d*d);
     
     Eigen::Vector4d in_x(pos_begin.x , vel_begin.x , pos_end.x , vel_end.x);
     Eigen::Vector4d in_y(pos_begin.y , vel_begin.y , pos_end.y , vel_end.y);
 
-    Eigen::Vector4d ax = M.inverse() * in_x;
-    Eigen::Vector4d by = M.inverse() * in_y;
+    Eigen::Vector4d ax = M_inv * in_x;
+    Eigen::Vector4d by = M_inv * in_y;
 
     for (double time = target_dt_ ; time < d ; time += target_dt_)
     {
@@ -123,9 +123,9 @@ std::vector<bot_utils::Pos3D> TrajectoryGenerator::Quintic(bot_utils::Pos3D &pos
 
     Eigen::MatrixXd M_inv(6,6);
 
-    M_inv << 1.0 , 0.0 , 0.0 , 0.0 , 0.0 , 0.0,
-             0.0 , 1.0 , 0.0 , 0.0 , 0.0 , 0.0,
-             0.0 , 0.0 , 0.5,  0.0 , 0.0 , 0.0,
+    M_inv <<  1.0 ,             0.0 ,           0.0 ,           0.0 ,               0.0 ,           0.0,
+              0.0 ,             1.0 ,           0.0 ,           0.0 ,               0.0 ,           0.0,
+              0.0 ,             0.0 ,           0.5,            0.0 ,               0.0 ,           0.0,
              -10.0/(d*d*d),    -6.0/(d*d),     -3.0/(2.0*d),    10.0/(d*d*d),      -4.0/(d*d),      1.0/(2.0*d),
              15.0/(d*d*d*d),    8.0/(d*d*d),    3.0/(2.0*d*d), -15.0/(d*d*d*d),     7.0/(d*d*d) ,  -1.0/(d*d),
              -6.0/(d*d*d*d*d), -3.0/(d*d*d*d), -1.0/(2.0*d*d*d), 6.0/(d*d*d*d*d),  -3.0/(d*d*d*d),  1.0/(2.0*d*d*d);
@@ -186,8 +186,8 @@ void TrajectoryGenerator::trajectory_handler(
         double dir_curr_heading = atan2(dir_curr.y , dir_curr.x);
 
         double heading_at_turtle = (dir_next_heading + dir_curr_heading) / 2.0;
-        vel_at_turtle.x = average_speed_ * std::cos(heading_at_turtle);
-        vel_at_turtle.y = average_speed_ * std::sin(heading_at_turtle);
+        vel_at_turtle.x = sqrt(average_speed_) * std::cos(heading_at_turtle);
+        vel_at_turtle.y = sqrt(average_speed_) * std::sin(heading_at_turtle);
         
         spline_a = SplineGenerator_(current_goal , h_pos, vel_at_turtle , h_vel);
 
@@ -198,20 +198,22 @@ void TrajectoryGenerator::trajectory_handler(
 
     else if (h_state == mission_states::HectorState::GOAL) 
     {
-        ROS_INFO("[DroneCommander]: SERVING GOAL");
         bot_utils::Pos3D vel_at_final;
-        bot_utils::Pos3D vel_at_start(sqrt(average_speed_),sqrt(average_speed_),0);
+        bot_utils::Pos3D vel_at_start;
 
-        bot_utils::Pos2D dir_curr(h_pos.x - current_goal.x , h_pos.y - current_goal.y);
-        bot_utils::Pos2D dir_next(current_goal.x - next_goal.x , current_goal.y - next_goal.y);
+        bot_utils::Pos2D dir_curr(h_pos.x - current_goal.x , h_pos.y - current_goal.y); //heading between hector and current goal(CP3)
+        bot_utils::Pos2D dir_next(current_goal.x - next_goal.x , current_goal.y - next_goal.y); //heading between current goal and next goal (CP3 and H0)
 
         double dir_next_heading = atan2(dir_next.y , dir_next.x);
         double dir_curr_heading = atan2(dir_curr.y , dir_curr.x);
 
         double heading_at_final = (dir_next_heading + dir_curr_heading) / 2.0;
-        vel_at_final.x = average_speed_ * std::cos(heading_at_final);
-        vel_at_final.y = average_speed_ * std::sin(heading_at_final);
-    
+
+        vel_at_final.x = sqrt(average_speed_) * std::cos(heading_at_final);
+        vel_at_final.y = sqrt(average_speed_) * std::sin(heading_at_final);
+        vel_at_start.x = sqrt(average_speed_) * std::cos(dir_next_heading);
+        vel_at_start.x = sqrt(average_speed_) * std::sin(dir_next_heading);
+        
         std::vector<bot_utils::Pos3D> spline_a = SplineGenerator_(current_goal , h_pos , vel_at_final , h_vel);
         std::vector<bot_utils::Pos3D> spline_b = SplineGenerator_(next_goal, current_goal , vel_at_start , vel_at_final);
         
@@ -226,25 +228,8 @@ void TrajectoryGenerator::trajectory_handler(
 
     else if (h_state == mission_states::HectorState::START)
     {
-        ROS_ERROR("Check statemachine. There is an issue if I am here");
+        ROS_ERROR("[DroneCommander]: Not supposed to generate trajectory here! Check State Machine");
         //We dont need to plan trajectory for this state because it is already done in the previous state
-
-        // bot_utils::Pos3D vel_at_start;
-        
-        // bot_utils::Pos2D dir_curr(h_pos.x - current_goal.x , h_pos.y - current_goal.y);
-        // bot_utils::Pos2D dir_next(current_goal.x - next_goal.x , current_goal.y - next_goal.y);
-
-        // double dir_next_heading = atan2(dir_next.y , dir_next.x);
-        // double dir_curr_heading = atan2(dir_curr.y , dir_curr.x);
-
-        // double heading_at_start = (dir_next_heading + dir_curr_heading) / 2.0;
-        // vel_at_start.x = average_speed_ * std::cos(heading_at_start);
-        // vel_at_start.y = average_speed_ * std::sin(heading_at_start);
-
-        // std::vector<bot_utils::Pos3D> spline_a = SplineGenerator_(current_goal , h_pos , vel_at_start , h_vel);
-        // hspline.spline.clear();
-        // hspline.spline = spline_a;
-        // hspline.curr_spline_id++;
     }
 
 ///####################################SOLO FLIGHT ONLY################################################################
@@ -255,8 +240,8 @@ void TrajectoryGenerator::trajectory_handler(
         bot_utils::Pos2D dir(h_pos.x - current_goal.x , h_pos.y - current_goal.x);
         bot_utils::Pos3D vel;
         double heading = atan2(dir.y , dir.x);
-        vel.x = average_speed_ * std::cos(heading);
-        vel.y = average_speed_ * std::sin(heading);
+        vel.x = sqrt(average_speed_) * std::cos(heading);
+        vel.y = sqrt(average_speed_) * std::sin(heading);
         vel.z = 0;
         spline_a = SplineGenerator_(current_goal , h_pos , vel , h_vel);
         hspline.spline.clear();
