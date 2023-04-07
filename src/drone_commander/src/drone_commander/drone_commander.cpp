@@ -210,7 +210,8 @@ std::pair<bot_utils::Pos2D,int> DroneCommander::predict_turtle_pos()
     Using this idea, we can estimate how long the turtlebot will take to go from current target to target n.
     The best target n is the one that the drone can reach as quickly as the turtlebot. There can be a few cases here
 
-    1. The turtlebot can reach the last target in the spline faster than the drone can. In this case, we just return the last target in the spline and leave the state machine to figure it out
+    1. The turtlebot can reach the last target in the spline faster than the drone can. In this case, we just return the last target in the spline and 
+    leave the state machine to figure it out
     2. We find a point n at which the drone can reach about as fast as the turtle bot. Return that point
     */
    double tbot_time = 0;
@@ -316,12 +317,6 @@ void DroneCommander::run()
             
             if (hector_reached_planar && hector_reached_height)
             {
-                if (verbose_)
-                {
-                    ROS_INFO_COND(co_op_ , "[DroneCommander]: TRANSITION FROM TAKEOFF TO TURTLE");
-                    ROS_INFO_COND(!co_op_, "[DroneCommander]: TRANSITION FROM TAKEOFF TO FOLLOW");
-                }
-
                 if (co_op_)
                 {
                     h_state_ = mission_states::HectorState::TURTLE;
@@ -365,8 +360,7 @@ void DroneCommander::run()
             
             if (hector_reached_turtle_planar && hector_at_target_height) //base check if we are close enough to the turtle
             {
-                //transition state
-                ROS_INFO("[DroneCommander]:TRANSITION FROM TURTLE TO GOAL");
+                //transition to GOAL
                 h_state_ = mission_states::HectorState::GOAL;
                 current_goal_ = hector_end_goal_; //current_goal: final waypoint of turtlebot
                 next_goal_ = hector_start_goal_;  //next_goal: start position of hector
@@ -455,7 +449,6 @@ void DroneCommander::run()
             if (hector_reached_end_goal && hector_reached_end_height)
             {
                 //state transition to START
-                ROS_INFO("[DroneCommander]: TRANSITION FROM GOAL TO START");
                 h_state_ = mission_states::HectorState::START;
                 current_goal_ = hector_start_goal_;
                 next_goal_.setCoords(turtle_position_.x , turtle_position_.y , cruise_height_);
@@ -475,7 +468,6 @@ void DroneCommander::run()
                 if (hector_reached_start_planar && hector_reached_start_height)
                 {
                     //transition to landing
-                    ROS_INFO("[DroneCommander]: TRANSITION FROM START TO LAND");
                     h_state_ = mission_states::HectorState::LAND;
                     current_goal_ = hector_land_goal_;
                     next_goal_.setCoords(NaN,NaN,NaN);
@@ -489,7 +481,6 @@ void DroneCommander::run()
                 if (hector_reached_start_planar && hector_reached_start_height)
                 {
                     //state transition
-                    ROS_INFO("[DroneCommander]: TRANSITION FROM START TO TURTLE");
                     h_state_ = mission_states::HectorState::TURTLE;
                     
                     if (enable_prediction_)
@@ -539,8 +530,6 @@ void DroneCommander::run()
             {
                 if (solo_goal_id_ == solo_goals_.size() - 1)
                 {
-                    //this means that we have reached out last goal
-                    ROS_INFO("[DroneCommander]: TRANSITION FROM FOLLOW TO HOME");
                     h_state_ = mission_states::HectorState::HOME;
                     current_goal_ = hector_home_goal_;
                     goal_full_msg_.goal_id = solo_goals_.size();
@@ -570,7 +559,6 @@ void DroneCommander::run()
 
             if (hector_reached_home_planar && hector_reached_home_height)
             {
-                ROS_INFO("[DroneCommander]:TRANSITION FROM HOME TO LAND");
                 h_state_ = mission_states::HectorState::LAND;
                 current_goal_ = hector_land_goal_;
                 goal_full_msg_.goal_id = -1; //-2 is takeoff, -1 is land
@@ -597,7 +585,6 @@ void DroneCommander::run()
 
             double look_ahead_time = std::min(look_ahead_ , hector_spline_.spline_duration_);
             look_ahead_targets_ = look_ahead_time / target_dt_;
-            ROS_INFO_STREAM("LOOK AHEAD TARGET: " << look_ahead_targets_);
 
             if (hector_spline_.spline.size() > look_ahead_targets_)
             {
@@ -697,10 +684,10 @@ void DroneCommander::run()
             ROS_INFO_STREAM("[DroneCommander]: NEXT GOAL: (" << next_goal_.x << "," << next_goal_.y << "," << next_goal_.z << ")");
             ROS_INFO_STREAM("[DroneCommander]: CURRENT TARGET: " << current_target_.x << "," << current_target_.y << "," << current_target_.z << ")");
             ROS_WARN_STREAM("[DroneCommander]: LINEAR VELOCITY: " << hector_lin_vel_.x << "," << hector_lin_vel_.y << "," << hector_lin_vel_.z << ")");
-            ROS_WARN_STREAM("[DroneCommander]: PLANAR X-Y VELOCITY MAGNITUDE" << hector_vel_mag_);
-            ROS_WARN_STREAM("[DroneCommander]: VERTICAL Z VELOCITY MAGNITUDE" << std::abs(hector_lin_vel_.z));
-            ROS_WARN_STREAM("[DroneCommander]: Toal Trajs" << trajs);
-            ROS_WARN_STREAM("[DroneCommander]: Average Traj Length" << avg_traj_length);
+            ROS_WARN_STREAM("[DroneCommander]: PLANAR X-Y VELOCITY MAGNITUDE: " << hector_vel_mag_);
+            ROS_WARN_STREAM("[DroneCommander]: VERTICAL Z VELOCITY MAGNITUDE: " << std::abs(hector_lin_vel_.z));
+            ROS_WARN_STREAM("[DroneCommander]: Toal Trajs: " << trajs);
+            ROS_WARN_STREAM("[DroneCommander]: Average Traj Length: " << avg_traj_length);
             ROS_INFO("#######################################################");
         }
 
