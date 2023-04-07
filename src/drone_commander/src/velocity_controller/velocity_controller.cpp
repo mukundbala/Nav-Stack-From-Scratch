@@ -101,9 +101,9 @@ std::array<double,4> VelocityController::generate_velocities(bot_utils::Pos3D &h
     double acc_z = (raw_z - cmd_vel_z_) / dt_;
     double est_z_vel = cmd_vel_z_ + (acc_z * dt_);
 
-    cmd_vel_x_ = est_x_vel > planar_sat_ ? planar_sat_ : est_x_vel;
-    cmd_vel_y_ = est_y_vel > planar_sat_ ? planar_sat_ : est_y_vel;
-    cmd_vel_z_ = est_z_vel > max_z_vel_ ? max_z_vel_ : est_z_vel;
+    cmd_vel_x_ = std::abs(est_x_vel) > planar_sat_ ? (bot_utils::sign(est_x_vel) * planar_sat_) : est_x_vel;
+    cmd_vel_y_ = std::abs(est_y_vel) > planar_sat_ ? (bot_utils::sign(est_y_vel) * planar_sat_) : est_y_vel;
+    cmd_vel_z_ = std::abs(est_z_vel) > max_z_vel_  ? (bot_utils::sign(est_z_vel) * max_z_vel_)  : est_z_vel;
     cmd_vel_ang_ = rotate ? yaw_rate_ : 0;
 
     error_x_prev_ = error_x;
@@ -112,13 +112,13 @@ std::array<double,4> VelocityController::generate_velocities(bot_utils::Pos3D &h
 
     if (verbose_)
     {
-        ROS_INFO("[DroneCommander - Velocity Generator]:VELOCITIES:");
-        ROS_INFO_STREAM("CMD_VEL_X: " << cmd_vel_x_);
-        ROS_INFO_STREAM("CMD_VEL_Y: " << cmd_vel_y_);
-        ROS_INFO_STREAM("CMD_VEL_Z: " << cmd_vel_z_);
-        ROS_INFO_STREAM("CMD LINEAR MAGNITUDE" << sqrt((cmd_vel_x_ * cmd_vel_x_)+(cmd_vel_y_+cmd_vel_y_)));
-        ROS_INFO_STREAM("CMD VERTICAL MAGNTUDE" << std::abs(cmd_vel_z_));
-        ROS_INFO_STREAM("CMD_ANG_VEL: " << cmd_vel_ang_);
+        ROS_INFO("[DroneCommander - Velocity Generator]: VELOCITIES:");
+        ROS_INFO_STREAM("[DroneCommander - Velocity Generator]: CMD_VEL_X: " << cmd_vel_x_);
+        ROS_INFO_STREAM("[DroneCommander - Velocity Generator]: CMD_VEL_Y: " << cmd_vel_y_);
+        ROS_INFO_STREAM("[DroneCommander - Velocity Generator]: CMD_VEL_Z: " << cmd_vel_z_);
+        ROS_INFO_STREAM("[DroneCommander - Velocity Generator]: CMD LINEAR MAGNITUDE" << sqrt((cmd_vel_x_ * cmd_vel_x_)+(cmd_vel_y_+cmd_vel_y_)));
+        ROS_INFO_STREAM("[DroneCommander - Velocity Generator]: CMD VERTICAL MAGNTUDE" << std::abs(cmd_vel_z_));
+        ROS_INFO_STREAM("[DroneCommander - Velocity Generator]: CMD_ANG_VEL: " << cmd_vel_ang_);
     }
     std::array<double,4> vels = {cmd_vel_x_ , cmd_vel_y_ , cmd_vel_z_ , cmd_vel_ang_};
     
