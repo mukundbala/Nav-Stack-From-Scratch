@@ -204,11 +204,8 @@ void Commander::run()
 
             else
             {
-                ROS_WARN_STREAM("DANGER CLOSE: " << danger_close_);
-                ROS_WARN_STREAM("TID - BAD IDX: " << t_id - bad_idx);
                 if (t_id - bad_idx < danger_close_)
                 {
-                    if (verbose_){ROS_WARN("[Commander]: Danger Close!");};
 
                     if (bot_utils::dist_euc(robot_position_,current_target_) < close_enough_)
                     {
@@ -291,7 +288,6 @@ void Commander::run()
     cmd_vel_msg_.linear.x = 0;
     cmd_vel_pub_.publish(cmd_vel_msg_);
     
-    if (verbose_){ROS_INFO("[Commander]: Setting velocity to 0");};
 }
 
 
