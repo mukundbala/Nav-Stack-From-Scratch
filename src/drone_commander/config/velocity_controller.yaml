@@ -1,15 +1,11 @@
 enable_controller: true
 verbose_controller: false
-Kp_lin: 1.63 
-Ki_lin: 0.0 
-Kd_lin: 0.1
-Kp_z: 1.75
+Kp_lin: 1.75
+Ki_lin: 0.0
+Kd_lin: 0.25 ##if too aggressive, try 0.38. If still too aggressive, 0.5 should work
+Kp_z: 2.0
 Ki_z: 0.0 
 Kd_z: 0.1
 yaw_rate: 0.5
 max_lin_vel: 2
 max_z_vel: 0.5
-
-
-
-#the actual average speed: 0.36

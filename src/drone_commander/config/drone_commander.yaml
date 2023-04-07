@@ -1,4 +1,4 @@
-verbose_commander: true
+verbose_commander: false
 commander_rate: 40
 cruise_height: 2.0
 takeoff_height: 2.0
