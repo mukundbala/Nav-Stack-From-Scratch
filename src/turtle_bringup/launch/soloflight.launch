@@ -11,16 +11,17 @@
     <arg name="goal_full" default = "/hector/goal_full"/>
     <arg name="vel_mag" default = "/hector/vel_mag"/>
     <arg name="velocity" default = "/hector/velocity"/>
+    <arg name="target" default = "/hector/target"/>
     <arg name="record" default = "true"/>
     <arg name="bag_dir" default = "/home/mukund/cpn/team12/Robot-Control-Planning-Navigation/data/bagfiles"/>
-    <arg name="experiment_name" default = "average_speed_test"/>
+    <arg name="experiment_name" default = "kpz2.0kiz0kdz0.1"/>
 
     <group if="$(eval project == 'soloflight')">
         <rosparam command="load" file="$(find turtle_bringup)/worlds/$(env WORLD)/$(env WORLD)_goals.yaml" ns="$(arg drone_namespace)"/>
         <include file="$(find ee4308_hector)/launch/run.launch" ns="$(arg drone_namespace)"/>
 
         <node pkg="rosbag" type="record" name="drone_logger" 
-        args = "record -O $(arg bag_dir)/$(arg experiment_name).bag $(arg pose) $(arg cmd_vel) $(arg error) $(arg error_vec) $(arg goal_full) $(arg vel_mag) $(arg velocity)"
+        args = "record -O $(arg bag_dir)/$(arg experiment_name).bag $(arg pose) $(arg cmd_vel) $(arg error) $(arg error_vec) $(arg goal_full) $(arg vel_mag) $(arg velocity) $(arg target)"
         if="$(arg record)"/>
     </group>
 </launch>
