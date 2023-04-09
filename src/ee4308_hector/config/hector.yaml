@@ -1,19 +1,19 @@
 # motion
 verbose_motion: true
 use_ground_truth: false
-variance: true
+variance: false
 qa: 1
-qx: 1
-qy: 1
-qz: 1
+qx: 2800
+qy: 2800
+qz: 2800
 enable_gps: true
-r_gps_x: 0.025 #1 
-r_gps_y: 0.025 #1
-r_gps_z: 0.025 #1
+r_gps_x: 0.25 #1 
+r_gps_y: 0.25 #1
+r_gps_z: 0.25 #1
 enable_magnet: true
-r_mgn_a: 2.661 #1.0e-1
-enable_baro: false
-r_bar_z: 1.0e-1
+r_mgn_a: 0.087 #1.0e-1
+enable_baro: true
+r_bar_z: 0.00287 #0.00175 #0.0114 #0.0287 #0.1089 #0.0028 #0.0014 #1.0e-1
 enable_sonar: true
-r_snr_z: 0.155 #1.0e-1
+r_snr_z: 0.380 #0.00380 #0.1533 #0.0015 #0.007 #1.0e-1
 motion_iter_rate: 20

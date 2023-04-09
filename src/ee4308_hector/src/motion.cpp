@@ -164,7 +164,6 @@ double calc_variance(std::vector<double> & vec)
         mse += pow(err, 2);
     }
     var = mse / (size - 1);
-    // vec.clear();
     return var;
 }
 
@@ -339,22 +338,24 @@ void cbMagnet(const geometry_msgs::Vector3Stamped::ConstPtr &msg)
 
     if (variance)
     {
+        double var;
         var_magn.push_back(a_mgn);
-        if (var_magn.size() < 100)
+        if (var_magn.size() > 100)
         {
-        return;
+        var = calc_variance(var_magn);
+        ROS_INFO("[HM] MAGNETOMETER VARIANCE: (%6.4lf)", var);
+        var_magn.erase(var_magn.begin());
         }
-        double var = calc_variance(var_magn);
-        ROS_INFO("[HM] MAGNETOMETER VARIANCE: (%6.3lf)", var);
     }
 }
 
 // --------- Baro ----------
 double z_bar = NaN;
 double r_bar_z;
-double b_bar = NaN;
+// double b_bar = NaN;
 cv::Matx<double, 1, 1> R_bar_z = {r_bar_z}, z_bar_m, z_bar_s, z_bar_b;
 cv::Matx31d K_bar_z;
+cv::Matx13d H_bar_z = {1, 0, 0};
 std::vector<double> var_bar;
 void cbBaro(const hector_uav_msgs::Altimeter::ConstPtr &msg)
 {
@@ -364,10 +365,10 @@ void cbBaro(const hector_uav_msgs::Altimeter::ConstPtr &msg)
     // IMPLEMENT BARO ////
     z_bar = msg->altitude;
 
-    if (std::isnan(b_bar))
+    if (abs(z_bar - Z(2)) > 2.3 || abs(z_bar - Z(2)) < 1.5)
     {
-        b_bar = z_bar - Z(0);
-        Z(2) = b_bar;
+        Z(2) = z_bar - Z(0); 
+        return;
     }
 
     // Measurement matrix and predicted state matrix and bias matrix
@@ -376,23 +377,27 @@ void cbBaro(const hector_uav_msgs::Altimeter::ConstPtr &msg)
     z_bar_b = {Z(2)};
     
     // Kalman gain
-    K_bar_z = (P_z * (H_z.t())) * (((H_z * P_z * (H_z.t())) + (V * R_bar_z * V)).inv());
+    K_bar_z = (P_z * (H_bar_z.t())) * (((H_bar_z * P_z * (H_bar_z.t())) + (V * R_bar_z * V)).inv());
 
     // Update state matrix
     Z = Z + (K_bar_z * (z_bar_m - z_bar_s - z_bar_b));
+    // Z = Z + (K_bar_z * (z_bar_s - (z_bar_m - z_bar_b)));
 
     // Update state covariance matrix
-    P_z = P_z - (K_bar_z * H_z * P_z);
+    P_z = P_z - (K_bar_z * H_bar_z * P_z);
+
+    ROS_INFO("Z(0): %3.3lf, Z(1): %3.3lf, Z(2): %3.3lf", Z(0), Z(1), Z(2));
 
     if (variance)
     {
+        double var;
         var_bar.push_back(z_bar);
-        if (var_bar.size() < 100)
+        if (var_bar.size() > 100)
         {
-        return;
+        var = calc_variance(var_bar);
+        var_bar.erase(var_bar.begin());
         }
-        double var = calc_variance(var_bar);
-        ROS_INFO("[HM] BAROMETER VARIANCE: (%6.3lf)", var);
+        ROS_INFO("[HM] BAROMETER VARIANCE: (%6.4lf)", var);
     }
          
 }
@@ -405,41 +410,42 @@ cv::Matx31d K_snr_z;    // Kalman gain for sonar
 std::vector<double> var_snr;
 void cbSonar(const sensor_msgs::Range::ConstPtr &msg)
 {
-    if (!ready && std::isnan(GPS(0)))
+    if (!ready && std::isnan(GPS(2)))
         return;
 
     //// IMPLEMENT SONAR ////
     z_snr = msg->range;
     
-    if (z_snr > 1.5) 
+    if (abs(z_snr) < 1.5 || abs(z_snr) > 2.3) 
     {
-        // --- EKF Calculation ---
-
-        // Measurement matrix and predicted state matrix
-        z_snr_m = {z_snr};
-        z_snr_s = {Z(0)};
-
-        // Kalman gain
-        K_snr_z = P_z * (H_z.t()) * ((H_z * P_z * (H_z.t()) + V * r_snr * V).inv());
-
-        // Update state matrix
-        Z = Z + (K_snr_z * (z_snr_m - z_snr_s));
-
-        // Update state covariance matrix
-        P_z = P_z - (K_snr_z * H_z * P_z);
+        return;
     }
+    // --- EKF Calculation ---
+
+    // Measurement matrix and predicted state matrix
+    z_snr_m = {z_snr};
+    z_snr_s = {Z(0)};
+
+    // Kalman gain
+    K_snr_z = P_z * (H_z.t()) * ((H_z * P_z * (H_z.t()) + V * r_snr * V).inv());
+
+    // Update state matrix
+    Z = Z + (K_snr_z * (z_snr_m - z_snr_s));
+
+    // Update state covariance matrix
+    P_z = P_z - (K_snr_z * H_z * P_z);
 
     if (variance)
     {
+        double var;
         var_snr.push_back(z_snr);
-        if (var_snr.size() < 100)
+        if (var_snr.size() > 100)
         {
-        return;
+        var = calc_variance(var_snr);
+        var_snr.erase(var_snr.begin());
         }
-        double var = calc_variance(var_snr);
-        ROS_INFO("[HM] SONAR VARIANCE: (%6.3lf)", var);
+        ROS_INFO("[HM] SONAR VARIANCE: (%6.4lf)", var);
     }
-    return;
 }
 
 // --------- GROUND TRUTH ----------
@@ -568,7 +574,7 @@ int main(int argc, char **argv)
             ROS_INFO("[HM]   GPS(%7.3lf,%7.3lf,%7.3lf, ---- )", GPS(0), GPS(1), GPS(2));
             ROS_INFO("[HM] MAGNT( ----- , ----- , ----- ,%6.3lf)", a_mgn);
             ROS_INFO("[HM]  BARO( ----- , ----- ,%7.3lf, ---- )", z_bar);
-            ROS_INFO("[HM] BAROB( ----- , ----- ,%7.3lf, ---- )", Z(3));
+            ROS_INFO("[HM] BAROB( ----- , ----- ,%7.3lf, ---- )", Z(2));
             ROS_INFO("[HM] SONAR( ----- , ----- ,%7.3lf, ---- )", z_snr);
         }
         //  Publish pose and vel
