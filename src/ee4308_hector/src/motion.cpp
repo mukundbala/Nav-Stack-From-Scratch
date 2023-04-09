@@ -365,9 +365,9 @@ void cbBaro(const hector_uav_msgs::Altimeter::ConstPtr &msg)
     // IMPLEMENT BARO ////
     z_bar = msg->altitude;
 
-    if (abs(z_bar - Z(2)) > 2.3 || abs(z_bar - Z(2)) < 1.5)
+    if (abs(z_bar - Z(2)) > 2.0) // || abs(z_bar - Z(2)) < 1.1)
     {
-        Z(2) = z_bar - Z(0); 
+        Z(2) = z_bar - Z(0);
         return;
     }
 
@@ -416,7 +416,11 @@ void cbSonar(const sensor_msgs::Range::ConstPtr &msg)
     //// IMPLEMENT SONAR ////
     z_snr = msg->range;
     
-    if (abs(z_snr) < 1.5 || abs(z_snr) > 2.3) 
+    // if (abs(z_snr) < 1.3)// || abs(z_snr) > 2.3) 
+    // {
+    //     return;
+    // }
+    if (z_snr > 1.1 && z_snr < 1.4)
     {
         return;
     }
