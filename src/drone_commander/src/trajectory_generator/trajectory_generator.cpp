@@ -40,22 +40,22 @@ std::vector<bot_utils::Pos3D> TrajectoryGenerator::LinearVertLand(bot_utils::Pos
 {
     std::vector<bot_utils::Pos3D> segment_traj = {pos_begin}; //landing position
     
-    for (int i = 0 ; i < 10 ; ++i)
+    for (int i = 0 ; i < 100 ; ++i)
     {
         segment_traj.emplace_back(pos_begin.x , pos_begin.y , 0.18);
     }
 
-    for (int i = 0 ; i < 10 ; ++i)
+    for (int i = 0 ; i < 100 ; ++i)
     {
         segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_end.z / 8);
     }
 
-    for (int i = 0 ; i < 10 ; ++i)
+    for (int i = 0 ; i < 60 ; ++i)
     {
         segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_end.z / 4);
     }
 
-    for (int i = 0 ; i < 10 ; ++i)
+    for (int i = 0 ; i < 60 ; ++i)
     {
         segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_end.z / 2);
     }

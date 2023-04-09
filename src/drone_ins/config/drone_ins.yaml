@@ -1,6 +1,6 @@
 # motion
 verbose_motion: true
-use_ground_truth: false
+use_ground_truth: true
 variance: false
 qa: 1
 qx: 2800
