@@ -1,9 +1,0 @@
-export TURTLE_X=-2.0
-export TURTLE_Y=-0.5
-export TURTLE_MIN_X=-8.0
-export TURTLE_MIN_Y=-13.0
-export TURTLE_MAX_X=7.0
-export TURTLE_MAX_Y=3.0
-export HECTOR_X=2.0
-export HECTOR_Y=2.0
-export HECTOR_Z=0.178

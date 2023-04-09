@@ -415,15 +415,16 @@ void cbSonar(const sensor_msgs::Range::ConstPtr &msg)
 
     //// IMPLEMENT SONAR ////
     z_snr = msg->range;
-    
-    // if (abs(z_snr) < 1.3)// || abs(z_snr) > 2.3) 
-    // {
-    //     return;
-    // }
-    if (z_snr > 1.1 && z_snr < 1.4)
+
+    if (abs(z_snr) < 1.3)// || abs(z_snr) > 2.3) 
     {
         return;
     }
+
+    // if (z_snr > 1.1 && z_snr < 1.4)
+    // {
+    //     return;
+    // }
     // --- EKF Calculation ---
 
     // Measurement matrix and predicted state matrix

@@ -23,7 +23,7 @@ verbose_(verbose)
     else
     {
         primary_traj_ = "Cubic";
-        SplineGenerator_ = std::bind(&TrajectoryGenerator::Quintic , this , std::placeholders::_1 , std::placeholders::_2 , std::placeholders::_3 , std::placeholders::_4 );
+        SplineGenerator_ = std::bind(&TrajectoryGenerator::Cubic , this , std::placeholders::_1 , std::placeholders::_2 , std::placeholders::_3 , std::placeholders::_4 );
     }
 
     ROS_INFO("[DroneCommander- TrajectoryGenerator]: Trajectory Generator Prepared");
@@ -40,22 +40,22 @@ std::vector<bot_utils::Pos3D> TrajectoryGenerator::LinearVertLand(bot_utils::Pos
 {
     std::vector<bot_utils::Pos3D> segment_traj = {pos_begin}; //landing position
     
-    for (int i = 0 ; i < 100 ; ++i)
+    for (int i = 0 ; i < 10 ; ++i)
     {
         segment_traj.emplace_back(pos_begin.x , pos_begin.y , 0.18);
     }
 
-    for (int i = 0 ; i < 100 ; ++i)
+    for (int i = 0 ; i < 10 ; ++i)
     {
         segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_end.z / 8);
     }
 
-    for (int i = 0 ; i < 60 ; ++i)
+    for (int i = 0 ; i < 10 ; ++i)
     {
         segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_end.z / 4);
     }
 
-    for (int i = 0 ; i < 60 ; ++i)
+    for (int i = 0 ; i < 10 ; ++i)
     {
         segment_traj.emplace_back(pos_begin.x , pos_begin.y , pos_end.z / 2);
     }
