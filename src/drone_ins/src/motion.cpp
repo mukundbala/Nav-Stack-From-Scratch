@@ -13,7 +13,7 @@
 #include <nav_msgs/Odometry.h>                       // subscribe to ground truth topic
 #include <std_srvs/Empty.h>                          // Service to calrbrate motors
 #include <opencv2/core/core.hpp>
-#include "common.hpp"
+
 
 #define NaN std::numeric_limits<double>::quiet_NaN()
 
@@ -462,7 +462,7 @@ void cbTrue(const nav_msgs::Odometry::ConstPtr &msg)
 // --------- MEASUREMENT UPDATE WITH GROUND TRUTH ----------
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "hector_motion");
+    ros::init(argc, argv, "drone_ins");
     ros::NodeHandle nh;
 
     // --------- parse parameters ----------

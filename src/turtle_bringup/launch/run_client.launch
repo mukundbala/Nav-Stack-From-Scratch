@@ -32,7 +32,17 @@
     </group>
     
     <group if="$(eval project == 'proj2')">
-        <include file="$(find ee4308_hector)/launch/run.launch" ns="$(arg drone_namespace)"/>
-    </group>
-        
+        <group ns = "$(arg drone_namespace)">
+            <param name="initial_x" value="$(env HECTOR_X)" type="double"/>
+            <param name="initial_y" value="$(env HECTOR_Y)" type="double"/>
+            <param name="initial_z" value="$(env HECTOR_Z)" type="double"/>
+            <rosparam command="load" file="$(find drone_commander)/config/drone_commander.yaml"/>
+            <rosparam command="load" file="$(find drone_commander)/config/trajectory_generator.yaml"/>
+            <rosparam command="load" file="$(find drone_commander)/config/velocity_controller.yaml"/>
+            <rosparam command="load" file="$(find drone_ins)/config/drone_ins.yaml" />
+            <param name="run" value="true" type="bool"/>
+            <node pkg="drone_commander" type="drone_commander_node" name="drone_commander" output="screen" />
+            <node pkg="drone_ins" type="drone_ins" name="drone_ins" output="screen" />
+        </group>
+    </group>    
 </launch>

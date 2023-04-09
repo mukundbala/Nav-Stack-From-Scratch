@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>ee4308_hector</name>
+  <name>drone_ins</name>
   <version>0.0.0</version>
-  <description>The ee4308_hector package</description>
+  <description>The drone_ins package</description>
 
   <maintainer email="lyk@todo.todo">lyk</maintainer>
 
