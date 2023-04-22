@@ -129,7 +129,7 @@ Alternately, we can fly to where the Turtle is *going to be* in the future. This
     - For **Mode 1: Solo Turtlebot**
         - *<world_name>.sh file*
             ```bash
-            ## spawning coordinates for turtlebot
+            ## spawning coordinates for Turtlebot
             export TURTLE_X=-2.0 
             export TURTLE_Y=-0.5
 
@@ -151,7 +151,7 @@ Alternately, we can fly to where the Turtle is *going to be* in the future. This
     - For **Mode 2: Solo Hector Quadrotor**
         - *<world_name>.sh file*
             ```bash
-            ## spawning coordinates for turtlebot
+            ## spawning coordinates for Hector Quadrotor
             export HECTOR_X=0.0
             export HECTOR_Y=0.0
             export HECTOR_Z=0.178
