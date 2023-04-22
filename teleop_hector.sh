@@ -1,3 +1,3 @@
 source devel/setup.bash
 
-rosrun turtle_bringup teleop_hector.py
+rosrun robot_bringup teleop_hector.py
