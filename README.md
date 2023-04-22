@@ -69,8 +69,8 @@ This is a from scratch implementation of drone autonomous navigation. The implem
 #### **(1) Drone Commander**
 The Drone Commander can be found in *drone_commander* package. The drone_commander node runs a Finite State Machine, trajectory generator and PID controller. Cubic or Quintic hermite splines can be used.
 
-#### **(2) drone_ins**
-The Drone INS, or Drone Inertial Navigation System, uses an Extended Kalman Filter for pose estimation using GPS,Sonar,Barometer and Magnetometer. Found in *drone_ins* package.
+#### **(2) Drone INS**
+The Drone INS, or Drone Inertial Navigation System, uses an Extended Kalman Filter for pose estimation by fusing GPS,Sonar,Barometer and Magnetometer. Found in *drone_ins* package.
 
 #### **(3) hmsgs**
 The hmsgs contains a single message to publish a Goal message, which contains the ID of the goal and the position. This is not used for anything other than logging and debugging on RViz.
