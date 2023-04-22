@@ -62,7 +62,7 @@ The tmsgs package contains purely message and service files for communication be
 
 
 ## (B) Hector Quadrotor
-This is a from scratch implementation of drone autonomous navigation. The implementation was simplified by consider the quadrotor as a 4DOF system, where we only consider X,Y,Z and Yaw. We assume that the robot frame Z-axis is always parallel to world frame Z-axis. This eliminates pitch and roll.
+This is a from scratch implementation of drone autonomous navigation. The implementation was simplified by considering the quadrotor as a 4DOF system, where we only consider X,Y,Z and Yaw. We assume that the robot frame Z-axis is always parallel to world frame Z-axis. This eliminates pitch and roll.
 
 ### **Features**:
 
