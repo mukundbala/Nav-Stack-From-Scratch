@@ -1,5 +1,5 @@
 # motion
-verbose_motion: true
+verbose_motion: false
 use_ground_truth: true
 variance: false
 qa: 1

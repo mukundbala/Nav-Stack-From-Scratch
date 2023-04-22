@@ -343,7 +343,6 @@ void cbMagnet(const geometry_msgs::Vector3Stamped::ConstPtr &msg)
         if (var_magn.size() > 100)
         {
         var = calc_variance(var_magn);
-        ROS_INFO("[HM] MAGNETOMETER VARIANCE: (%6.4lf)", var);
         var_magn.erase(var_magn.begin());
         }
     }
@@ -385,8 +384,6 @@ void cbBaro(const hector_uav_msgs::Altimeter::ConstPtr &msg)
 
     // Update state covariance matrix
     P_z = P_z - (K_bar_z * H_bar_z * P_z);
-
-    ROS_INFO("Z(0): %3.3lf, Z(1): %3.3lf, Z(2): %3.3lf", Z(0), Z(1), Z(2));
 
     if (variance)
     {
