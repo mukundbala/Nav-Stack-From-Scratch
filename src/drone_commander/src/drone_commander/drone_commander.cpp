@@ -76,7 +76,7 @@ DroneCommander::DroneCommander(ros::NodeHandle &nh)
     {
         
         XmlRpc::XmlRpcValue goal_loader;
-        nh_.getParam("solo_goals" , goal_loader);
+        nh_.getParam("goals" , goal_loader);
 
         if (goal_loader.getType() == XmlRpc::XmlRpcValue::TypeArray)
         {
