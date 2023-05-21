@@ -1,7 +1,7 @@
 # Robot-Control-Planning-Navigation
 [![ROS Build](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml)
 
-This repository contains from scratch implementation of planning and control techniques for differential drive robots (part 1) and quadrotors (part 2) in C++
+This repository contains implementations of robot planning and control techniques for differential drive robots (part 1) and quadrotors (part 2), written entirely in C++
 Tested on Ubuntu 20.04 for ROS Noetic and compiled with C++17.
 
 There are 3 simulation modes that can be used. Mode 1 spawns the Turtlebot and can run waypoint based missions for the Turtlebot. Mode 2 spawns the Hector Quadrotor only and can run waypoint based missions for the Hector Quadrotor. Mode 3 spawns both Turtlebot and Hector and can run co-op missions.
