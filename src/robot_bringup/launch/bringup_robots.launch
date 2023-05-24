@@ -18,7 +18,7 @@
         <group ns="$(arg turtle_namespace)">
             <param name = "robot_description" command="$(find xacro)/xacro $(find robot_bringup)/urdf/turtlebot3_burger.urdf.xacro tf_prefix:=turtle"/>
             <node pkg="gazebo_ros" type="spawn_model" name="spawn_turtle"  
-                args="-urdf -model turtlebot3_burger -x $(env TURTLE_X) -y $(env TURTLE_Y) -z 0.002 -param robot_description"
+                args="-urdf -model turtlebot3_burger -x $(env TURTLE_X) -y $(env TURTLE_Y) -z 0.002 -param /turtle/robot_description"
                 respawn="false" output="screen" /> 
             
             <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
@@ -68,7 +68,7 @@
         <group ns="$(arg turtle_namespace)">
             <param name = "robot_description" command="$(find xacro)/xacro $(find robot_bringup)/urdf/turtlebot3_burger_proj2.urdf.xacro tf_prefix:=turtle" /><!-- yk: added tf_prefix into urdf-->
             <node pkg="gazebo_ros" type="spawn_model" name="spawn_turtle"  
-                args="-urdf -model turtlebot3_burger -x $(env TURTLE_X) -y $(env TURTLE_Y) -z 0.002 -param robot_description"
+                args="-urdf -model turtlebot3_burger -x $(env TURTLE_X) -y $(env TURTLE_Y) -z 0.002 -param /turtle/robot_description"
                 respawn="false" output="screen" /> 
             <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
                 <param name="publish_frequency" type="double" value="50.0" />

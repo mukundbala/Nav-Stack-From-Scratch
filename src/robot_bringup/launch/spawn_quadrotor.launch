@@ -77,7 +77,7 @@
 
   <!-- push robot_description to factory and spawn robot in gazebo -->
   <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model"
-        args="-param robot_description
+        args="-param /hector/robot_description
            -urdf
            -x $(arg x)
            -y $(arg y)
