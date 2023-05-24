@@ -11,4 +11,4 @@ thresh_cruise_planar: 0.2
 
 look_ahead: 0.3
 enable_prediction: true
-co_op: false
+co_op: true
