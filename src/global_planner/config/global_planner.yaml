@@ -1,2 +1,4 @@
 gp_rate: 25.0
-verbose_planner: false
+verbose_planner: true
+planner_name: "astar"
+cost_mode: "fg"
