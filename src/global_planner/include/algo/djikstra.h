@@ -1,60 +1,34 @@
 #ifndef TBOT__DJIKSTRA_H
 #define TBOT__DJIKSTRA_H
-#include "bot_utils/map_data.h"
 
-class Djikstra
+#include "bot_utils/bot_utils.h"
+#include "grid_planner_core.h"
+#include <array>
+#include <deque>
+#include <vector>
+
+
+class Djikstra : public GridPlannerCore
 {
-public:
-    struct Node
-    {
-        double g, h;
-        bool visited;
-        bot_utils::Index idx;
-        bot_utils::Index parent;
-        Node();
-    };
-    struct Open
-    {
-        double f;
-        bot_utils::Index idx;
-        Open();
-        Open(double f, bot_utils::Index idx);
-    };
-    
-    bot_utils::Index start;
-    
-    bot_utils::Index goal;
-    
-    bot_utils::MapData &map_;
-
-    Djikstra(bot_utils::MapData &map_);
-    
-    bot_utils::Index plan(bot_utils::Index idx_start);
-    
-    bot_utils::Pos2D plan(bot_utils::Pos2D pos_start);
-
 private:
 
-    std::vector<Node> nodes; // keeps a record of the cheapest cost of every cell in the grid, as well as their parents
+    std::vector<bot_utils::Pos2D> plan(bot_utils::Index idx_start, bot_utils::Index idx_goal , bot_utils::MapData &map_data) override;
     
-    std::deque<Open> open_list;
+    std::vector<bot_utils::Pos2D> plan(bot_utils::Pos2D pos_start, bot_utils::Pos2D pos_goal , bot_utils::MapData &map_data) override;
 
-    bot_utils::Index NB_LUT[8] = {{1,0}, {1,1}, {0,1}, {-1,1}, {-1,0}, {-1,-1}, {0,-1}, {1,-1}};
+    std::vector<bot_utils::Pos2D> post_process_path(std::vector<bot_utils::Pos2D>& raw_path , bot_utils::MapData &map_data) override;
 
-    void add_to_open(Node * node);
-    
-    Node * poll_from_open();
+public:
 
-    //helpers
-    bot_utils::Index pos2idx(bot_utils::Pos2D &pos);
+    Djikstra();
 
-    bot_utils::Pos2D idx2pos(bot_utils::Index &idx);
+    Djikstra(std::string cost_mode, bot_utils::MapData &map_data);
 
-    int flatten(bot_utils::Index &idx);
+    ~Djikstra() override;
 
-    bool oob(bot_utils::Index &idx);
+    bot_utils::Pos2D find_better_point(bot_utils::Index idx_bad , bot_utils::MapData &map_data);
 
-    bool testPos(bot_utils::Pos2D idx);
+    bot_utils::Pos2D find_better_point(bot_utils::Pos2D pos_bad , bot_utils::MapData &map_data);
 
 };
 

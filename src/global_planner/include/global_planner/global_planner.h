@@ -2,6 +2,7 @@
 #define TBOT__GLOBAL_PLANNER_H
 
 #include "ros/ros.h"
+#include "grid_planner_core.h"
 #include "astar.h"
 #include "thetastar.h"
 #include "djikstra.h"
@@ -15,7 +16,9 @@
 #include <std_msgs/Int32MultiArray.h>
 #include <std_msgs/Bool.h>
 #include <nav_msgs/Path.h>
+
 #include <vector>
+#include <memory>
 /*
 GlobalPlanner class has the following roles:
 - Subscribe to pose
@@ -42,6 +45,14 @@ private:
     //goals
     bot_utils::Pos2D current_goal_; //ok
     bool goal_status_;
+
+    //planner related
+    //MainPlanner
+    std::shared_ptr<GridPlannerCore> main_planner_;
+    //BackupPlanner
+    Djikstra fallback_planner_;
+    std::string planner_name_;
+    std::string cost_mode_;
 
     //planning related
     bool trigger_plan;
@@ -92,6 +103,9 @@ public:
     
     //load params
     bool loadParams();
+
+    //setup planners polymorphically
+    void setupPlanner();
 
     //helper stuff
     bot_utils::Index pos2idx(bot_utils::Pos2D &pos);

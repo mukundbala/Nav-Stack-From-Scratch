@@ -43,6 +43,7 @@ include_directories(
 # With catkin_make all packages are built within a single CMake context
 # The recommended prefix ensures that target names across packages don't collide
 add_executable(global_planner_node
+  src/algo/grid_planner_core.cpp
   src/algo/astar.cpp
   src/algo/djikstra.cpp
   src/algo/thetastar.cpp
