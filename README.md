@@ -1,12 +1,17 @@
 # Robot-Control-Planning-Navigation
 [![ROS Build](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml)
 
-This repository contains implementations of robot planning and control techniques for differential drive robots (part 1) and quadrotors (part 2), written entirely in C++
-Tested on Ubuntu 20.04 for ROS Noetic and compiled with C++17.
+This repository contains implementations of robotics motion planning, control and mapping algorithms/techniques. This repository started off as a project for my coursework in NUS EE4308, and has come a long way since. 
 
-There are 3 simulation modes that can be used. Mode 1 spawns the Turtlebot and can run waypoint based missions for the Turtlebot. Mode 2 spawns the Hector Quadrotor only and can run waypoint based missions for the Hector Quadrotor. Mode 3 spawns both Turtlebot and Hector and can run co-op missions.
+Generally, I am not for implementing algorithms that have already been iteratively improved and established by the open source community (for eg. https://github.com/ros-planning/navigation2/tree/main). However, spending time implementing (and struggling to do so at times) these algorithms from scratch has instilled a first-principles understanding of how these supposedly common and simple algorithms work under the hood. 
 
-# How to build
+The value of this endeavor is vertiably clear to me as it has made me a better developer and made me more confident in using off the shelf tools :) I take inspiration from wonderful projects like https://github.com/AtsushiSakai/PythonRobotics and hope to further extend this repository. PRs are always welcome!
+
+All algorithms are implemented and tested on C++17 on ROS Noetic.
+
+See Section (1) for building instruction. If you are just browsing, see Sections (3) and (6). Otherwise, read all :) 
+
+# (1) How to build
 
 ```bash
 ##but first, some dependencies
@@ -23,6 +28,14 @@ mkdir -p catkin_ws/src ##note that you dont have to use "catkin_ws"
 cd ~catkin_ws/src
 git clone git@github.com:mukundbala/Robot-Control-Planning-Navigation.git
 ```
+
+Dependencies
+```md
+1. Download the hector gazebo plugins and controllers here: 
+**https://drive.google.com/drive/folders/1dpGfExLByJUMmeoGGoY88x6IGdUeHe9C?usp=sharing**
+
+2. Move *hector* and *hector_quadrotor* folders into catkin_ws/src
+```
 Build workspace using catkin build
 ```bash
 catkin build
@@ -31,96 +44,190 @@ catkin build
 ```bash
 source ~/catkin_ws/devel/setup.bash
 ```
-# Implementation
-## (A) Differential Drive Robot
-This is a from scratch implementation of core features for autonomous navigation of a differential drive robot using the TurtleBot. Packages like move_base and ROS navigation were deliberately not used, hence "from scratch".
-### **Features**:
 
-#### **(1) Weighted Average Motion Filter**
-Uses joint states and differential drive motion model to to perform localization. In *loco_mapping* package.
+# (2) Robots and Simulation
+## (a) Overview
+A **Differential Drive Robot (TurtleBot3)** and a **Hector Quadrotor** are simulated on Gazebo. There are options to spawn and control each robot individually, or run cooperative waypoint-based/coupled missions. Simulations, worlds, urdfs and simulation modes are all controlled by the ***robot_bringup*** package. 
+## (b) ***robot_bringup*** package
+In this package, utilities and files for launching, logging, visualization and simulation can be found. A brief overview is provided in this section. For this repository, this is the only package that will launch the simulation and the relevant nodes.
 
-#### **(2) Logs Odd Bayes Filter for Occupancy Grids**
-Bayesian update using logs odd Bayes Filter for map is used to update belief of the environment in 2D space. In *loco_mapping* package.
+| Directory |                                                          Description                                                         |
+|:---------:|:----------------------------------------------------------------------------------------------------------------------------:|
+|  *launch* |          This directory contains launch files for simulations (bringup_robots.launch) and nodes (run_robots.launch)          |
+| *logging* |                                             Logging config files for plotjuggler                                             |
+|   *rviz*  |                                                       Rviz config files                                                      |
+| *scripts* |              Contains python teleoperation scripts for Hector Quadrotor and TurtleBot3, written as python nodes              |
+|   *src*   |                                            tf transform broadcaster for Turtlebot3                                           |
+|   *urdf*  |                               Contains URDF descriptions of the robots used in this repository.                              |
+|  *worlds* | Contains .world files of the simulation environment, spawn parameters (spawn location etc) and waypoint position in 2D or 3D |
 
-#### **(3) Mission Planner**
-Tracks whether the TurtleBot has achieved its goal, and publishes new goals. Mission Planner can also update its internal list of goals based on feedback from Global Planner. This happens when the PERCEIVED location of the goal lies in an occupied cell on the occupancy grid, something generally caused by odometry drifts. In *mission_planner* package.
+## (c) ***supporting .sh files***
+This repository extensively uses bash scripts to load paramters and run programs to avoid the common hassle of "sourcing" the ROS workspace etc. Generally, it helps with data collection purposes where these .sh files can be run repeatedly with different parameters.
+|     Bash File    |                                                                                                                                                            Description                                                                                                                                                           |
+|:----------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+|    bringup.sh    |                                                                             Handles the boring stuff like sourcing workspace. More importantly, it loads (or sources in bash terms) simulation parameters and launches the bringup_robots.launch file                                                                            |
+|      run.sh      | Handles the boring stuff like sourcing workspace. Resets Gazebo simulation so that we can immediately restart simulation without shutting off everything. Launch all relevant nodes according to the simulation mode using run_robots.launch file.Safely shuts down the simulation by directly publishing 0 velocities to robots |
+|     params.sh    |                                                                          Contains 2 very important field: WORLD and TASK. WORLD refers to the chosen world in ***robot_bringup*** package, while TASK refers to the simulation mode (more on this later)                                                                         |
+| teleop_turtle.sh |                                                                                              Launches TurtleBot3 teleoperation node. Directly publishes to /cmd_vel topic. You minimally need to bringup the simulation to use this.                                                                                             |
+| teleop_hector.sh |                                                                                           Launches Hector Quadrotor teleoperation node. Directly publishes to /cmd_vel topic. You minimally need to bringup the simulation to use this.                                                                                          |
+|  drone_logger.sh |                                                                                                                             Logging bash file that launches plotjuggler. Nothing too important here.                                                                                                                             |
+**================================**
+# (3) Architecture
 
-#### **(4) Global Planner: AStar with Post-Processing**
-Global planner recives a goal and plans a path to the goal using AStar. Astar paths a post-processed to make paths more any-angle. Found in *global_planner* package.
-
-#### **(5) Global Planner: Djikstra**
-Djikstra is used as a backup planner to find the nearest free cell when either TurtleBot is on an occupied cell or when the goal is on an occupied cell. For the latter case, a service is used to update the mission planner's internal list of goals. Found in *global_planner* package.
-
-#### **(6) Commander**
-Commander gets a path from the Global Planner and generates a trajectory, which comprises of an array of targets. Trajectory generation is done using either Linear Interpolation, Cubic Hermite Spline or Quintic Hermite Spline. These can be set in the *config/trajectory.yaml* in the *commander* package.
-
-#### **(7) PID Controller**
-The PID controller runs on the same level (same ros node) as the commander. It takes in the current target issued by the trajectory generator, and generates command velocities. Bidirectional motion is allowed here, where the turtlebot will simply reverse to the goal rather than turning around. Found in *commander* package.
-
-#### **(8) tmsgs**
-The tmsgs package contains purely message and service files for communication between nodes.
-
-
-## (B) Hector Quadrotor
-This is a from scratch implementation of drone autonomous navigation. The implementation was simplified by considering the quadrotor as a 4DOF system, where we only consider X,Y,Z and Yaw. We assume that the robot frame Z-axis is always parallel to world frame Z-axis. This eliminates pitch and roll.
-
-### **Features**:
-
-#### **(1) Drone Commander**
-The Drone Commander can be found in *drone_commander* package. The drone_commander node runs a Finite State Machine, trajectory generator and PID controller. Cubic or Quintic hermite splines can be used.
-
-#### **(2) Drone INS**
-The Drone INS, or Drone Inertial Navigation System, uses an Extended Kalman Filter for pose estimation by fusing GPS,Sonar,Barometer and Magnetometer. Found in *drone_ins* package.
-
-#### **(3) hmsgs**
-The hmsgs contains a single message to publish a Goal message, which contains the ID of the goal and the position. This is not used for anything other than logging and debugging on RViz.
-
-## (C) Common Features
-#### **(1) robot_bringup**
-This package contains everything you would need to set worlds and waypoints. This is common for both Differential Drive and Quadrotor. At its core, bringup_robots.launch spawns the robot/robots according to the chosen simulation modes, while run_robots.launch starts the control and navigation stack nodes.
-
-#### **(2) bot_utils**
-Bot utils package (*bot_utils*) is a library containing common functions and data structures that can be used for both Quadrotor and Differential Drive.
-
-#### **(3) Usage of .sh files**
-Bash files are used to toggle between solo turtlebot, solo drone and co-op where the drone and turtle are spawned together to do some task. You can also set the world you want to launch here.
+<p align="center">
+  <img src="images/architecture.png"/>
+</p>
+<p align="center">Figure 1: Software and Control Architecture</p>
 
 **================================**
-# Simulation Modes
+# (4) Algorithms/Techniques Implementations
+## (a) Differential Drive Simple Localization
+[Found in ***loco_mapping*** package.]
+
+This implementation uses the velocity motion model of a differential drive robot to track the pose using odometry (dead reckoning). This is fused with IMU with a weighted average filter. This is generally does not perform well due to wheel slip etc, but is reasonable for the flat ground in simulation.
+
+## (b) Occupancy Grid Mapping with Log Odds Binary Bayes Filter
+[Found in ***loco_mapping*** package.]
+
+This implementation uses lidar measurements to incrementally update the robot's belief of the occupancy state of each grid on the map. Brensenham's Line Algorithm combined with the inverse sensor model is heavily used accomplish this. The occupancy map is also inflated to permit point mass assumption and allow safe navigation.
+
+## (c) Mission Planner
+[Found in ***mission_planner*** package.]
+
+Mission Planner is a top level controller that loads waypoints from .yaml file. The completion of each waypoint is tracked, and the next waypoint is published only when the current waypoint is completed. This node shuts off all other nodes when all checkpoints have been achieved.
+
+## (d) tmsgs and hmsgs
+[Found in ***tmsgs*** and ***hmsgs***  packages.]
+
+Custom .msg and .srv files for communication for TurtleBot3 and Hector Quadrotor. Generally good practice is write these messages as separate topics. This should be followed for extensions with different robots.
+
+## (e) Global Planner
+[Found in ***global_planner*** package]
+
+Global Planner is a package that contains planning algorithms and the main global planner logic.
+
+- ### (e.1) Global Planner Logic
+    The main global planner logic gets a new waypoint from mission planner, and uses the current position of the robot along with the current map state to compute a path. This path is published. Main logic is found in GlobalPlanner::run().
+
+    The type of planner used is polymorphically selected at runtime from global_planner.yaml config files.
+
+- ### (e.2) GridPlannerCore
+    This class is the base class grid planner pure interface that **enforces plan(.), post_process_path(.) and generatePath(.) methods for its children**. It also implements common functions and data structures that planners would need.
+
+- ### (e.3) OpenList
+    The implementation of OpenList uses a **min heap implemented using std::priority_queue**, with 3 sorting modes that can be selected in the config files. Note that some planners require a certain cost mode to work. The OpenList data structure is implemented in GridPlannerCore.
+
+- ### (e.4) Grid Planners: Djikstra, Astar , ThetaStar(wip)
+    3 Grid Based planners that inherit from GridPlannerCore have been implemented, and can be selected easily through config files.
+
+- ### (e.5) Fallback Planner
+    Grid-based planners plan based on map states, where they avoid grids that are occupied/inflated and explore cells that are free. Due to imperfections in odometry, the robot can find itself on occupied/inflated cells or its goal may appear on these cells. **This will cause the planner to always fail as these cells will be avoided**. A Fallback Planner, implemented using Djikstra, finds the nearest free cell from a given non-free cell, which the main planner uses to plan its path.
+
+## (f) Commander
+[Found in ***commander*** package]
+
+The Local Planner receives a path from the Global Planner and generates a trajectory over the points on the path. It feeds targets on the trajectory to a PID controller to generate command velocities.
+
+- ### (f.1) Commander Logic
+    The commander receives a path from Global Planner and generates a trajectory over this path. It tests the trajectory and triggers replanning by the Global Planner if the robot is too close to a target that is on a non-free cell. The Commander selects a target and feeds it to the PID Controller. Once a target is reached, it feeds the next target.
+
+- ### (f.2) Local Planner
+    Trajectories are generated using ***C<sup>0</sup>* Continuous Linear Interpolation**, ***C<sup>1</sup>* Continuous Cubic Hermite Spline** or ***C<sup>2</sup>* Continuous Quintic Hermite Spline**. Choice of local planner algorithm is polymorphically set based on config file params.
+
+- ### (f.3) PID Controller
+
+    The PID Controller receives a target from the Local Planner and generates a command velocity using PID algorithm. The gains for the controller can be set in config params.
+
+## (g) Drone Commander
+[Found in ***drone_commander*** package]
+
+The Drone Commander contains a high level **Finite State Machine (FNS)** for mission control and a mid-level **Trajectory Generator** and **PID Controller** for motion planning. It allows the drone to fly coupled missions with the TurtleBot3 or solo waypoint based missions.
+
+- ### (g.1) FNS
+    The FNS tracks the mission state of the Hector Drone and transitions to subsequent states to perform solo or coupled missions. 
+
+- ### (g.2) Trajectory Generator
+    Trajectories are generated using ***C<sup>0</sup>* Continuous Linear Interpolation**, ***C<sup>1</sup>* Continuous Cubic Hermite Spline** or ***C<sup>2</sup>* Continuous Quintic Hermite Spline**. Choice of local planner algorithm is polymorphically set based on config file params.
+
+- ### (g.3) PID Controller
+
+    The PID Controller receives a target from the Trajectory Generator and generates a command velocity using PID algorithm. The gains for the controller can be set in config params.
+
+- ### (g.4) Spline Based Prediction
+
+    For coupled Hector-TurtleBot3 missions, we may require the Hector to fly to the movign TurtleBot3. Rather than generating trajectories to the Turtle's position, we use the spline of the TurtleBot to compute a point on the spline that both Hector and TurtleBot can reach at the same time. Repeating this prediction at every time step creates shorter and faster trajectories for the Hector.
+
+## (h) Drone Inertial Navigation System using EKF
+
+The Drone Inertial Navigation System (INS) fuses GPS, IMU, Magnetometer, Barometer and Sonar measurements using an Extended Kalman Filter for pose estimation.
+
+**================================**
+
+# (5) Simulation Modes
 
 ## Mode1: Solo Turtlebot
 This mode allows only the Turtlebot to be spawned in a world. Waypoints can be set and the Turtlebot will map the environment and travel to each of the waypoints in sequence.
 
-<p align="center">
-  <img src="vids/mode1.gif" alt="animated" />
-</p>
-<p align="center">Solo Turtlebot Waypoint-based mission</p>
-
 ## Mode 2: Solo Hector Quadrotor
 This mode is primarily meant to test out Hector's Finite State Machine and Trajectory Generation. This mode allows waypoint based flight for the Hector. Only the hector will be spawned in this mode. This mode was used to tune the PID gains of the Hector
 
-<p align="center">
+<!-- <p align="center">
   <img src="vids/mode2flight.gif" alt="animated" />
 </p>
-<p align="center">Solo Hector Quadrotor Waypoint-based Flight</p>
+<p align="center">Solo Hector Quadrotor Waypoint-based Flight</p> -->
 
 ## Mode 3: Coupled Co-op Flights
 During Co-op flights, the Hector will chase after the Turtle and fly to its position. The Hector then flies to the final goal of the Turtle before flying back to the Takeoff Point. A naive approach might be to simply get the Turtle's position and fly to it. However, this can create unnecessarily long flight paths.
 
 Alternately, we can fly to where the Turtle is *going to be* in the future. This is done by getting the published trajectory of the turtle. These trajectories can be Linear, Cubic or Quintic splines. The commonality is that targets in these trajectories are generated over a fixed *dt*. We can exploit this to find a point on the trajectory from the Turtle's current target where both the Turtle and the Hector will reach at around the same time.
 
+# (6) In Action
+<p align="center">
+  <img src="vids/NavStackInAction.gif" alt="animated" />
+</p>
+<p align="center">Figure 2: TurtleBot3 Mapping and Navigation</p>
 
 <p align="center">
-  <img src="vids/chase.gif" alt="animated" />
+  <img src="vids/TurtleLinear.gif" alt="animated" />
 </p>
-<p align="center">Chasing the Turtlebot using spline-based prediction</p>
+<p align="center">Figure 3: Linear TurtleBot3 Trajectories</p>
 
 <p align="center">
-  <img src="vids/co_opflight.gif" alt="animated" />
+  <img src="vids/TurtleCubic.gif" alt="animated" />
 </p>
-<p align="center">Hector and Turtlebot missions</p>
+<p align="center">Figure 4: Cubic Hermite Spline TurtleBot3 Trajectories</p>
 
-# How to Use
+<p align="center">
+  <img src="vids/TurtleQuintic.gif" alt="animated" />
+</p>
+<p align="center">Figure 5: Quintic Hermite Spline TurtleBot3 Trajectories</p>
+
+<p align="center">
+  <img src="vids/DroneTakeoffLand.gif" alt="animated" />
+</p>
+<p align="center">Figure 6: Hector Quadrotor Takeoff and Landing</p>
+
+<p align="center">
+  <img src="vids/DroneSoloWaypointFlight.gif" alt="animated" />
+</p>
+<p align="center">Figure 7: Hector Quadrotor Solo Waypoint Flight</p>
+
+<p align="center">
+  <img src="vids/CoOpFlight.gif" alt="animated" />
+</p>
+<p align="center">Figure 8: TurlteBot3 - Hector Co-Op Mission</p>
+
+<p align="center">
+  <img src="vids/PredictionFlight.gif" alt="animated" />
+</p>
+<p align="center">Figure 9: Spline-Based Prediction</p>
+
+<p align="center">
+  <img src="vids/NoPredictionFlight.gif" alt="animated" />
+</p>
+<p align="center">Figure 10: Without Spline-Based Prediction</p>
+
+# (7) How to Use
 ## Adding World Files and goals for different modes
 1. Go to robot_bringup/worlds
 - Each world file that is added has its own directory,<world_name>. This directory contains a *<world_name>.sh file*,*<world_name>_tgoals.yaml*,*<world_name>_hgoals.yaml* file and a *<world_name>.world* file.
@@ -213,7 +320,10 @@ This mode will spawn a Turtlebot in a world, and it will navigate from its spawn
 6. Once Gazebo and Rviz have launched, run ./run.sh in the second terminal
 7. The Turtlebot will begin its mission
 
-![Alt text](images/Mode1.png)
+<p align="center">
+  <img src="images/Mode1.png"/>
+</p>
+<p align="center">Figure 11: Mode 1</p>
 
 ## Mode 2: Solo Hector Quadrotor
 This mode will spawn a Hector Quadrotor in a world, and it will navigate from its spawn location to each of the goal locations that were set.
@@ -226,7 +336,11 @@ This mode will spawn a Hector Quadrotor in a world, and it will navigate from it
 6. In the first terminal, run ./bringup.sh
 7. Once Gazebo and Rviz have launched, run ./run.sh in the second terminal
 8. The Quadrotor will begin its mission
-![Alt text](images/Mode2.png)
+
+<p align="center">
+  <img src="images/Mode2.png"/>
+</p>
+<p align="center">Figure 12: Mode 2</p>
 
 ## Mode 3: Co-op Turtlebot + Hector Quadrotor
 This mode spawn both the Hector and Turtlebot in the world. There are 2 "sub modes" in this mode, mode3a and mode3b that have different co-op behaviors
@@ -258,7 +372,8 @@ The only difference in settings for mode3a and mode3b is in setting the **co_op 
 7. Once Gazebo and Rviz have launched, run ./run.sh in the second terminal
 8. The Quadrotor and Turtlebot will begin their respective missions
 
-Hector Flying around with the Turtle
-![Alt text](images/Mode3.png)
-Hector Chasing the Turtle
-![Alt text](images/Mode3ChasingTurtle.png)
+<p align="center">
+  <img src="images/Mode3.png"/>
+</p>
+<p align="center">Figure 13: Mode 3</p>
+
