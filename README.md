@@ -1,4 +1,4 @@
-# Robot-Control-Planning-Navigation
+# Nav-Stack-From-Scratch
 [![ROS Build](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml)
 
 **This project is a part of and an extension to EE4308 Autonomous Robot Systems course project at the National University of Singapore.**
