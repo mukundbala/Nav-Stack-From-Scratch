@@ -1,7 +1,7 @@
 # Robot-Control-Planning-Navigation
 [![ROS Build](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml)
 
-This project is a part of and an extension to EE4308 Autonomous Robot Systems at NUS.
+This project is a part of and an extension to EE4308 Autonomous Robot Systems course project at the National University of Singapore.
 
 This repository contains from-scratch implementations of robotics motion planning, control and mapping algorithms/techniques. This repository started off as a project for my coursework in NUS EE4308, and has come a long way since.  Spending time implementing (and struggling to do so at times) these algorithms from scratch has instilled a first-principles understanding of how these supposedly common and simple algorithms work under the hood. 
 
