@@ -207,7 +207,7 @@ This repository extensively uses bash scripts to load paramters and run programs
 
 # (6) Simulation Modes
 
-## Mode1: Solo Turtlebot
+## Mode 1: Solo Turtlebot
 This mode allows only the Turtlebot to be spawned in a world. Waypoints can be set and the Turtlebot will map the environment and travel to each of the waypoints in sequence.
 
 ## Mode 2: Solo Hector Quadrotor
@@ -341,14 +341,14 @@ This mode will spawn a Hector Quadrotor in a world, and it will navigate from it
 ## Mode 3: Co-op Turtlebot + Hector Quadrotor
 This mode spawn both the Hector and Turtlebot in the world. There are 2 "sub modes" in this mode, mode3a and mode3b that have different co-op behaviors
 
-**In mode3a**, Hector's navigation is entirely coupled with the Turtlebot. The Hector will Takeoff, then fly to the Turtle's position, then fly to the Turtle's final goal.
+**In Mode 3a**, Hector's navigation is entirely coupled with the Turtlebot. The Hector will Takeoff, then fly to the Turtle's position, then fly to the Turtle's final goal.
 It will then fly back to its Takeoff position. This pattern (Takeoff - Turtle - TurtleFinalWaypoint - Takeoff - ....) will continue UNTIL the Turtle has reached its final goal. It will then complete its current cycle, fly back to the Takeoff point, and Land.
 
-**In mode3b**, the Hector's navigation is decoupled from the Turtlebot. The Hector will load in separate goals from *<world_name>_hgoals.yaml* and follow that instead. Its behavior will be identical to the behavior in Mode2.
+**In Mode 3b**, the Hector's navigation is decoupled from the Turtlebot. The Hector will load in separate goals from *<world_name>_hgoals.yaml* and follow that instead. Its behavior will be identical to the behavior in Mode2.
 
 The only difference in settings for mode3a and mode3b is in setting the **co_op field in *drone_commander/config/drone_commander.yaml* to true or false.**
 
-### Mode3a: Coupled Mission
+### Mode 3a: Coupled Mission
 1. Follow the instructions in the Adding World Files section. Make sure you follow the fields for **Mode 3**.
 2. Go to *params.sh* and add in the <world_name> in the **WORLD** field and "mode3" to the **TASK** field.
 3. Go to *drone_commander/config/drone_commander.yaml* and set **co_op=true**. The State Machine will run a follow turtle sequence to fulfill the cycles
@@ -358,7 +358,7 @@ The only difference in settings for mode3a and mode3b is in setting the **co_op 
 7. Once Gazebo and Rviz have launched, run ./run.sh in the second terminal
 8. The Quadrotor and Turtlebot will begin their respective missions
 
-### Mode3b: Decoupled Mission
+### Mode 3b: Decoupled Mission
 1. Follow the instructions in the Adding World Files section. Make sure you follow the fields for **Mode 3**.
 2. Go to *params.sh* and add in the <world_name> in the **WORLD** field and "mode3" to the **TASK** field.
 3. Go to *drone_commander/config/drone_commander.yaml* and set **co_op=false**. The State Machine will run a waypoint follower sequence and fly independently of the Turtle
