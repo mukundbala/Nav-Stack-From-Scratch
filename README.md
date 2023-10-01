@@ -3,9 +3,9 @@
 
 **This project is a part of and an extension to EE4308 Autonomous Robot Systems course project at the National University of Singapore.**
 
-This repository contains from-scratch implementations of robotics motion planning, control and mapping algorithms/techniques. This repository started off as a project for my coursework in NUS EE4308, and has come a long way since.  Spending time implementing these algorithms from scratch has instilled a first-principles understanding of how these supposedly common and simple algorithms work under the hood. 
+This repository contains from-scratch implementations of robotics motion planning, control and mapping algorithms/techniques. The goal was to understand these algorithms from 1st principles and implement them in an efficient, yet readable manner. This "full stack" approach has been vital in building an indepth understanding of how these algorithms work under the hood, while also vastly improving my skills as a robotics software engineer. This work allows for decoupled waypoint based missions for both robots and coupled missions where the drone's path is dependent on the Turtlebot's path
 
-All algorithms are implemented and tested on **C++17 on ROS Noetic**.
+All algorithms are implemented and tested on **C++17 on ROS Noetic** using **Gazebo** for simulation.
 
 If you are just browsing, see **Sections (1-3)**. Build and usage instructions in **Sections (4-6)**
 # (1) Architecture
@@ -98,7 +98,7 @@ Global Planner is a package that contains planning algorithms and the main globa
 - ### (e.3) OpenList
     The implementation of OpenList uses a **min heap implemented using std::priority_queue**, with 3 sorting modes that can be selected in the config files. Note that some planners require a certain cost mode to work. The OpenList data structure is implemented in GridPlannerCore.
 
-- ### (e.4) Grid Planners: Djikstra, Astar , ThetaStar(wip)
+- ### (e.4) Grid Planners: Djikstra, Astar , ThetaStar
     3 Grid Based planners that inherit from GridPlannerCore have been implemented, and can be selected easily through config files.
 
 - ### (e.5) Fallback Planner
