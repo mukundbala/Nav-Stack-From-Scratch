@@ -1,8 +1,6 @@
 # Nav-Stack-From-Scratch
 [![ROS Build](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml/badge.svg?branch=main)](https://github.com/mukundbala/Robot-Control-Planning-Navigation/actions/workflows/main.yml)
 
-**This project is a part of and an extension to EE4308 Autonomous Robot Systems course project at the National University of Singapore.**
-
 This repository contains from-scratch implementations of robotics motion planning, control and mapping algorithms/techniques. The goal was to understand these algorithms from 1st principles and implement them in an efficient, yet readable manner. This "full stack" approach has been vital in building an indepth understanding of how these algorithms work under the hood, while also vastly improving my skills as a robotics software engineer. This work allows for decoupled waypoint based missions for both robots and coupled missions where the drone's path is dependent on the Turtlebot's path
 
 All algorithms are implemented and tested on **C++17 on ROS Noetic** using **Gazebo** for simulation.
