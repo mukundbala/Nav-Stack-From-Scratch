@@ -1,4 +1,0 @@
-target_dt: 0.025
-average_speed: 2.0
-primary_traj: "Cubic" ##Cubic or Quintic
-verbose_trajectory: false
