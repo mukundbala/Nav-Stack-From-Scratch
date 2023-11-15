@@ -1,0 +1,65 @@
+###################################################################                                 
+#####################GLOBAL HECTOR CONFIGURATION FILE##############
+###################################################################
+
+#////////////////////////////////////////////////////////////////////////////////////////////
+############################################DRONE COMMANDER##################################
+verbose_commander: false #enabling verbosity
+commander_rate: 40 #node rate
+cruise_height: 2.0 #target height for drone
+takeoff_height: 2.0 #Height to take off to
+land_height: 0.178 #Land Height Target
+#############################################################################################
+#////////////////////////////////////////////////////////////////////////////////////////////
+thresh_cruise_height: 0.1 #Thresholds 
+thresh_takeoff_height: 0.05 #Thresholds 
+thresh_land_height: 0.1 #Thresholds 
+thresh_cruise_planar: 0.2 #Thresholds 
+
+look_ahead: 0.3 #Look ahead distance for controller
+enable_prediction: true #Predicting the turle's future position
+co_op: true #Enable coop
+#############################################################################################
+#////////////////////////////////////////////////////////////////////////////////////////////
+###########################################DRONE TRAJECTORY GENERATOR########################
+target_dt: 0.025 #Target rate for controller
+average_speed: 2.0 #Average drone speed
+primary_traj: "Cubic" ##Cubic or Quintic
+verbose_trajectory: false #Verbosity
+#############################################################################################
+#////////////////////////////////////////////////////////////////////////////////////////////
+###########################################DRONE VELOCITY CONTROLLER#########################
+enable_controller: true #Set to False for teleoperation
+verbose_controller: false #enabling verbosity
+Kp_lin: 1.75 #P Gain for Linear Vel
+Ki_lin: 0.0 #I Gain for Linear Vel
+Kd_lin: 0.25 ##if too aggressive, try 0.38. If still too aggressive, 0.5 should work
+Kp_z: 2.0 #P gain for Vertical Vel
+Ki_z: 0.0  #I Gain for Vertical Vel
+Kd_z: 0.1 #Z Gain for Vertical Vel
+yaw_rate: 0.5 #Constant yaw rate
+max_lin_vel: 2 #Maximum Linear velocity for hardware dependent hard constraint
+max_z_vel: 0.5 #Maximum Z velocity for hardware dependent hard constraint
+#############################################################################################
+#////////////////////////////////////////////////////////////////////////////////////////////
+###########################################DRONE INS#########################################
+verbose_motion: false
+use_ground_truth: true
+variance: false
+qa: 1
+qx: 2800
+qy: 2800
+qz: 2800
+enable_gps: true
+r_gps_x: 0.25 #1 
+r_gps_y: 0.25 #1
+r_gps_z: 0.25 #1
+enable_magnet: true
+r_mgn_a: 0.087 #1.0e-1
+enable_baro: true
+r_bar_z: 0.00287 #0.00175 #0.0114 #0.0287 #0.1089 #0.0028 #0.0014 #1.0e-1
+enable_sonar: true
+r_snr_z: 0.380 #0.00380 #0.1533 #0.0015 #0.007 #1.0e-1
+motion_iter_rate: 20
+#############################################################################################
+#////////////////////////////////////////////////////////////////////////////////////////////

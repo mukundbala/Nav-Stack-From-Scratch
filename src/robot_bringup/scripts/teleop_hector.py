@@ -5,7 +5,6 @@
 #  <license>BSD</license>
 #  <url type="website">http://wiki.ros.org/teleop_twist_keyboard</url>
 #  <author>Graylin Trevor Jay</author>
-#  modified by Lai Yan Kai for use for EE4308
 
 from __future__ import print_function
 

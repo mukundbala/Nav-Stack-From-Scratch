@@ -9,13 +9,7 @@
         <group ns="$(arg turtle_namespace)">
         <!-- Params -->
             <rosparam command="load" file="$(find robot_bringup)/worlds/$(env WORLD)/$(env WORLD)_tgoals.yaml"/>
-            <rosparam command="load" file="$(find loco_mapping)/config/motion_filter.yaml"/>
-            <rosparam command="load" file="$(find loco_mapping)/config/occupancy_grid.yaml"/>
-            <rosparam command="load" file="$(find mission_planner)/config/mission_planner.yaml"/>
-            <rosparam command="load" file="$(find global_planner)/config/global_planner.yaml"/>
-            <rosparam command="load" file="$(find commander)/config/commander.yaml"/>
-            <rosparam command="load" file="$(find commander)/config/pid.yaml"/>
-            <rosparam command="load" file="$(find commander)/config/trajectory.yaml"/>
+            <rosparam command="load" file="$(find robot_bringup)/config/core_turtle_config.yaml"/>
 
             <param name="initial_x" value="$(env TURTLE_X)" type="double"/>
             <param name="initial_y" value="$(env TURTLE_Y)" type="double"/>
@@ -41,10 +35,8 @@
             <param name="initial_y" value="$(env HECTOR_Y)" type="double"/>
             <param name="initial_z" value="$(env HECTOR_Z)" type="double"/>
             <rosparam command="load" file="$(find robot_bringup)/worlds/$(env WORLD)/$(env WORLD)_hgoals.yaml"/>
-            <rosparam command="load" file="$(find drone_commander)/config/drone_commander.yaml"/>
-            <rosparam command="load" file="$(find drone_commander)/config/trajectory_generator.yaml"/>
-            <rosparam command="load" file="$(find drone_commander)/config/velocity_controller.yaml"/>
-            <rosparam command="load" file="$(find drone_ins)/config/drone_ins.yaml" />
+            <rosparam command="load" file="$(find robot_bringup)/config/core_hector_config.yaml"/>
+
             <param name="run" value="true" type="bool"/>
             <node pkg="drone_commander" type="drone_commander_node" name="drone_commander" output="screen" />
             <node pkg="drone_ins" type="drone_ins" name="drone_ins" output="screen" />
@@ -58,10 +50,7 @@
             <param name="initial_y" value="$(env HECTOR_Y)" type="double"/>
             <param name="initial_z" value="$(env HECTOR_Z)" type="double"/>
             <rosparam command="load" file="$(find robot_bringup)/worlds/$(env WORLD)/$(env WORLD)_hgoals.yaml"/>
-            <rosparam command="load" file="$(find drone_commander)/config/drone_commander.yaml"/>
-            <rosparam command="load" file="$(find drone_commander)/config/trajectory_generator.yaml"/>
-            <rosparam command="load" file="$(find drone_commander)/config/velocity_controller.yaml"/>
-            <rosparam command="load" file="$(find drone_ins)/config/drone_ins.yaml" />
+            <rosparam command="load" file="$(find robot_bringup)/config/core_hector_config.yaml"/>
             <param name="run" value="true" type="bool"/>
             <node pkg="drone_commander" type="drone_commander_node" name="drone_commander" output="screen" />
             <node pkg="drone_ins" type="drone_ins" name="drone_ins" output="screen" />
@@ -70,14 +59,7 @@
         <group ns="$(arg turtle_namespace)">
         <!-- Params -->
             <rosparam command="load" file="$(find robot_bringup)/worlds/$(env WORLD)/$(env WORLD)_tgoals.yaml"/>
-            <rosparam command="load" file="$(find loco_mapping)/config/motion_filter.yaml"/>
-            <rosparam command="load" file="$(find loco_mapping)/config/occupancy_grid.yaml"/>
-            <rosparam command="load" file="$(find mission_planner)/config/mission_planner.yaml"/>
-            <rosparam command="load" file="$(find global_planner)/config/global_planner.yaml"/>
-            <rosparam command="load" file="$(find commander)/config/commander.yaml"/>
-            <rosparam command="load" file="$(find commander)/config/pid.yaml"/>
-            <rosparam command="load" file="$(find commander)/config/trajectory.yaml"/>
-
+            <rosparam command="load" file="$(find robot_bringup)/config/core_turtle_config.yaml"/>
             <param name="initial_x" value="$(env TURTLE_X)" type="double"/>
             <param name="initial_y" value="$(env TURTLE_Y)" type="double"/>
             <param name="min_x" value="$(env TURTLE_MIN_X)" type="double"/>

@@ -2,7 +2,6 @@
 
 # Copyright (c) 2011, Willow Garage, Inc.
 # All rights reserved.
-# Modified by Lai Yan Kai for EE4308
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
