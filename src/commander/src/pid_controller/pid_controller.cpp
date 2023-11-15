@@ -175,6 +175,7 @@ std::pair<double,double> Controller::generate_cmdvel(bot_utils::Pos2D &robot_pos
             double angvel_from_sat_ang_acc = cmd_ang_vel_ + (sat_ang_acc * dt_);
             double sat_ang_vel = fabs(angvel_from_sat_ang_acc) > max_ang_vel_ ? bot_utils::sign(angvel_from_sat_ang_acc) * max_ang_vel_ : angvel_from_sat_ang_acc;
             
+            
             cmd_lin_vel_ = sat_lin_vel;
             cmd_ang_vel_ = sat_ang_vel;
             prev_linear_error_ = curr_linear_error;

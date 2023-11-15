@@ -18,6 +18,7 @@
 #include "tmsgs/TriggerPlannerReplan.h"
 #include "tmsgs/TurtlePath.h"
 #include "tmsgs/TurtleSpline.h"
+#include "tmsgs/Brake.h"
 #include <vector>
 #include <deque>
 #include <tuple>
@@ -64,6 +65,7 @@ private:
     bool enable_commander_;
     double close_enough_;
     int danger_close_;
+    bool brake_;
 
     //subscribers
     ros::Subscriber pose_sub_;
@@ -86,6 +88,9 @@ private:
     std_msgs::Bool replan_msg_;
     tmsgs::TurtleSpline spline_msg_;
 
+    //brake service
+    ros::ServiceServer brake_server_;
+
     //nodehandle
     ros::NodeHandle nh_;
 
@@ -106,6 +111,8 @@ public:
 
     void motionFilterCallback(const std_msgs::Float64ConstPtr &speed);
     
+    bool BrakeServiceCallback(tmsgs::Brake::Request &req,tmsgs::Brake::Response &res);
+
     std::pair<bool,int> checkTrajectorySafety();
 
     bool checkDist();

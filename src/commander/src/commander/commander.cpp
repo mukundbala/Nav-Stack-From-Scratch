@@ -18,6 +18,9 @@ Commander::Commander(ros::NodeHandle &nh)
     robot_position_.setCoords(-500,-500); //-500 is a very unlikely value
     robot_heading_ = -500;//-500 is an unlikely value
     robot_speed_ = 0;
+
+    //Braking
+    brake_ = 0;
     
     //setup map variables
     mapdata.origin_ = mapdata.pos_min_;
@@ -64,6 +67,8 @@ Commander::Commander(ros::NodeHandle &nh)
     replan_pub_ = nh_.advertise<std_msgs::Bool>("trigger_replan" , 1 , true);
     spline_pub_ = nh_.advertise<tmsgs::TurtleSpline>("spline" , 1 , true);
 
+    //braking server
+    brake_server_ = nh_.advertiseService("brake_tbot", &Commander::BrakeServiceCallback,this);
     ROS_INFO("[Commander]: Commander prepared!");
 }
 
@@ -108,6 +113,13 @@ void Commander::pathCallback(const tmsgs::TurtlePath &path)
 void Commander::motionFilterCallback(const std_msgs::Float64ConstPtr &spd)
 {
     robot_speed_ = spd->data;
+}
+
+bool Commander::BrakeServiceCallback(tmsgs::Brake::Request &req,tmsgs::Brake::Response &res)
+{
+    brake_ = req.brake_mode;
+    res.response = true;
+    return true;
 }
 
 void Commander::run()
@@ -411,8 +423,10 @@ void Commander::writeTargetMsg()
 
 void Commander::writeVelocityMsg()
 {
-    cmd_vel_msg_.linear.x = cmd_lin_vel_;
-    cmd_vel_msg_.angular.z = cmd_ang_vel_;
+    //braking coefficient
+    int braking_coefficient = !brake_;
+    cmd_vel_msg_.linear.x = cmd_lin_vel_ * braking_coefficient;
+    cmd_vel_msg_.angular.z = cmd_ang_vel_ * braking_coefficient;
 }
 
 void Commander::writeReplanMsg()
