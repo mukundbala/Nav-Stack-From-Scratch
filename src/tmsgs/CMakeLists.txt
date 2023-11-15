@@ -22,6 +22,7 @@ add_service_files(
   FILES
   UpdateTurtleGoal.srv
   TriggerPlannerReplan.srv
+  Brake.srv
 )
 
 ## Generate actions in the 'action' folder

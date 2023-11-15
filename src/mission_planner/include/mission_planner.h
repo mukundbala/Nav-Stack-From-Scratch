@@ -5,7 +5,7 @@
 #include "bot_utils/bot_utils.h"
 #include "tmsgs/Goal.h"
 #include "tmsgs/UpdateTurtleGoal.h"
-
+#include "tmsgs/Brake.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "xmlrpcpp/XmlRpc.h"
 #include <vector>
@@ -13,9 +13,13 @@
 class MissionPlanner
 {
 private:
+
     int num_goals;
+    int goal_id_;
     std::deque<bot_utils::Pos2D> goals_;
     double goal_radius_;
+
+    bool brake_state_;
 
     geometry_msgs::PoseStamped robot_pose_;
     bot_utils::Pos2D robot_position_;
@@ -23,17 +27,27 @@ private:
     ros::Publisher goal_pub_;
 
     ros::Subscriber pose_sub_;
-    // ros::Subscriber update_goal_sub_;
+    ros::Subscriber single_goal_sub_;
+
     ros::ServiceServer update_goal_server_;
+
+    ros::ServiceClient brake_client_;
+
     ros::NodeHandle nh_;
+    XmlRpc::XmlRpcValue goal_loader_;
 
     double rate_;
 
 public:
     MissionPlanner(ros::NodeHandle &nh);
     void poseCallback(const geometry_msgs::PoseStampedConstPtr &pose_msg);
+    void singleGoalCallback(const geometry_msgs::PoseStampedConstPtr &single_goal_msg);
+
     bool updateGoalService(tmsgs::UpdateTurtleGoal::Request &req, tmsgs::UpdateTurtleGoal::Response &res);
     void run();
+
+    bool loadParams();
+    bool loadPresetWaypoints();
 };
 
 #endif //TBOT__MISSION_PLANNER_H

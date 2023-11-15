@@ -6,7 +6,6 @@
 ##################################################################MISSION PLANNER################################################################
 goal_radius: 0.1 #the goal radius in m at which the goal is declared as reached
 mp_rate: 25 #rate of mission planner
-dynamic_goal: false #Set to True for goal setting using RVIZ
 #################################################################################################################################################
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ##################################################################MOTION FILTER##################################################################
@@ -54,8 +53,8 @@ max_lin_acc: 1.0  #hard angular acceleration constraint to prevent slippage on r
 Kp_ang: 1.5 #P gain for angular vel
 Ki_ang: 0.0 #I gain for angular vel
 Kd_ang: 0.5 #D gain for angular vel
-max_ang_vel: 2.50 #hard angular velocity constraint to prevent turtlebot from dying on real hardware
-max_ang_acc: 4.0  #hard angular acceleration constraint to prevent slippage on real hardware
+max_ang_vel: 2.0 #hard angular velocity constraint to prevent turtlebot from dying on real hardware
+max_ang_acc: 2.3  #hard angular acceleration constraint to prevent slippage on real hardware
 damping_limit: 20 ##in degrees
 damping_function: Cos ## Cos, Quad , PieceWise , Exp
 ##note that changing this will break Controller::dampingCoefficient. A better function needs to be designed 
