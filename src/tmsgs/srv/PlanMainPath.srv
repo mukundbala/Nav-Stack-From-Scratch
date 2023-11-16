@@ -1,0 +1,4 @@
+geometry_msgs/Point start_pos
+geometry_msgs/Point goal_pos
+---
+nav_msgs/Path path

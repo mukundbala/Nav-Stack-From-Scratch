@@ -22,6 +22,8 @@ add_service_files(
   FILES
   UpdateTurtleGoal.srv
   Brake.srv
+  PlanMainPath.srv
+  FindFallbackPosition.srv
 )
 
 ## Generate actions in the 'action' folder

@@ -100,6 +100,8 @@ public:
     void goalCallback(const tmsgs::GoalConstPtr &goal);
 
     void replanCallback(const std_msgs::BoolConstPtr &trigger);
+
+    void request_goal_update(bot_utils::Pos2D &goal_to_update);
     
     //load params
     bool loadParams();

@@ -1,0 +1,3 @@
+geometry_msgs/Point bad_position
+---
+geometry_msgs/Point fallback_position
