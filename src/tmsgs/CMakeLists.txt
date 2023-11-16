@@ -21,7 +21,6 @@ add_message_files(
 add_service_files(
   FILES
   UpdateTurtleGoal.srv
-  TriggerPlannerReplan.srv
   Brake.srv
 )
 

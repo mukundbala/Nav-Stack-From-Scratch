@@ -11,7 +11,6 @@
 #include "tmsgs/Goal.h"
 #include "tmsgs/TurtlePath.h"
 #include "tmsgs/UpdateTurtleGoal.h"
-#include "tmsgs/TriggerPlannerReplan.h"
 #include <geometry_msgs/PoseStamped.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <std_msgs/Bool.h>

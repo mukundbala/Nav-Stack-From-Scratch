@@ -15,7 +15,6 @@
 #include "std_msgs/Bool.h"
 #include "std_msgs/Int32MultiArray.h"
 #include "std_msgs/Float64.h"
-#include "tmsgs/TriggerPlannerReplan.h"
 #include "tmsgs/TurtlePath.h"
 #include "tmsgs/TurtleSpline.h"
 #include "tmsgs/Brake.h"
