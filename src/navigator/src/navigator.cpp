@@ -53,12 +53,16 @@ Navigator::Navigator(ros::NodeHandle& nh)
     update_goal_client_ = nh_.serviceClient<tmsgs::UpdateTurtleGoal>("update_t_goal");
 
     //Planner service clients. Made into a persisitent connection
-    main_planner_client_ = nh_.serviceClient<tmsgs::PlanMainPath>("plan_main_path",true);
-    fallback_planner_client_ = nh_.serviceClient<tmsgs::FindFallbackPosition>("find_fallback_position",true);
+    main_planner_client_ = nh_.serviceClient<tmsgs::PlanMainPath>("plan_main_path");
+    fallback_planner_client_ = nh_.serviceClient<tmsgs::FindFallbackPosition>("find_fallback_position");
     
     //setup publisher
     path_pub_ = nh_.advertise<nav_msgs::Path>("path", 1 , true);
     path_comm_pub_ = nh_.advertise<tmsgs::TurtlePath>("path_comm" , 1 , true);
+
+    //wait for the servers to become active
+    main_planner_client_.waitForExistence();
+    fallback_planner_client_.waitForExistence();
 
     ROS_INFO("[Navigator]: Navigator prepared!");
 }
@@ -95,11 +99,10 @@ void Navigator::goalCallback(const tmsgs::GoalConstPtr &goal)
     {
         this->current_goal_.setCoords(goal->goal_position.x , goal->goal_position.y);
         this->current_goal_id_ = received_goal_id;
-
-
         this->path_.clear();
         this->path_msg_.poses.clear();
         trigger_plan = true;
+
         if (verbose_){ROS_INFO_STREAM("[Navigator]: New goal received: (" << current_goal_.x << "," << current_goal_.y << ")");};
     }
     // else
@@ -176,9 +179,10 @@ void Navigator::run()
             //Case 2: Robot okay, goal bad
             else if (robot_status_ && !goal_status_)
             {
-                ROS_WARN_COND(verbose_,"[Navigator]: Bad goal received. Finding a new goal!");
+                ROS_WARN("[Navigator]: Bad goal received. Finding a new goal!");
+                current_goal_.print();
                 bot_utils::Pos2D updated_goal = request_backup_position(current_goal_);
-                
+                updated_goal.print();
                 tmsgs::Goal update_goal_msg;
                 update_goal_msg.action = 2;
                 update_goal_msg.goal_position.x = updated_goal.x;
@@ -205,7 +209,7 @@ void Navigator::run()
             //Case 3: Robot bad, goal okay
             else if (!robot_status_ && goal_status_)
             {
-                ROS_WARN_COND(verbose_,"[Navigator]: Robot on Non-Free Cell");
+                ROS_WARN("[Navigator]: Robot on Non-Free Cell");
                 ROS_WARN_COND(verbose_,"[Navigator]: Finding better robot position!");
                 ROS_INFO_COND(verbose_,"ROBOT POSITION: ");
                 if (verbose_){robot_position_.print();}
@@ -218,7 +222,7 @@ void Navigator::run()
                 
                 backup_mode_ = true;
                 path_.clear();
-                path_ = request_path(robot_position_,current_goal_);
+                path_ = request_path(backup_robot_position_,current_goal_);
                 writeToPathMsg();
             }
             //Final Case 4: Robot and goal bad

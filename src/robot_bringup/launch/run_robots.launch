@@ -22,6 +22,7 @@
             <!-- Nodes -->
             <node pkg="loco_mapping" type="motion_filter_node" name="motion_filter" output="screen"/>
             <node pkg="loco_mapping" type="occupancy_grid_node" name="occupancy_grid" output="screen"/>
+            <node pkg="navigator" type="navigator_node" name="navigator" output="screen"/>
             <node pkg="mission_planner" type="mission_planner_node" name="mission_planner" output="screen"/>
             <node pkg="global_planner" type="global_planner_node" name="global_planner" output="screen"/>
             <node pkg="commander" type="commander_node" name="commander" output="screen"/>
@@ -71,6 +72,7 @@
             <!-- Nodes -->
             <node pkg="loco_mapping" type="motion_filter_node" name="motion_filter" output="screen"/>
             <node pkg="loco_mapping" type="occupancy_grid_node" name="occupancy_grid" output="screen"/>
+            <node pkg="navigator" type="navigator_node" name="navigator" output="screen"/>
             <node pkg="mission_planner" type="mission_planner_node" name="mission_planner" output="screen"/>
             <node pkg="global_planner" type="global_planner_node" name="global_planner" output="screen"/>
             <node pkg="commander" type="commander_node" name="commander" output="screen"/>

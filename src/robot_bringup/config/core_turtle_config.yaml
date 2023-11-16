@@ -4,28 +4,28 @@
 
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ##################################################################MISSION PLANNER################################################################
+mp_rate: 25.0 #rate of mission planner
 goal_radius: 0.1 #the goal radius in m at which the goal is declared as reached
-mp_rate: 25 #rate of mission planner
 #################################################################################################################################################
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ##################################################################MOTION FILTER##################################################################
+mf_rate: 50.0 #the rate of the motion filter
 axle_track: 0.16 #width between wheels
 wheel_radius: 0.033 #radius of wheel
 weight_odom_v: 0.99 #weight of linear velocity for weighted average filter
 weight_odom_w: 0.01 #weight of angular velocity for weighted average filter
 straight_thresh: 0.05 #heading to declare that turtlebot is moving straight
-mf_rate: 50 #the rate of the motion filter
 use_internal_odom: true #True:GroundTruth Pose, False: Motion Filter
 verbose_mf: false #Verbosity of logging
 #################################################################################################################################################
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ##################################################################OCCUPANCY GRID#################################################################
+occ_rate: 25.0 #spin rate of occupancy grid node
 cell_size: 0.05 #Cell resolution
 inflation_radius: 0.20 #Inflation radius of each cell in m
 max_scan_range: 3.49999 #Max range of laser scan
 log_odds_thresh: 10 # Threshold after which we declare that a node is occ (Log Odds Bayes Filter)
 log_odds_cap: 20 # The cap for the Log Odds Bayes Filter
-occ_rate: 25 #spin rate of occupancy grid node
 occ_verbose: false #verbosity
 #################################################################################################################################################
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -35,13 +35,14 @@ verbose_navigator: true #verbosity of logs
 #################################################################################################################################################
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ##################################################################NAVIGATOR######################################################################
+gp_rate: 25.0 #rate
 primary_planner: "astar"  #name of primary planner
 secondary_planner: "astar" #name of secondary planner
-fallback_planner: "djikstra" #name of fallback planner
+planner_verbose: false
 #################################################################################################################################################
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ##################################################################COMMANDER######################################################################
-com_rate: 25 #rate of commander
+com_rate: 25.0 #rate of commander
 enable_commander: true ##set this to false so that we can teleoperate
 close_enough: 0.1 #We decalre a target to be reached if we are within close_enogh m
 danger_close: 100  ##as long as the first occuring bad cell is more than danger_close cells away, we can just keep navigating towards that target
@@ -68,5 +69,5 @@ reverse_limit: 90 ##this means that any heading STRICTLY more than 90 will trigg
 ##################################################################TRAJECTORY PLANNER#############################################################
 target_dt: 0.04 ##must be slower than or equal to com_rate
 average_speed: 0.20 #average speed of the turtlebot
-traj_type: Quintic ##Linear, Cubic, Quintic
+traj_type: Cubic ##Linear, Cubic, Quintic
 #################################################################################################################################################

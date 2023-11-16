@@ -71,7 +71,7 @@ void MissionPlanner::singleGoalCallback(const geometry_msgs::PoseStampedConstPtr
     single_goal.x = single_goal_msg->pose.position.x;
     single_goal.y = single_goal_msg->pose.position.y;
     goals_.push_back(single_goal);
-
+    
     if (brake_state_)
     {
         brake_state_ = 0;
@@ -84,6 +84,7 @@ void MissionPlanner::singleGoalCallback(const geometry_msgs::PoseStampedConstPtr
     }
 
     ROS_INFO("[MissionPlanner]: Single goal received!");
+    single_goal.print();
 }
 
 bool MissionPlanner::updateGoalService(tmsgs::UpdateTurtleGoal::Request &req , tmsgs::UpdateTurtleGoal::Response &res)
@@ -222,7 +223,7 @@ bool MissionPlanner::loadPresetWaypoints()
             }
         }
 
-        if (goals_.size() <= 0)
+        if (goals_.empty())
         {
             ROS_WARN("[MissionPlanner]: PresetWaypoints empty!");
             return false;
