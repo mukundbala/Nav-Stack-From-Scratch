@@ -6,14 +6,7 @@ MissionPlanner::MissionPlanner(ros::NodeHandle &nh)
     bool status = loadParams();
     ROS_WARN_COND(!status , "[MissionPlanner]: Params not loaded properly!");
     
-    bool preset_waypoints_status = loadPresetWaypoints();
-
-    if (!preset_waypoints_status)
-    {
-        //Revert to dynamic goals
-        ROS_WARN("[MissionPlanner]: Reverting to dynamic goal mode");
-    
-    }
+    preset_waypoint_status_ = loadPresetWaypoints();
 
     robot_position_.x = -500;
     robot_position_.y = -500;
@@ -23,6 +16,8 @@ MissionPlanner::MissionPlanner(ros::NodeHandle &nh)
     goal_id_ = 0;
 
     goal_pub_ = nh_.advertise<tmsgs::Goal>("goal",1);
+
+    goal_visualization_pub_ = nh_.advertise<geometry_msgs::PointStamped>("goal_viz",1);
 
     pose_sub_ = nh_.subscribe("pose" , 1 , &MissionPlanner::poseCallback , this);
 
@@ -34,11 +29,19 @@ MissionPlanner::MissionPlanner(ros::NodeHandle &nh)
     
     ROS_INFO("###WAYPOINTS###");
     int cnt = 0;
-    for (auto &gl : goals_)
+    if (goals_.size() == 0)
     {
-        ROS_INFO_STREAM("Waypoint " << cnt << ": (" << gl.x << "," << gl.y<<")");
-        cnt++;
+        ROS_WARN("[MissionPlanner]: No Preset Waypoint Provided. Please use RVIZ to send goals!");
     }
+    else
+    {
+        for (auto &gl : goals_)
+        {
+            ROS_INFO_STREAM("Waypoint " << cnt << ": (" << gl.x << "," << gl.y<<")");
+            cnt++;
+        }
+    }
+
     ROS_INFO("###WAYPOINTS###");
 
     ROS_INFO_STREAM("[Mission Planner]: Mission Planner Prepared!");
@@ -48,6 +51,18 @@ void MissionPlanner::poseCallback(const geometry_msgs::PoseStampedConstPtr &pose
 {
     robot_pose_ = *pose_msg;
     robot_position_.setCoords(robot_pose_.pose.position.x , robot_pose_.pose.position.y);
+    
+    /*
+    Place the robot's current position to the goals list.
+    This will happen exactly once, and this dummy goal will be consumed immediately by
+    the mission planner before waiting for the next dynamically set goal.
+    */
+    if (!preset_waypoint_status_)
+    {
+        //set to true because of the dummy position
+        preset_waypoint_status_ = true;
+        goals_.push_back(robot_position_);
+    }
 }
 
 void MissionPlanner::singleGoalCallback(const geometry_msgs::PoseStampedConstPtr &single_goal_msg)
@@ -80,12 +95,14 @@ bool MissionPlanner::updateGoalService(tmsgs::UpdateTurtleGoal::Request &req , t
         ROS_INFO("[MissionPlanner]: Goal added to goals!");
         //this is a temporary goal
         goals_.push_front(updated_goal);
+        goal_id_++;
     }
 
     else if (action == 2)
     {
         ROS_INFO("[MissionPlanner]: Goal replaced!");
         goals_.at(0) = updated_goal; //this is a goal to replace the current goal
+        goal_id_ ++;
     }
     res.response = true;
     return true;
@@ -140,8 +157,15 @@ void MissionPlanner::run()
         tmsgs::Goal goal;
         goal.goal_position.x = goals_.front().x;
         goal.goal_position.y = goals_.front().y;
+        goal.goal_id = goal_id_;
 
+        geometry_msgs::PointStamped current_goal_viz_msg;
+        current_goal_viz_msg.header.frame_id = "world";
+        current_goal_viz_msg.point.x = goal.goal_position.x;
+        current_goal_viz_msg.point.y = goal.goal_position.y;
+        
         goal_pub_.publish(goal);
+        goal_visualization_pub_.publish(current_goal_viz_msg);
         
         spinrate.sleep();
     }
@@ -176,25 +200,33 @@ bool MissionPlanner::loadPresetWaypoints()
         return false;
     }
 
-    nh_.getParam("goals",goal_loader_);
-
-    if (goal_loader_.getType() == XmlRpc::XmlRpcValue::TypeArray)
+    try
     {
-        for (int i = 0 ; i < goal_loader_.size() ; ++i)
+        nh_.getParam("goals",goal_loader_);
+        if (goal_loader_.getType() == XmlRpc::XmlRpcValue::TypeArray)
         {
-            XmlRpc::XmlRpcValue ob = goal_loader_[i];
+            for (int i = 0 ; i < goal_loader_.size() ; ++i)
+            {
+                XmlRpc::XmlRpcValue ob = goal_loader_[i];
 
-            bot_utils::Pos2D my_goal;
-            my_goal.x = ob[0];
-            my_goal.y = ob[1];
-            goals_.push_back(my_goal);
+                bot_utils::Pos2D my_goal;
+                my_goal.x = ob[0];
+                my_goal.y = ob[1];
+                goals_.push_back(my_goal);
+            }
         }
+
+        if (goals_.size() <= 0)
+        {
+            ROS_WARN("[MissionPlanner]: PresetWaypoints empty!");
+            return false;
+        }
+        return true;
     }
-    if (goals_.size() <= 0)
+
+    catch (const std::exception &e)
     {
-        ROS_WARN("[MissionPlanner]: PresetWaypoints empty!");
+        std::cout<< e.what();
         return false;
     }
-    
-    return true;
 }

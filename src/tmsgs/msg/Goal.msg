@@ -1,2 +1,3 @@
 geometry_msgs/Point goal_position
+uint32 goal_id
 uint8 action

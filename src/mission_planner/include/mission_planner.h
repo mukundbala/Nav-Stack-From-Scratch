@@ -7,6 +7,7 @@
 #include "tmsgs/UpdateTurtleGoal.h"
 #include "tmsgs/Brake.h"
 #include "geometry_msgs/PoseStamped.h"
+#include "geometry_msgs/PointStamped.h"
 #include "xmlrpcpp/XmlRpc.h"
 #include <vector>
 #include <deque>
@@ -14,17 +15,18 @@ class MissionPlanner
 {
 private:
 
-    int num_goals;
-    int goal_id_;
     std::deque<bot_utils::Pos2D> goals_;
     double goal_radius_;
+    int goal_id_;
 
+    bool preset_waypoint_status_;
     bool brake_state_;
 
     geometry_msgs::PoseStamped robot_pose_;
     bot_utils::Pos2D robot_position_;
 
     ros::Publisher goal_pub_;
+    ros::Publisher goal_visualization_pub_;
 
     ros::Subscriber pose_sub_;
     ros::Subscriber single_goal_sub_;
