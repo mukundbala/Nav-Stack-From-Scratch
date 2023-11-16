@@ -368,7 +368,7 @@ std::vector<bot_utils::Pos2D> Navigator::request_path(bot_utils::Pos2D &start_po
     geometry_msgs::Point goal;
     start.x = start_pos.x;
     start.y = start_pos.y;
-    goal.x = goal_pos.y;
+    goal.x = goal_pos.x;
     goal.y = goal_pos.y;
 
     tmsgs::PlanMainPath path_request;
@@ -382,7 +382,9 @@ std::vector<bot_utils::Pos2D> Navigator::request_path(bot_utils::Pos2D &start_po
         ROS_WARN("[Navigator]: Plan from Global Planner received!");
         for (auto& pt : path_request.response.path.poses)
         {
-            bot_utils::Pos2D path_point(pt.pose.position.x,pt.pose.position.y);
+            bot_utils::Pos2D path_point;
+            path_point.x = pt.pose.position.x;
+            path_point.y = pt.pose.position.y;
             new_path.push_back(path_point);
         }
     }
@@ -399,7 +401,7 @@ bot_utils::Pos2D Navigator::request_backup_position(bot_utils::Pos2D &bad_pos)
 {
     geometry_msgs::Point bad_point;
     bad_point.x = bad_pos.x;
-    bad_point.y = bad_point.y;
+    bad_point.y = bad_pos.y;
     
     tmsgs::FindFallbackPosition fallback_request;
     fallback_request.request.bad_position = bad_point;
