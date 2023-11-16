@@ -101,8 +101,15 @@ bool MissionPlanner::updateGoalService(tmsgs::UpdateTurtleGoal::Request &req , t
     else if (action == 2)
     {
         ROS_INFO("[MissionPlanner]: Goal replaced!");
-        goals_.at(0) = updated_goal; //this is a goal to replace the current goal
-        goal_id_ ++;
+        if(goals_.empty())
+        {
+            goals_.push_back(updated_goal);
+        }
+        else
+        {
+            goals_.at(0) = updated_goal;
+        }
+        
     }
     res.response = true;
     return true;
@@ -136,7 +143,6 @@ void MissionPlanner::run()
                     ROS_INFO("[MissionPlanner]: Braking!");
                 }
             }
-            ROS_INFO_STREAM("[MissionPlanner]: Waiting for new waypoint!");
             continue;
             
         }
