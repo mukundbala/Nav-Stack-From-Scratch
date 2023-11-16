@@ -30,7 +30,7 @@ private:
     geometry_msgs::PoseStamped robot_pose_; 
     bot_utils::Pos2D robot_position_;
     double robot_heading_;
-    double robot_speed_; //speed captured from motion filter
+    double robot_speed_;
 
     //map information
     bot_utils::MapData mapdata; //occupancy map data
@@ -81,15 +81,15 @@ private:
     ros::Publisher replan_pub_;
     ros::Publisher spline_pub_;
 
+    //brake service
+    ros::ServiceServer brake_server_;
+
     //published messages
     geometry_msgs::PointStamped target_msg_;
     nav_msgs::Path traj_msg_;
     geometry_msgs::Twist cmd_vel_msg_;
     std_msgs::Bool replan_msg_;
     tmsgs::TurtleSpline spline_msg_;
-
-    //brake service
-    ros::ServiceServer brake_server_;
 
     //nodehandle
     ros::NodeHandle nh_;
@@ -111,7 +111,7 @@ public:
 
     void motionFilterCallback(const std_msgs::Float64ConstPtr &speed);
     
-    bool BrakeServiceCallback(tmsgs::Brake::Request &req,tmsgs::Brake::Response &res);
+    bool brakeServiceCallback(tmsgs::Brake::Request &req,tmsgs::Brake::Response &res);
 
     std::pair<bool,int> checkTrajectorySafety();
 

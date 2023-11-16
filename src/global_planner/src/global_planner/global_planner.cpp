@@ -26,6 +26,7 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     //setup goals
     current_goal_.setCoords(-1000 , -1000); //again some very unlikely value
     goal_status_ = true;
+    current_goal_id_ = -1;
 
     //setup planning
     trigger_plan = false;
@@ -41,9 +42,9 @@ GlobalPlanner::GlobalPlanner(ros::NodeHandle& nh)
     inflation_sub_ = nh_.subscribe("grid/mapinfo/inflation" , 1 , &GlobalPlanner::inflationCallback , this);
     lo_sub_ = nh_.subscribe("grid/mapinfo/logodds" , 1 , &GlobalPlanner::logoddsCallback , this);
     goal_sub_ = nh_.subscribe("goal" , 1 , &GlobalPlanner::goalCallback , this);
-    replan_sub_ = nh_.subscribe("trigger_replan" , 1, &GlobalPlanner::replanCallback , this);
-    
-    //setup serivce client
+    replan_sub_ = nh_.subscribe("trigger_replan", 1 , &GlobalPlanner::replanCallback,this);
+
+    //setup service client
     update_goal_client_ = nh_.serviceClient<tmsgs::UpdateTurtleGoal>("update_t_goal");
 
     //setup publisher
@@ -75,10 +76,14 @@ void GlobalPlanner::logoddsCallback(const std_msgs::Int32MultiArrayConstPtr &lo)
 void GlobalPlanner::goalCallback(const tmsgs::GoalConstPtr &goal)
 {
     //check if the arriving goal is the same as our current goal
-    if (fabs(goal->goal_position.x - current_goal_.x) > EPS_ && fabs(goal->goal_position.y - current_goal_.y) > EPS_)
+    int received_goal_id = goal->goal_id;
+
+    if (received_goal_id > current_goal_id_)
     {
         this->current_goal_.setCoords(goal->goal_position.x , goal->goal_position.y);
-        // this->current_goal_idx_ = goal->idx;
+        this->current_goal_id_ = received_goal_id;
+
+
         this->path_.clear();
         this->path_msg_.poses.clear();
         trigger_plan = true;
@@ -98,6 +103,7 @@ void GlobalPlanner::replanCallback(const std_msgs::BoolConstPtr &trigger)
         if (verbose_){ROS_WARN("[GlobalPlanner]: Trigger replan from Commander's Request");};
     }
 }
+
 
 void GlobalPlanner::setupPlanner()
 {

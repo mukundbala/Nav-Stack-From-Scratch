@@ -8,8 +8,8 @@ Commander::Commander(ros::NodeHandle &nh)
     bool traj_loader = loadTrajParams();
     bool comm_loader = loadCommanderParams();
     
-    ROS_WARN_COND(!map_loader , "[Commander]: Map parameters have not been loaded correctly!");
-    ROS_WARN_COND(!pid_loader , "[Commander]: PID parameters have not been loaded correctly!");
+    ROS_WARN_COND(!map_loader , "[Commander]:  Map parameters have not been loaded correctly!");
+    ROS_WARN_COND(!pid_loader , "[Commander]:  PID parameters have not been loaded correctly!");
     ROS_WARN_COND(!traj_loader , "[Commander]: Map parameters have not been loaded correctly!");
     ROS_WARN_COND(!comm_loader , "[Commander]: Map parameters have not been loaded correctly!");
     ROS_INFO_COND(map_loader + pid_loader + traj_loader + comm_loader == 4 , "[Commander]: All parameters loaded successfully!");
@@ -68,7 +68,7 @@ Commander::Commander(ros::NodeHandle &nh)
     spline_pub_ = nh_.advertise<tmsgs::TurtleSpline>("spline" , 1 , true);
 
     //braking server
-    brake_server_ = nh_.advertiseService("brake_tbot", &Commander::BrakeServiceCallback,this);
+    brake_server_ = nh_.advertiseService("brake_tbot", &Commander::brakeServiceCallback,this);
     ROS_INFO("[Commander]: Commander prepared!");
 }
 
@@ -115,7 +115,7 @@ void Commander::motionFilterCallback(const std_msgs::Float64ConstPtr &spd)
     robot_speed_ = spd->data;
 }
 
-bool Commander::BrakeServiceCallback(tmsgs::Brake::Request &req,tmsgs::Brake::Response &res)
+bool Commander::brakeServiceCallback(tmsgs::Brake::Request &req,tmsgs::Brake::Response &res)
 {
     brake_ = req.brake_mode;
     res.response = true;

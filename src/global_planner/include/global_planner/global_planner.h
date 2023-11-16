@@ -45,6 +45,7 @@ private:
     //goals
     bot_utils::Pos2D current_goal_; //ok
     bool goal_status_;
+    int current_goal_id_;
 
     //planner related
     //MainPlanner
