@@ -390,6 +390,14 @@ void GridPlannerCore::pushToOpenList(Node *node)
     open_list_.pushNode(next_node);
 }
 
+void GridPlannerCore::pushToOpenList(Node *node , double inflation_factor)
+{
+    double node_f = (cost_mode_ == "g") ? 0 : node->g + inflation_factor * node->h;
+    double node_g = node->g;
+    OpenNode next_node(node_f , node_g , node->idx);
+    open_list_.pushNode(next_node);
+}
+
 GridPlannerCore::Node * GridPlannerCore::popFromOpenList()
 {
     OpenNode open_nd = open_list_.popNode();

@@ -1,9 +1,0 @@
-#ifndef TBOT__THETASTAR_PLANNER_H
-#define TBOT__THETASTAR_PLANNER_H
-
-class ThetaStar
-{
-
-};
-
-#endif //TBOT__THETASTAR_PLANNER_H

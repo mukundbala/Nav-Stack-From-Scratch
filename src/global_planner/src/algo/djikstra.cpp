@@ -201,13 +201,19 @@ bot_utils::Pos2D Djikstra::find_better_point(bot_utils::Index idx_bad , bot_util
 
         //if it is not visited, set it to visited
         node->visited = true;
-    
+        
+
         if (testPos(node -> idx , map_data))
         {   // reached the goal, return the path
             //ROS_INFO("[GlobalPlanner - Djikstra]: Generating new point");
-            auto better_point_pos = idx2pos(node->idx);
-            ROS_INFO("[DjiktraFallback]: Better Point Found! Returning");
-            return better_point_pos;
+            auto a = flatten(node->idx);
+            if (map_data.grid_logodds_.at(a) != 0)
+            {
+                auto better_point_pos = idx2pos(node->idx);
+                ROS_INFO("[DjiktraFallback]: Better Point Found! Returning");
+                return better_point_pos;
+            }
+
         }
 
         bool is_cardinal = true;
@@ -242,7 +248,12 @@ bot_utils::Pos2D Djikstra::find_better_point(bot_utils::Index idx_bad , bot_util
                 {
                     // in map, not inflated, and log odds occupied
                     g_nb += 1000; 
-                }    
+                }
+
+                else if (map_data.grid_logodds_[k] == 0)
+                {
+                    g_nb += 10000;
+                }
             }
 
             else 

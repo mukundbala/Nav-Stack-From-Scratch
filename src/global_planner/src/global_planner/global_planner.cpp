@@ -56,7 +56,7 @@ void GlobalPlanner::setupPlanner()
         else if (primary_planner_name_ == "inflatedastar")
         {
             std::string cost_mode = "f";
-            //primary_planner_ = std::make_shared<InflatedAStar>(cost_mode , mapdata);
+            primary_planner_ = std::make_shared<InflatedAstar>(cost_mode, mapdata);
         }
 
         else if (primary_planner_name_ == "arastar")

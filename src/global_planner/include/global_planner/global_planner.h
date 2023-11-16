@@ -4,8 +4,9 @@
 #include "ros/ros.h"
 #include "grid_planner_core.h"
 #include "astar.h"
-#include "thetastar.h"
 #include "djikstra.h"
+#include "inflatedastar.h"
+
 #include "bot_utils/bot_utils.h"
 #include "bot_utils/map_data.h"
 
@@ -47,6 +48,10 @@ private:
     //Secondary Planner (Always optimal)
     std::string secondary_planner_name_;
     std::shared_ptr<GridPlannerCore> secondary_planner_;
+
+    //Planner Specific Parameters
+    ///Inflated Astar
+    double inflation_factor_;
 
     //Fallback Planner
     Djikstra fallback_planner_;

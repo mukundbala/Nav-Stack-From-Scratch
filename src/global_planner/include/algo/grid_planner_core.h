@@ -152,6 +152,8 @@ protected:
     //openlist push
     void pushToOpenList(Node *node);
 
+    void pushToOpenList(Node *node, double inflation_factor);
+
     //openlist pop
     Node* popFromOpenList();
     
