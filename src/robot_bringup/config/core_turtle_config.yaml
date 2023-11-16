@@ -45,7 +45,7 @@ planner_verbose: false
 com_rate: 25.0 #rate of commander
 enable_commander: true ##set this to false so that we can teleoperate
 close_enough: 0.1 #We decalre a target to be reached if we are within close_enogh m
-danger_close: 100  ##as long as the first occuring bad cell is more than danger_close cells away, we can just keep navigating towards that target
+danger_close: 30  ##as long as the first occuring bad cell is more than danger_close cells away, we can just keep navigating towards that target
 verbose_commander: false #verbosity
 #################################################################################################################################################
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -58,8 +58,8 @@ max_lin_acc: 1.0  #hard angular acceleration constraint to prevent slippage on r
 Kp_ang: 1.5 #P gain for angular vel
 Ki_ang: 0.0 #I gain for angular vel
 Kd_ang: 0.5 #D gain for angular vel
-max_ang_vel: 2.0 #hard angular velocity constraint to prevent turtlebot from dying on real hardware
-max_ang_acc: 2.3  #hard angular acceleration constraint to prevent slippage on real hardware
+max_ang_vel: 1.3 #hard angular velocity constraint to prevent turtlebot from dying on real hardware
+max_ang_acc: 1.5  #hard angular acceleration constraint to prevent slippage on real hardware
 damping_limit: 20 ##in degrees
 damping_function: Cos ## Cos, Quad , PieceWise , Exp
 ##note that changing this will break Controller::dampingCoefficient. A better function needs to be designed 
@@ -68,6 +68,6 @@ reverse_limit: 90 ##this means that any heading STRICTLY more than 90 will trigg
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ##################################################################TRAJECTORY PLANNER#############################################################
 target_dt: 0.04 ##must be slower than or equal to com_rate
-average_speed: 0.20 #average speed of the turtlebot
+average_speed: 0.15 #average speed of the turtlebot
 traj_type: Cubic ##Linear, Cubic, Quintic
 #################################################################################################################################################

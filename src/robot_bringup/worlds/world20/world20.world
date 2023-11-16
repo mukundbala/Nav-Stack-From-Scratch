@@ -1,8 +1,8 @@
-<sdf version='1.6'>
+<sdf version='1.7'>
   <world name='default'>
     <light name='sun' type='directional'>
       <cast_shadows>1</cast_shadows>
-      <pose frame=''>0 0 10 0 -0 0</pose>
+      <pose>0 0 10 0 -0 0</pose>
       <diffuse>0.8 0.8 0.8 1</diffuse>
       <specular>0.2 0.2 0.2 1</specular>
       <attenuation>
@@ -12,6 +12,11 @@
         <quadratic>0.001</quadratic>
       </attenuation>
       <direction>-0.5 0.1 -0.9</direction>
+      <spot>
+        <inner_angle>0</inner_angle>
+        <outer_angle>0</outer_angle>
+        <falloff>0</falloff>
+      </spot>
     </light>
     <gravity>0 0 -9.8</gravity>
     <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
@@ -52,1027 +57,957 @@
       <heading_deg>0</heading_deg>
     </spherical_coordinates>
     <state world_name='default'>
-      <sim_time>0</sim_time>
-      <real_time>0</real_time>
-      <wall_time>0</wall_time>
-      <iterations>0</iterations>
+      <sim_time>104 57000000</sim_time>
+      <real_time>104 411020625</real_time>
+      <wall_time>1700157324 786708286</wall_time>
+      <iterations>104057</iterations>
       <model name='RegionEventBox_clone_0_clone'>
-        <pose frame=''>3.01485 -4.05142 0 0 -0 0</pose>
+        <pose>3.01485 -4.05142 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>3.01485 -4.05142 0 0 -0 0</pose>
+          <pose>3.01485 -4.05142 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='RegionEventBox_clone_0_clone_clone_0_clone_clone'>
-        <pose frame=''>-1.01241 -5.02399 0 0 -0 0</pose>
+        <pose>-1.01241 -5.02399 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-1.01241 -5.02399 0 0 -0 0</pose>
+          <pose>-1.01241 -5.02399 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='RegionEventBox_clone_0_clone_clone_0_clone_clone_clone'>
-        <pose frame=''>-3.49818 -8.49725 0 0 -0 0</pose>
+        <pose>-3.49818 -8.49725 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>-3.49818 -8.49725 0 0 -0 0</pose>
+          <pose>-3.49818 -8.49725 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_10'>
-        <pose frame=''>-1.10681 -3.34727 0.149 0 -0 0</pose>
+        <pose>-1.10681 -3.34727 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-1.10681 -3.34727 0.149 0 -0 0</pose>
+          <pose>-1.10681 -3.34727 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_11'>
-        <pose frame=''>-1.49999 -3.64286 0.149 0 -0 0</pose>
+        <pose>-1.49999 -3.64286 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-1.49999 -3.64286 0.149 0 -0 0</pose>
+          <pose>-1.49999 -3.64286 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_12'>
-        <pose frame=''>-2.4599 -6.41716 0.149 0 -0 0</pose>
+        <pose>-2.4599 -6.41716 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.4599 -6.41716 0.149 0 -0 0</pose>
+          <pose>-2.4599 -6.41716 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_13'>
-        <pose frame=''>-2.90832 -6.41201 0.149 0 -0 0</pose>
+        <pose>-2.90832 -6.41201 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.90832 -6.41201 0.149 0 -0 0</pose>
+          <pose>-2.90832 -6.41201 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_14'>
-        <pose frame=''>-3.36792 -6.43187 0.149 0 -0 0</pose>
+        <pose>-3.36792 -6.43187 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-3.36792 -6.43187 0.149 0 -0 0</pose>
+          <pose>-3.36792 -6.43187 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_15'>
-        <pose frame=''>-3.7722 -6.46677 0.149 0 -0 0</pose>
+        <pose>-3.7722 -6.46677 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-3.7722 -6.46677 0.149 0 -0 0</pose>
+          <pose>-3.7722 -6.46677 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_16'>
-        <pose frame=''>-4.18047 -6.58991 0.149 0 -0 0</pose>
+        <pose>-4.18047 -6.58991 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-4.18047 -6.58991 0.149 0 -0 0</pose>
+          <pose>-4.18047 -6.58991 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_17'>
-        <pose frame=''>-4.56066 -6.88099 0.149 0 -0 0</pose>
+        <pose>-4.56066 -6.88099 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-4.56066 -6.88099 0.149 0 -0 0</pose>
+          <pose>-4.56066 -6.88099 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_18'>
-        <pose frame=''>-4.09684 -9.77326 0.149 0 -0 0</pose>
+        <pose>-4.09684 -9.77326 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-4.09684 -9.77326 0.149 0 -0 0</pose>
+          <pose>-4.09684 -9.77326 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_19'>
-        <pose frame=''>-3.65315 -9.80937 0.149 0 -0 0</pose>
+        <pose>-3.65315 -9.80937 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-3.65315 -9.80937 0.149 0 -0 0</pose>
+          <pose>-3.65315 -9.80937 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_1_clone'>
-        <pose frame=''>0.918792 -2.68698 0.149 0 -0 0</pose>
+        <pose>0.918792 -2.68698 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.918792 -2.68698 0.149 0 -0 0</pose>
+          <pose>0.918792 -2.68698 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_1_clone_0'>
-        <pose frame=''>1.39196 -2.69378 0.149 0 -0 0</pose>
+        <pose>1.39196 -2.69378 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>1.39196 -2.69378 0.149 0 -0 0</pose>
+          <pose>1.39196 -2.69378 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_1_clone_1'>
-        <pose frame=''>1.82358 -2.40857 0.149 0 -0 0</pose>
+        <pose>1.82358 -2.40857 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>1.82358 -2.40857 0.149 0 -0 0</pose>
+          <pose>1.82358 -2.40857 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_1_clone_2'>
-        <pose frame=''>2.28024 -2.59219 0.149 0 -0 0</pose>
+        <pose>2.28024 -2.59219 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>2.28024 -2.59219 0.149 0 -0 0</pose>
+          <pose>2.28024 -2.59219 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_1_clone_3'>
-        <pose frame=''>2.71488 -2.44158 0.149 0 -0 0</pose>
+        <pose>2.71488 -2.44158 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>2.71488 -2.44158 0.149 0 -0 0</pose>
+          <pose>2.71488 -2.44158 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_1_clone_4'>
-        <pose frame=''>3.16773 -2.65912 0.149 0 -0 0</pose>
+        <pose>3.16773 -2.65912 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>3.16773 -2.65912 0.149 0 -0 0</pose>
+          <pose>3.16773 -2.65912 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_1_clone_5'>
-        <pose frame=''>3.59171 -2.99371 0.149 0 -0 0</pose>
+        <pose>3.59171 -2.99371 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>3.59171 -2.99371 0.149 0 -0 0</pose>
+          <pose>3.59171 -2.99371 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_2'>
-        <pose frame=''>-2.22103 0.687687 0.149 0 -0 0</pose>
+        <pose>-2.22103 0.687687 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.22103 0.687687 0.149 0 -0 0</pose>
+          <pose>-2.22103 0.687687 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_20'>
-        <pose frame=''>-3.19793 -9.81638 0.149 0 -0 0</pose>
+        <pose>-3.19793 -9.81638 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-3.19793 -9.81638 0.149 0 -0 0</pose>
+          <pose>-3.19793 -9.81638 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_21'>
-        <pose frame=''>-2.74733 -9.82966 0.149 0 -0 0</pose>
+        <pose>-2.74733 -9.82966 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.74733 -9.82966 0.149 0 -0 0</pose>
+          <pose>-2.74733 -9.82966 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_22'>
-        <pose frame=''>-2.2615 -9.78437 0.149 0 -0 0</pose>
+        <pose>-2.2615 -9.78437 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.2615 -9.78437 0.149 0 -0 0</pose>
+          <pose>-2.2615 -9.78437 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_23'>
-        <pose frame=''>-1.78489 -9.95299 0.149 0 -0 0</pose>
+        <pose>-1.78489 -9.95299 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-1.78489 -9.95299 0.149 0 -0 0</pose>
+          <pose>-1.78489 -9.95299 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_24'>
-        <pose frame=''>-1.32422 -9.77706 0.149 0 -0 0</pose>
+        <pose>-1.32422 -9.77706 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-1.32422 -9.77706 0.149 0 -0 0</pose>
+          <pose>-1.32422 -9.77706 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_25'>
-        <pose frame=''>-0.844404 -9.82173 0.149 0 -0 0</pose>
+        <pose>-0.844404 -9.82173 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-0.844404 -9.82173 0.149 0 -0 0</pose>
+          <pose>-0.844404 -9.82173 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_26'>
-        <pose frame=''>-0.379165 -9.74391 0.149 0 -0 0</pose>
+        <pose>-0.379165 -9.74391 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-0.379165 -9.74391 0.149 0 -0 0</pose>
+          <pose>-0.379165 -9.74391 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_27'>
-        <pose frame=''>0.070947 -9.79323 0.149 0 -0 0</pose>
+        <pose>0.070947 -9.79323 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.070947 -9.79323 0.149 0 -0 0</pose>
+          <pose>0.070947 -9.79323 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_28'>
-        <pose frame=''>0.431255 -9.50687 0.149 0 -0 0</pose>
+        <pose>0.431255 -9.50687 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.431255 -9.50687 0.149 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='box_clone_29'>
-        <pose frame=''>-0.301458 -4.39542 0.149 0 -0 0</pose>
-        <scale>1 1 1</scale>
-        <link name='cardboard_box_clone::link'>
-          <pose frame=''>-0.301458 -4.39542 0.149 0 -0 0</pose>
+          <pose>0.431255 -9.50687 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_2_clone'>
-        <pose frame=''>-2.64031 -2.04978 0.149 0 -0 0</pose>
+        <pose>-2.64031 -2.04978 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.64031 -2.04978 0.149 0 -0 0</pose>
+          <pose>-2.64031 -2.04978 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_2_clone_0'>
-        <pose frame=''>-2.1539 -2.05558 0.149 0 -0 0</pose>
+        <pose>-2.1539 -2.05558 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.1539 -2.05558 0.149 0 -0 0</pose>
+          <pose>-2.1539 -2.05558 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_2_clone_1'>
-        <pose frame=''>-1.67344 -2.05843 0.149 0 -0 0</pose>
+        <pose>-1.67344 -2.05843 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-1.67344 -2.05843 0.149 0 -0 0</pose>
+          <pose>-1.67344 -2.05843 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3'>
-        <pose frame=''>-2.67175 -0.660249 0.149 0 -0 1.55153</pose>
+        <pose>-2.67175 -0.660249 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.67175 -0.660249 0.149 0 -0 1.55153</pose>
+          <pose>-2.67175 -0.660249 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_31'>
-        <pose frame=''>-3.74182 -7.79879 0.149 0 -0 0</pose>
+        <pose>-3.74182 -7.79879 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-3.74182 -7.79879 0.149 0 -0 0</pose>
+          <pose>-3.74182 -7.79879 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_31_clone'>
-        <pose frame=''>-3.25589 -7.80439 0.149 0 -0 0</pose>
+        <pose>-3.25589 -7.80439 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-3.25589 -7.80439 0.149 0 -0 0</pose>
+          <pose>-3.25589 -7.80439 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_32'>
-        <pose frame=''>-1.78478 0.647683 0.149 0 -0 0</pose>
+        <pose>-1.78478 0.647683 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-1.78478 0.647683 0.149 0 -0 0</pose>
+          <pose>-1.78478 0.647683 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_32_clone'>
-        <pose frame=''>-1.19979 -2.26762 0.149 0 -0 0</pose>
+        <pose>-1.19979 -2.26762 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-1.19979 -2.26762 0.149 0 -0 0</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='box_clone_32_clone_0'>
-        <pose frame=''>0.094898 -4.71346 0.149 0 -0 0</pose>
-        <scale>1 1 1</scale>
-        <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.094898 -4.71346 0.149 0 -0 0</pose>
+          <pose>-1.19979 -2.26762 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_33'>
-        <pose frame=''>-1.33645 0.648898 0.149 0 -0 0</pose>
+        <pose>-1.33645 0.648898 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-1.33645 0.648898 0.149 0 -0 0</pose>
+          <pose>-1.33645 0.648898 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_34'>
-        <pose frame=''>-0.889995 0.614023 0.149 0 -0 0</pose>
+        <pose>-0.889995 0.614023 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-0.889995 0.614023 0.149 0 -0 0</pose>
+          <pose>-0.889995 0.614023 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_35'>
-        <pose frame=''>-0.459248 0.641005 0.149 0 -0 0</pose>
+        <pose>-0.459248 0.641005 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-0.459248 0.641005 0.149 0 -0 0</pose>
+          <pose>-0.459248 0.641005 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_36'>
-        <pose frame=''>0 0.598558 0.149 0 -0 0</pose>
+        <pose>0 0.598558 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0 0.598558 0.149 0 -0 0</pose>
+          <pose>0 0.598558 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_37'>
-        <pose frame=''>0.427273 0.565972 0.149 0 -0 0</pose>
+        <pose>0.427273 0.565972 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.427273 0.565972 0.149 0 -0 0</pose>
+          <pose>0.427273 0.565972 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone'>
-        <pose frame=''>-2.66078 -0.304132 0.149 0 -0 1.55153</pose>
+        <pose>-2.66078 -0.304132 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.66078 -0.304132 0.149 0 -0 1.55153</pose>
+          <pose>-2.66078 -0.304132 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_0'>
-        <pose frame=''>-2.68128 -1.13471 0.149 0 -0 1.55153</pose>
+        <pose>-2.68128 -1.13471 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.68128 -1.13471 0.149 0 -0 1.55153</pose>
+          <pose>-2.68128 -1.13471 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_1'>
-        <pose frame=''>-2.68961 -1.61993 0.149 0 -0 1.55153</pose>
+        <pose>-2.68961 -1.61993 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.68961 -1.61993 0.149 0 -0 1.55153</pose>
+          <pose>-2.68961 -1.61993 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_2'>
-        <pose frame=''>0.840472 -6.1457 0.149 0 -0 1.55153</pose>
+        <pose>0.840472 -6.1457 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.840472 -6.1457 0.149 0 -0 1.55153</pose>
+          <pose>0.840472 -6.1457 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_3'>
-        <pose frame=''>0.881072 -6.61692 0.149 0 -0 1.55153</pose>
+        <pose>0.881072 -6.61692 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.881072 -6.61692 0.149 0 -0 1.55153</pose>
+          <pose>0.881072 -6.61692 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_4'>
-        <pose frame=''>1.02403 -7.05167 0.149 0 -0 1.55153</pose>
+        <pose>1.02403 -7.05167 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>1.02403 -7.05167 0.149 0 -0 1.55153</pose>
+          <pose>1.02403 -7.05167 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_5'>
-        <pose frame=''>1.21764 -7.45565 0.149 0 -0 1.55153</pose>
+        <pose>1.21764 -7.45565 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>1.21764 -7.45565 0.149 0 -0 1.55153</pose>
+          <pose>1.21764 -7.45565 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_6'>
-        <pose frame=''>1.49562 -7.94138 0.149 0 -0 1.55153</pose>
+        <pose>1.49562 -7.94138 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>1.49562 -7.94138 0.149 0 -0 1.55153</pose>
+          <pose>1.49562 -7.94138 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_7'>
-        <pose frame=''>1.31681 -8.40154 0.149 0 -0 1.55153</pose>
+        <pose>1.31681 -8.40154 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>1.31681 -8.40154 0.149 0 -0 1.55153</pose>
+          <pose>1.31681 -8.40154 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_8'>
-        <pose frame=''>1.01457 -8.83833 0.149 0 -0 1.55153</pose>
+        <pose>1.01457 -8.83833 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>1.01457 -8.83833 0.149 0 -0 1.55153</pose>
+          <pose>1.01457 -8.83833 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_9'>
-        <pose frame=''>0.718459 -9.26594 0.149 0 -0 1.55153</pose>
+        <pose>0.718459 -9.26594 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.718459 -9.26594 0.149 0 -0 1.55153</pose>
+          <pose>0.718459 -9.26594 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone'>
-        <pose frame=''>0.525405 -0.308483 0.149 0 -0 1.55153</pose>
+        <pose>0.525405 -0.308483 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.525405 -0.308483 0.149 0 -0 1.55153</pose>
+          <pose>0.525405 -0.308483 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_0'>
-        <pose frame=''>-1.91359 -4.01674 0.149 0 -0 1.55153</pose>
+        <pose>-1.91359 -4.01674 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-1.91359 -4.01674 0.149 0 -0 1.55153</pose>
+          <pose>-1.91359 -4.01674 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_1'>
-        <pose frame=''>-2.2484 -4.44625 0.149 0 -0 1.55153</pose>
+        <pose>-2.2484 -4.44625 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.2484 -4.44625 0.149 0 -0 1.55153</pose>
+          <pose>-2.2484 -4.44625 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_10'>
-        <pose frame=''>-4.44502 -9.54578 0.149 0 -0 1.55153</pose>
+        <pose>-4.44502 -9.54578 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-4.44502 -9.54578 0.149 0 -0 1.55153</pose>
+          <pose>-4.44502 -9.54578 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_11'>
-        <pose frame=''>-2.65546 0.170058 0.149 0 -0 1.55153</pose>
+        <pose>-2.65546 0.170058 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.65546 0.170058 0.149 0 -0 1.55153</pose>
+          <pose>-2.65546 0.170058 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_11_clone'>
-        <pose frame=''>0.548554 0.136261 0.149 0 -0 1.55153</pose>
+        <pose>0.548554 0.136261 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.548554 0.136261 0.149 0 -0 1.55153</pose>
+          <pose>0.548554 0.136261 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_12'>
-        <pose frame=''>-2.65028 0.632164 0.149 0 -0 1.55153</pose>
+        <pose>-2.65028 0.632164 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.65028 0.632164 0.149 0 -0 1.55153</pose>
+          <pose>-2.65028 0.632164 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_13'>
-        <pose frame=''>1.13091 -3.13033 0.149 0 -0 1.55153</pose>
+        <pose>1.13091 -3.13033 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>1.13091 -3.13033 0.149 0 -0 1.55153</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='box_clone_3_clone_clone_15'>
-        <pose frame=''>-0.729935 -6.90395 0.149 0 -0 1.55153</pose>
-        <scale>1 1 1</scale>
-        <link name='cardboard_box_clone::link'>
-          <pose frame=''>-0.729935 -6.90395 0.149 0 -0 1.55153</pose>
+          <pose>1.13091 -3.13033 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_2'>
-        <pose frame=''>-2.45755 -4.91013 0.149 0 -0 1.55153</pose>
+        <pose>-2.45755 -4.91013 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.45755 -4.91013 0.149 0 -0 1.55153</pose>
+          <pose>-2.45755 -4.91013 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_3'>
-        <pose frame=''>-2.35637 -5.37175 0.149 0 -0 1.55153</pose>
+        <pose>-2.35637 -5.37175 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.35637 -5.37175 0.149 0 -0 1.55153</pose>
+          <pose>-2.35637 -5.37175 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_4'>
-        <pose frame=''>-2.13835 -5.78726 0.149 0 -0 1.55153</pose>
+        <pose>-2.13835 -5.78726 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.13835 -5.78726 0.149 0 -0 1.55153</pose>
+          <pose>-2.13835 -5.78726 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_5'>
-        <pose frame=''>-4.74217 -7.27077 0.149 0 -0 1.55153</pose>
+        <pose>-4.74217 -7.27077 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-4.74217 -7.27077 0.149 0 -0 1.55153</pose>
+          <pose>-4.74217 -7.27077 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_6'>
-        <pose frame=''>-4.77673 -7.68249 0.149 0 -0 1.55153</pose>
+        <pose>-4.77673 -7.68249 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-4.77673 -7.68249 0.149 0 -0 1.55153</pose>
+          <pose>-4.77673 -7.68249 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_7'>
-        <pose frame=''>-4.80347 -8.15577 0.149 0 -0 1.55153</pose>
+        <pose>-4.80347 -8.15577 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-4.80347 -8.15577 0.149 0 -0 1.55153</pose>
+          <pose>-4.80347 -8.15577 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_8'>
-        <pose frame=''>-4.81156 -8.60433 0.149 0 -0 1.55153</pose>
+        <pose>-4.81156 -8.60433 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-4.81156 -8.60433 0.149 0 -0 1.55153</pose>
+          <pose>-4.81156 -8.60433 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_9'>
-        <pose frame=''>-4.73506 -9.08568 0.149 0 -0 1.55153</pose>
+        <pose>-4.73506 -9.08568 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-4.73506 -9.08568 0.149 0 -0 1.55153</pose>
+          <pose>-4.73506 -9.08568 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone'>
-        <pose frame=''>0.521071 -0.766393 0.149 0 -0 1.55153</pose>
+        <pose>0.521071 -0.766393 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.521071 -0.766393 0.149 0 -0 1.55153</pose>
+          <pose>0.521071 -0.766393 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_0'>
-        <pose frame=''>0.524186 -1.22775 0.149 0 -0 1.55153</pose>
+        <pose>0.524186 -1.22775 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.524186 -1.22775 0.149 0 -0 1.55153</pose>
+          <pose>0.524186 -1.22775 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_0_clone'>
-        <pose frame=''>3.98835 -3.24578 0.149 0 -0 1.55153</pose>
+        <pose>3.98835 -3.24578 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>3.98835 -3.24578 0.149 0 -0 1.55153</pose>
+          <pose>3.98835 -3.24578 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_0_clone_0'>
-        <pose frame=''>3.97273 -3.71542 0.149 0 -0 1.55153</pose>
+        <pose>3.97273 -3.71542 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>3.97273 -3.71542 0.149 0 -0 1.55153</pose>
+          <pose>3.97273 -3.71542 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_0_clone_1'>
-        <pose frame=''>3.97417 -4.19616 0.149 0 -0 1.55153</pose>
+        <pose>3.97417 -4.19616 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>3.97417 -4.19616 0.149 0 -0 1.55153</pose>
+          <pose>3.97417 -4.19616 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_0_clone_2'>
-        <pose frame=''>3.94335 -4.67785 0.149 0 -0 1.55153</pose>
+        <pose>3.94335 -4.67785 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>3.94335 -4.67785 0.149 0 -0 1.55153</pose>
+          <pose>3.94335 -4.67785 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_0_clone_3'>
-        <pose frame=''>2.29607 -4.30964 0.149 0 -0 1.55153</pose>
+        <pose>2.29607 -4.30964 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>2.29607 -4.30964 0.149 0 -0 1.55153</pose>
+          <pose>2.29607 -4.30964 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_0_clone_4'>
-        <pose frame=''>3.73755 -5.15106 0.149 0 -0 1.55153</pose>
+        <pose>3.73755 -5.15106 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>3.73755 -5.15106 0.149 0 -0 1.55153</pose>
+          <pose>3.73755 -5.15106 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_1'>
-        <pose frame=''>0.528427 -1.69636 0.149 0 -0 1.55153</pose>
+        <pose>0.528427 -1.69636 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.528427 -1.69636 0.149 0 -0 1.55153</pose>
+          <pose>0.528427 -1.69636 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_2'>
-        <pose frame=''>0.52335 -2.17334 0.149 0 -0 1.55153</pose>
+        <pose>0.52335 -2.17334 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.52335 -2.17334 0.149 0 -0 1.55153</pose>
+          <pose>0.52335 -2.17334 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_3'>
-        <pose frame=''>-0.363877 -0.460464 0.149 0 -0 1.55153</pose>
+        <pose>-0.363877 -0.460464 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-0.363877 -0.460464 0.149 0 -0 1.55153</pose>
+          <pose>-0.363877 -0.460464 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_3_clone_clone'>
-        <pose frame=''>0.479754 -2.65819 0.149 0 -0 2.31083</pose>
+        <pose>0.479754 -2.65819 0.149 0 -0 2.31083</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.479754 -2.65819 0.149 0 -0 2.31083</pose>
+          <pose>0.479754 -2.65819 0.149 0 -0 2.31083</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_3_clone_clone_clone'>
-        <pose frame=''>-0.685924 -2.46282 0.149 0 -0 2.31083</pose>
+        <pose>-0.685924 -2.46282 0.149 0 -0 2.31083</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-0.685924 -2.46282 0.149 0 -0 2.31083</pose>
+          <pose>-0.685924 -2.46282 0.149 0 -0 2.31083</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_3_clone_clone_clone_0'>
-        <pose frame=''>-1.86034 -6.04029 0.149 0 -0 2.31083</pose>
+        <pose>-1.86034 -6.04029 0.149 0 -0 2.31083</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-1.86034 -6.04029 0.149 0 -0 2.31083</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='box_clone_3_clone_clone_clone_3_clone_clone_clone_1'>
-        <pose frame=''>-0.33021 -5.71784 0.149 0 -0 2.31083</pose>
-        <scale>1 1 1</scale>
-        <link name='cardboard_box_clone::link'>
-          <pose frame=''>-0.33021 -5.71784 0.149 0 -0 2.31083</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='box_clone_3_clone_clone_clone_3_clone_clone_clone_2'>
-        <pose frame=''>-0.316135 -8.06227 0.149 0 -0 2.31083</pose>
-        <scale>1 1 1</scale>
-        <link name='cardboard_box_clone::link'>
-          <pose frame=''>-0.316135 -8.06227 0.149 0 -0 2.31083</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='box_clone_3_clone_clone_clone_3_clone_clone_clone_2_clone'>
-        <pose frame=''>-2.12273 -7.59657 0.149 0 -0 2.31083</pose>
-        <scale>1 1 1</scale>
-        <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.12273 -7.59657 0.149 0 -0 2.31083</pose>
+          <pose>-1.86034 -6.04029 0.149 0 -0 2.31083</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_3_clone_clone_clone_5'>
-        <pose frame=''>-0.716717 -2.94851 0.149 0 -0 1.55153</pose>
+        <pose>-0.716717 -2.94851 0.149 0 -0 1.55153</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-0.716717 -2.94851 0.149 0 -0 1.55153</pose>
-          <velocity>0 0 0 0 -0 0</velocity>
-          <acceleration>0 0 0 0 -0 0</acceleration>
-          <wrench>0 0 0 0 -0 0</wrench>
-        </link>
-      </model>
-      <model name='box_clone_3_clone_clone_clone_5_clone'>
-        <pose frame=''>0.112115 -4.04552 0.149 0 -0 1.55153</pose>
-        <scale>1 1 1</scale>
-        <link name='cardboard_box_clone::link'>
-          <pose frame=''>0.112115 -4.04552 0.149 0 -0 1.55153</pose>
+          <pose>-0.716717 -2.94851 0.149 0 -0 1.55153</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_4'>
-        <pose frame=''>3.32403 -5.19757 0.149 0 -0 0</pose>
+        <pose>3.32403 -5.19757 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>3.32403 -5.19757 0.149 0 -0 0</pose>
+          <pose>3.32403 -5.19757 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_5'>
-        <pose frame=''>2.89622 -5.4423 0.149 0 -0 0</pose>
+        <pose>2.89622 -5.4423 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>2.89622 -5.4423 0.149 0 -0 0</pose>
+          <pose>2.89622 -5.4423 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_6'>
-        <pose frame=''>2.46651 -5.6112 0.149 0 -0 0</pose>
+        <pose>2.46651 -5.6112 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>2.46651 -5.6112 0.149 0 -0 0</pose>
+          <pose>2.46651 -5.6112 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_7'>
-        <pose frame=''>2.02097 -5.50404 0.149 0 -0 0</pose>
+        <pose>2.02097 -5.50404 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>2.02097 -5.50404 0.149 0 -0 0</pose>
+          <pose>2.02097 -5.50404 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_8'>
-        <pose frame=''>1.57176 -5.56411 0.149 0 -0 0</pose>
+        <pose>1.57176 -5.56411 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>1.57176 -5.56411 0.149 0 -0 0</pose>
+          <pose>1.57176 -5.56411 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_9'>
-        <pose frame=''>1.07912 -5.7245 0.149 0 -0 0</pose>
+        <pose>1.07912 -5.7245 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>1.07912 -5.7245 0.149 0 -0 0</pose>
+          <pose>1.07912 -5.7245 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='box_clone_9_clone'>
-        <pose frame=''>-2.02375 -6.4146 0.149 0 -0 0</pose>
+        <pose>-2.02375 -6.4146 0.149 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='cardboard_box_clone::link'>
-          <pose frame=''>-2.02375 -6.4146 0.149 0 -0 0</pose>
+          <pose>-2.02375 -6.4146 0.149 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
-      <model name='checkerboard_plane'>
-        <pose frame=''>1.99653 2.00703 0.0005 0 -0 0</pose>
+      <model name='checkerboard_plane_clone'>
+        <pose>1.99653 2.00703 0.0005 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>2.0000 2.0000 0.0005 0 -0 0</pose>
+          <pose>1.99653 2.00703 0.0005 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <model name='ground_plane'>
-        <pose frame=''>0.215037 0.234206 0 0 -0 0</pose>
+        <pose>0.215037 0.234206 0 0 -0 0</pose>
         <scale>1 1 1</scale>
         <link name='link'>
-          <pose frame=''>0.215037 0.234206 0 0 -0 0</pose>
+          <pose>0.215037 0.234206 0 0 -0 0</pose>
           <velocity>0 0 0 0 -0 0</velocity>
           <acceleration>0 0 0 0 -0 0</acceleration>
           <wrench>0 0 0 0 -0 0</wrench>
         </link>
       </model>
       <light name='sun'>
-        <pose frame=''>0 0 10 0 -0 0</pose>
+        <pose>0 0 10 0 -0 0</pose>
       </light>
     </state>
     <gui fullscreen='0'>
       <camera name='user_camera'>
-        <pose frame=''>1.5552 -4.33822 14.2148 0 1.5698 0.007241</pose>
+        <pose>-5.14251 1.02261 38.4588 -0 1.4858 0.047241</pose>
         <view_controller>orbit</view_controller>
         <projection_type>perspective</projection_type>
       </camera>
@@ -1124,11 +1059,11 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose frame=''>0.215037 0.234206 0 0 -0 0</pose>
+      <pose>0.215037 0.234206 0 0 -0 0</pose>
     </model>
     <model name='RegionEventBox_clone_0_clone'>
       <static>1</static>
-      <pose frame=''>3.01485 -4.05142 0 0 -0 0</pose>
+      <pose>3.01485 -4.05142 0 0 -0 0</pose>
       <link name='link'>
         <visual name='visual'>
           <transparency>0.75</transparency>
@@ -1158,7 +1093,7 @@
     </model>
     <model name='RegionEventBox_clone_0_clone_clone_0_clone_clone'>
       <static>1</static>
-      <pose frame=''>-1.01241 -5.02399 0 0 -0 0</pose>
+      <pose>-1.01241 -5.02399 0 0 -0 0</pose>
       <link name='link'>
         <visual name='visual'>
           <transparency>0.75</transparency>
@@ -1202,9 +1137,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -1217,7 +1152,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -1272,7 +1207,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.67175 -0.660249 0.149 0 -0 1.55153</pose>
+      <pose>-2.67175 -0.660249 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone'>
       <link name='cardboard_box_clone::link'>
@@ -1290,9 +1225,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -1305,7 +1240,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -1360,7 +1295,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.66078 -0.304132 0.149 0 -0 1.55153</pose>
+      <pose>-2.66078 -0.304132 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_0'>
       <link name='cardboard_box_clone::link'>
@@ -1378,9 +1313,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -1393,7 +1328,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -1448,7 +1383,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.68128 -1.13471 0.149 0 -0 1.55153</pose>
+      <pose>-2.68128 -1.13471 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_1'>
       <link name='cardboard_box_clone::link'>
@@ -1466,9 +1401,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -1481,7 +1416,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -1536,7 +1471,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.68961 -1.61993 0.149 0 -0 1.55153</pose>
+      <pose>-2.68961 -1.61993 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_2_clone'>
       <link name='cardboard_box_clone::link'>
@@ -1554,9 +1489,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -1569,7 +1504,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -1624,7 +1559,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.64031 -2.04978 0.149 0 -0 0</pose>
+      <pose>-2.64031 -2.04978 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_2_clone_0'>
       <link name='cardboard_box_clone::link'>
@@ -1642,9 +1577,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -1657,7 +1592,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -1712,7 +1647,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.1539 -2.05558 0.149 0 -0 0</pose>
+      <pose>-2.1539 -2.05558 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_2_clone_1'>
       <link name='cardboard_box_clone::link'>
@@ -1730,9 +1665,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -1745,7 +1680,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -1800,7 +1735,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-1.67344 -2.05843 0.149 0 -0 0</pose>
+      <pose>-1.67344 -2.05843 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_3_clone_clone'>
       <link name='cardboard_box_clone::link'>
@@ -1818,9 +1753,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -1833,7 +1768,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -1888,7 +1823,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.525405 -0.308483 0.149 0 -0 1.55153</pose>
+      <pose>0.525405 -0.308483 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone'>
       <link name='cardboard_box_clone::link'>
@@ -1906,9 +1841,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -1921,7 +1856,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -1976,7 +1911,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.521071 -0.766393 0.149 0 -0 1.55153</pose>
+      <pose>0.521071 -0.766393 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_0'>
       <link name='cardboard_box_clone::link'>
@@ -1994,9 +1929,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -2009,7 +1944,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -2064,7 +1999,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.524186 -1.22775 0.149 0 -0 1.55153</pose>
+      <pose>0.524186 -1.22775 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_1'>
       <link name='cardboard_box_clone::link'>
@@ -2082,9 +2017,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -2097,7 +2032,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -2152,7 +2087,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.528427 -1.69636 0.149 0 -0 1.55153</pose>
+      <pose>0.528427 -1.69636 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_2'>
       <link name='cardboard_box_clone::link'>
@@ -2170,9 +2105,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -2185,7 +2120,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -2240,7 +2175,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.52335 -2.17334 0.149 0 -0 1.55153</pose>
+      <pose>0.52335 -2.17334 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_5'>
       <link name='cardboard_box_clone::link'>
@@ -2258,9 +2193,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -2273,7 +2208,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -2328,95 +2263,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.716717 -2.94851 0.149 0 -0 1.55153</pose>
-    </model>
-    <model name='box_clone_3_clone_clone_clone_5_clone'>
-      <link name='cardboard_box_clone::link'>
-        <inertial>
-          <mass>2</mass>
-          <inertia>
-            <ixx>0.0416667</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.0566667</iyy>
-            <iyz>0</iyz>
-            <izz>0.0683333</izz>
-          </inertia>
-        </inertial>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
-        <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
-              <scale>1.25932 1.00745 0.755591</scale>
-            </mesh>
-          </geometry>
-          <transparency>0</transparency>
-          <cast_shadows>1</cast_shadows>
-        </visual>
-        <collision name='collision'>
-          <laser_retro>0</laser_retro>
-          <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.5 0.4 0.3</size>
-            </box>
-          </geometry>
-          <surface>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-                <fdir1>0 0 0</fdir1>
-                <slip1>0</slip1>
-                <slip2>0</slip2>
-              </ode>
-              <torsional>
-                <coefficient>1</coefficient>
-                <patch_radius>0</patch_radius>
-                <surface_radius>0</surface_radius>
-                <use_patch_radius>1</use_patch_radius>
-                <ode>
-                  <slip>0</slip>
-                </ode>
-              </torsional>
-            </friction>
-            <bounce>
-              <restitution_coefficient>0</restitution_coefficient>
-              <threshold>1e+06</threshold>
-            </bounce>
-            <contact>
-              <collide_without_contact>0</collide_without_contact>
-              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-              <collide_bitmask>1</collide_bitmask>
-              <ode>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <max_vel>0.1</max_vel>
-                <min_depth>0.001</min_depth>
-              </ode>
-              <bullet>
-                <split_impulse>1</split_impulse>
-                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-              </bullet>
-            </contact>
-          </surface>
-        </collision>
-      </link>
-      <static>1</static>
-      <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.112115 -4.04552 0.149 0 -0 1.55153</pose>
+      <pose>-0.716717 -2.94851 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_1_clone'>
       <link name='cardboard_box_clone::link'>
@@ -2434,9 +2281,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -2449,7 +2296,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -2504,7 +2351,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.918792 -2.68698 0.149 0 -0 0</pose>
+      <pose>0.918792 -2.68698 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_1_clone_0'>
       <link name='cardboard_box_clone::link'>
@@ -2522,9 +2369,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -2537,7 +2384,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -2592,7 +2439,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>1.39196 -2.69378 0.149 0 -0 0</pose>
+      <pose>1.39196 -2.69378 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_1_clone_1'>
       <link name='cardboard_box_clone::link'>
@@ -2610,9 +2457,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -2625,7 +2472,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -2680,7 +2527,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>1.82358 -2.40857 0.149 0 -0 0</pose>
+      <pose>1.82358 -2.40857 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_1_clone_2'>
       <link name='cardboard_box_clone::link'>
@@ -2698,9 +2545,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -2713,7 +2560,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -2768,7 +2615,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>2.28024 -2.59219 0.149 0 -0 0</pose>
+      <pose>2.28024 -2.59219 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_1_clone_3'>
       <link name='cardboard_box_clone::link'>
@@ -2786,9 +2633,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -2801,7 +2648,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -2856,7 +2703,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>2.71488 -2.44158 0.149 0 -0 0</pose>
+      <pose>2.71488 -2.44158 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_1_clone_4'>
       <link name='cardboard_box_clone::link'>
@@ -2874,9 +2721,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -2889,7 +2736,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -2944,7 +2791,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>3.16773 -2.65912 0.149 0 -0 0</pose>
+      <pose>3.16773 -2.65912 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_1_clone_5'>
       <link name='cardboard_box_clone::link'>
@@ -2962,9 +2809,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -2977,7 +2824,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -3032,7 +2879,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>3.59171 -2.99371 0.149 0 -0 0</pose>
+      <pose>3.59171 -2.99371 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_0_clone'>
       <link name='cardboard_box_clone::link'>
@@ -3050,9 +2897,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -3065,7 +2912,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -3120,7 +2967,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>3.98835 -3.24578 0.149 0 -0 1.55153</pose>
+      <pose>3.98835 -3.24578 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_0_clone_0'>
       <link name='cardboard_box_clone::link'>
@@ -3138,9 +2985,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -3153,7 +3000,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -3208,7 +3055,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>3.97273 -3.71542 0.149 0 -0 1.55153</pose>
+      <pose>3.97273 -3.71542 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_0_clone_1'>
       <link name='cardboard_box_clone::link'>
@@ -3226,9 +3073,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -3241,7 +3088,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -3296,7 +3143,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>3.97417 -4.19616 0.149 0 -0 1.55153</pose>
+      <pose>3.97417 -4.19616 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_0_clone_2'>
       <link name='cardboard_box_clone::link'>
@@ -3314,9 +3161,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -3329,7 +3176,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -3384,7 +3231,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>3.94335 -4.67785 0.149 0 -0 1.55153</pose>
+      <pose>3.94335 -4.67785 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_0_clone_3'>
       <link name='cardboard_box_clone::link'>
@@ -3402,9 +3249,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -3417,7 +3264,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -3472,7 +3319,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>2.29607 -4.30964 0.149 0 -0 1.55153</pose>
+      <pose>2.29607 -4.30964 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_0_clone_4'>
       <link name='cardboard_box_clone::link'>
@@ -3490,9 +3337,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -3505,7 +3352,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -3560,7 +3407,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>3.73755 -5.15106 0.149 0 -0 1.55153</pose>
+      <pose>3.73755 -5.15106 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_4'>
       <link name='cardboard_box_clone::link'>
@@ -3578,9 +3425,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -3593,7 +3440,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -3648,7 +3495,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>3.32403 -5.19757 0.149 0 -0 0</pose>
+      <pose>3.32403 -5.19757 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_5'>
       <link name='cardboard_box_clone::link'>
@@ -3666,9 +3513,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -3681,7 +3528,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -3736,7 +3583,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>2.89622 -5.4423 0.149 0 -0 0</pose>
+      <pose>2.89622 -5.4423 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_6'>
       <link name='cardboard_box_clone::link'>
@@ -3754,9 +3601,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -3769,7 +3616,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -3824,7 +3671,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>2.46651 -5.6112 0.149 0 -0 0</pose>
+      <pose>2.46651 -5.6112 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_7'>
       <link name='cardboard_box_clone::link'>
@@ -3842,9 +3689,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -3857,7 +3704,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -3912,7 +3759,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>2.02097 -5.50404 0.149 0 -0 0</pose>
+      <pose>2.02097 -5.50404 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_8'>
       <link name='cardboard_box_clone::link'>
@@ -3930,9 +3777,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -3945,7 +3792,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -4000,7 +3847,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>1.57176 -5.56411 0.149 0 -0 0</pose>
+      <pose>1.57176 -5.56411 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_9'>
       <link name='cardboard_box_clone::link'>
@@ -4018,9 +3865,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -4033,7 +3880,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -4088,7 +3935,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>1.07912 -5.7245 0.149 0 -0 0</pose>
+      <pose>1.07912 -5.7245 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_10'>
       <link name='cardboard_box_clone::link'>
@@ -4106,9 +3953,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -4121,7 +3968,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -4176,7 +4023,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-1.10681 -3.34727 0.149 0 -0 0</pose>
+      <pose>-1.10681 -3.34727 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_11'>
       <link name='cardboard_box_clone::link'>
@@ -4194,9 +4041,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -4209,7 +4056,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -4264,7 +4111,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-1.49999 -3.64286 0.149 0 -0 0</pose>
+      <pose>-1.49999 -3.64286 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_3_clone_clone_0'>
       <link name='cardboard_box_clone::link'>
@@ -4282,9 +4129,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -4297,7 +4144,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -4352,7 +4199,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-1.91359 -4.01674 0.149 0 -0 1.55153</pose>
+      <pose>-1.91359 -4.01674 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_1'>
       <link name='cardboard_box_clone::link'>
@@ -4370,9 +4217,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -4385,7 +4232,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -4440,7 +4287,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.2484 -4.44625 0.149 0 -0 1.55153</pose>
+      <pose>-2.2484 -4.44625 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_2'>
       <link name='cardboard_box_clone::link'>
@@ -4458,9 +4305,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -4473,7 +4320,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -4528,7 +4375,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.45755 -4.91013 0.149 0 -0 1.55153</pose>
+      <pose>-2.45755 -4.91013 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_3'>
       <link name='cardboard_box_clone::link'>
@@ -4546,9 +4393,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -4561,7 +4408,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -4616,7 +4463,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.35637 -5.37175 0.149 0 -0 1.55153</pose>
+      <pose>-2.35637 -5.37175 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_4'>
       <link name='cardboard_box_clone::link'>
@@ -4634,9 +4481,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -4649,7 +4496,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -4704,7 +4551,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.13835 -5.78726 0.149 0 -0 1.55153</pose>
+      <pose>-2.13835 -5.78726 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_3_clone_clone'>
       <link name='cardboard_box_clone::link'>
@@ -4722,9 +4569,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -4737,7 +4584,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -4792,7 +4639,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.479754 -2.65819 0.149 0 -0 2.31083</pose>
+      <pose>0.479754 -2.65819 0.149 0 -0 2.31083</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_3_clone_clone_clone'>
       <link name='cardboard_box_clone::link'>
@@ -4810,9 +4657,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -4825,7 +4672,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -4880,7 +4727,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.685924 -2.46282 0.149 0 -0 2.31083</pose>
+      <pose>-0.685924 -2.46282 0.149 0 -0 2.31083</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_3_clone_clone_clone_0'>
       <link name='cardboard_box_clone::link'>
@@ -4898,9 +4745,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -4913,7 +4760,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -4968,7 +4815,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-1.86034 -6.04029 0.149 0 -0 2.31083</pose>
+      <pose>-1.86034 -6.04029 0.149 0 -0 2.31083</pose>
     </model>
     <model name='box_clone_9_clone'>
       <link name='cardboard_box_clone::link'>
@@ -4986,9 +4833,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -5001,7 +4848,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -5056,7 +4903,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.02375 -6.4146 0.149 0 -0 0</pose>
+      <pose>-2.02375 -6.4146 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_3_clone_2'>
       <link name='cardboard_box_clone::link'>
@@ -5074,9 +4921,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -5089,7 +4936,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -5144,7 +4991,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.840472 -6.1457 0.149 0 -0 1.55153</pose>
+      <pose>0.840472 -6.1457 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_3'>
       <link name='cardboard_box_clone::link'>
@@ -5162,9 +5009,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -5177,7 +5024,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -5232,7 +5079,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.881072 -6.61692 0.149 0 -0 1.55153</pose>
+      <pose>0.881072 -6.61692 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_4'>
       <link name='cardboard_box_clone::link'>
@@ -5250,9 +5097,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -5265,7 +5112,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -5320,7 +5167,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>1.02403 -7.05167 0.149 0 -0 1.55153</pose>
+      <pose>1.02403 -7.05167 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_5'>
       <link name='cardboard_box_clone::link'>
@@ -5338,9 +5185,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -5353,7 +5200,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -5408,7 +5255,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>1.21764 -7.45565 0.149 0 -0 1.55153</pose>
+      <pose>1.21764 -7.45565 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_6'>
       <link name='cardboard_box_clone::link'>
@@ -5426,9 +5273,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -5441,7 +5288,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -5496,7 +5343,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>1.49562 -7.94138 0.149 0 -0 1.55153</pose>
+      <pose>1.49562 -7.94138 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_7'>
       <link name='cardboard_box_clone::link'>
@@ -5514,9 +5361,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -5529,7 +5376,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -5584,7 +5431,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>1.31681 -8.40154 0.149 0 -0 1.55153</pose>
+      <pose>1.31681 -8.40154 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_8'>
       <link name='cardboard_box_clone::link'>
@@ -5602,9 +5449,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -5617,7 +5464,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -5672,7 +5519,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>1.01457 -8.83833 0.149 0 -0 1.55153</pose>
+      <pose>1.01457 -8.83833 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_9'>
       <link name='cardboard_box_clone::link'>
@@ -5690,9 +5537,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -5705,7 +5552,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -5760,11 +5607,11 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.718459 -9.26594 0.149 0 -0 1.55153</pose>
+      <pose>0.718459 -9.26594 0.149 0 -0 1.55153</pose>
     </model>
     <model name='RegionEventBox_clone_0_clone_clone_0_clone_clone_clone'>
       <static>1</static>
-      <pose frame=''>-3.49818 -8.49725 0 0 -0 0</pose>
+      <pose>-3.49818 -8.49725 0 0 -0 0</pose>
       <link name='link'>
         <visual name='visual'>
           <transparency>0.75</transparency>
@@ -5792,94 +5639,6 @@
         </event>
       </plugin>
     </model>
-    <model name='box_clone_3_clone_clone_clone_3_clone_clone_clone_2_clone'>
-      <link name='cardboard_box_clone::link'>
-        <inertial>
-          <mass>2</mass>
-          <inertia>
-            <ixx>0.0416667</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.0566667</iyy>
-            <iyz>0</iyz>
-            <izz>0.0683333</izz>
-          </inertia>
-        </inertial>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
-        <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
-              <scale>1.25932 1.00745 0.755591</scale>
-            </mesh>
-          </geometry>
-          <transparency>0</transparency>
-          <cast_shadows>1</cast_shadows>
-        </visual>
-        <collision name='collision'>
-          <laser_retro>0</laser_retro>
-          <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.5 0.4 0.3</size>
-            </box>
-          </geometry>
-          <surface>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-                <fdir1>0 0 0</fdir1>
-                <slip1>0</slip1>
-                <slip2>0</slip2>
-              </ode>
-              <torsional>
-                <coefficient>1</coefficient>
-                <patch_radius>0</patch_radius>
-                <surface_radius>0</surface_radius>
-                <use_patch_radius>1</use_patch_radius>
-                <ode>
-                  <slip>0</slip>
-                </ode>
-              </torsional>
-            </friction>
-            <bounce>
-              <restitution_coefficient>0</restitution_coefficient>
-              <threshold>1e+06</threshold>
-            </bounce>
-            <contact>
-              <collide_without_contact>0</collide_without_contact>
-              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-              <collide_bitmask>1</collide_bitmask>
-              <ode>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <max_vel>0.1</max_vel>
-                <min_depth>0.001</min_depth>
-              </ode>
-              <bullet>
-                <split_impulse>1</split_impulse>
-                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-              </bullet>
-            </contact>
-          </surface>
-        </collision>
-      </link>
-      <static>1</static>
-      <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.12273 -7.59657 0.149 0 -0 2.31083</pose>
-    </model>
     <model name='box_clone_12'>
       <link name='cardboard_box_clone::link'>
         <inertial>
@@ -5896,9 +5655,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -5911,7 +5670,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -5966,7 +5725,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.4599 -6.41716 0.149 0 -0 0</pose>
+      <pose>-2.4599 -6.41716 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_13'>
       <link name='cardboard_box_clone::link'>
@@ -5984,9 +5743,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -5999,7 +5758,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -6054,7 +5813,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.90832 -6.41201 0.149 0 -0 0</pose>
+      <pose>-2.90832 -6.41201 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_14'>
       <link name='cardboard_box_clone::link'>
@@ -6072,9 +5831,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -6087,7 +5846,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -6142,7 +5901,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-3.36792 -6.43187 0.149 0 -0 0</pose>
+      <pose>-3.36792 -6.43187 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_15'>
       <link name='cardboard_box_clone::link'>
@@ -6160,9 +5919,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -6175,7 +5934,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -6230,7 +5989,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-3.7722 -6.46677 0.149 0 -0 0</pose>
+      <pose>-3.7722 -6.46677 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_16'>
       <link name='cardboard_box_clone::link'>
@@ -6248,9 +6007,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -6263,7 +6022,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -6318,7 +6077,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-4.18047 -6.58991 0.149 0 -0 0</pose>
+      <pose>-4.18047 -6.58991 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_17'>
       <link name='cardboard_box_clone::link'>
@@ -6336,9 +6095,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -6351,7 +6110,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -6406,7 +6165,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-4.56066 -6.88099 0.149 0 -0 0</pose>
+      <pose>-4.56066 -6.88099 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_3_clone_clone_5'>
       <link name='cardboard_box_clone::link'>
@@ -6424,9 +6183,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -6439,7 +6198,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -6494,7 +6253,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-4.74217 -7.27077 0.149 0 -0 1.55153</pose>
+      <pose>-4.74217 -7.27077 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_6'>
       <link name='cardboard_box_clone::link'>
@@ -6512,9 +6271,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -6527,7 +6286,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -6582,7 +6341,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-4.77673 -7.68249 0.149 0 -0 1.55153</pose>
+      <pose>-4.77673 -7.68249 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_7'>
       <link name='cardboard_box_clone::link'>
@@ -6600,9 +6359,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -6615,7 +6374,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -6670,7 +6429,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-4.80347 -8.15577 0.149 0 -0 1.55153</pose>
+      <pose>-4.80347 -8.15577 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_8'>
       <link name='cardboard_box_clone::link'>
@@ -6688,9 +6447,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -6703,7 +6462,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -6758,7 +6517,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-4.81156 -8.60433 0.149 0 -0 1.55153</pose>
+      <pose>-4.81156 -8.60433 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_9'>
       <link name='cardboard_box_clone::link'>
@@ -6776,9 +6535,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -6791,7 +6550,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -6846,7 +6605,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-4.73506 -9.08568 0.149 0 -0 1.55153</pose>
+      <pose>-4.73506 -9.08568 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_10'>
       <link name='cardboard_box_clone::link'>
@@ -6864,9 +6623,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -6879,7 +6638,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -6934,7 +6693,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-4.44502 -9.54578 0.149 0 -0 1.55153</pose>
+      <pose>-4.44502 -9.54578 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_18'>
       <link name='cardboard_box_clone::link'>
@@ -6952,9 +6711,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -6967,7 +6726,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -7022,7 +6781,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-4.09684 -9.77326 0.149 0 -0 0</pose>
+      <pose>-4.09684 -9.77326 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_19'>
       <link name='cardboard_box_clone::link'>
@@ -7040,9 +6799,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -7055,7 +6814,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -7110,7 +6869,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-3.65315 -9.80937 0.149 0 -0 0</pose>
+      <pose>-3.65315 -9.80937 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_20'>
       <link name='cardboard_box_clone::link'>
@@ -7128,9 +6887,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -7143,7 +6902,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -7198,7 +6957,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-3.19793 -9.81638 0.149 0 -0 0</pose>
+      <pose>-3.19793 -9.81638 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_21'>
       <link name='cardboard_box_clone::link'>
@@ -7216,9 +6975,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -7231,7 +6990,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -7286,7 +7045,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.74733 -9.82966 0.149 0 -0 0</pose>
+      <pose>-2.74733 -9.82966 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_22'>
       <link name='cardboard_box_clone::link'>
@@ -7304,9 +7063,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -7319,7 +7078,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -7374,7 +7133,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.2615 -9.78437 0.149 0 -0 0</pose>
+      <pose>-2.2615 -9.78437 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_23'>
       <link name='cardboard_box_clone::link'>
@@ -7392,9 +7151,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -7407,7 +7166,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -7462,7 +7221,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-1.78489 -9.95299 0.149 0 -0 0</pose>
+      <pose>-1.78489 -9.95299 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_24'>
       <link name='cardboard_box_clone::link'>
@@ -7480,9 +7239,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -7495,7 +7254,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -7550,7 +7309,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-1.32422 -9.77706 0.149 0 -0 0</pose>
+      <pose>-1.32422 -9.77706 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_25'>
       <link name='cardboard_box_clone::link'>
@@ -7568,9 +7327,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -7583,7 +7342,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -7638,7 +7397,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.844404 -9.82173 0.149 0 -0 0</pose>
+      <pose>-0.844404 -9.82173 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_26'>
       <link name='cardboard_box_clone::link'>
@@ -7656,9 +7415,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -7671,7 +7430,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -7726,7 +7485,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.379165 -9.74391 0.149 0 -0 0</pose>
+      <pose>-0.379165 -9.74391 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_27'>
       <link name='cardboard_box_clone::link'>
@@ -7744,9 +7503,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -7759,7 +7518,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -7814,7 +7573,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.070947 -9.79323 0.149 0 -0 0</pose>
+      <pose>0.070947 -9.79323 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_28'>
       <link name='cardboard_box_clone::link'>
@@ -7832,9 +7591,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -7847,7 +7606,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -7902,95 +7661,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.431255 -9.50687 0.149 0 -0 0</pose>
-    </model>
-    <model name='box_clone_29'>
-      <link name='cardboard_box_clone::link'>
-        <inertial>
-          <mass>2</mass>
-          <inertia>
-            <ixx>0.0416667</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.0566667</iyy>
-            <iyz>0</iyz>
-            <izz>0.0683333</izz>
-          </inertia>
-        </inertial>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
-        <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
-              <scale>1.25932 1.00745 0.755591</scale>
-            </mesh>
-          </geometry>
-          <transparency>0</transparency>
-          <cast_shadows>1</cast_shadows>
-        </visual>
-        <collision name='collision'>
-          <laser_retro>0</laser_retro>
-          <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.5 0.4 0.3</size>
-            </box>
-          </geometry>
-          <surface>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-                <fdir1>0 0 0</fdir1>
-                <slip1>0</slip1>
-                <slip2>0</slip2>
-              </ode>
-              <torsional>
-                <coefficient>1</coefficient>
-                <patch_radius>0</patch_radius>
-                <surface_radius>0</surface_radius>
-                <use_patch_radius>1</use_patch_radius>
-                <ode>
-                  <slip>0</slip>
-                </ode>
-              </torsional>
-            </friction>
-            <bounce>
-              <restitution_coefficient>0</restitution_coefficient>
-              <threshold>1e+06</threshold>
-            </bounce>
-            <contact>
-              <collide_without_contact>0</collide_without_contact>
-              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-              <collide_bitmask>1</collide_bitmask>
-              <ode>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <max_vel>0.1</max_vel>
-                <min_depth>0.001</min_depth>
-              </ode>
-              <bullet>
-                <split_impulse>1</split_impulse>
-                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-              </bullet>
-            </contact>
-          </surface>
-        </collision>
-      </link>
-      <static>1</static>
-      <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.301458 -4.39542 0.149 0 -0 0</pose>
+      <pose>0.431255 -9.50687 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_31'>
       <link name='cardboard_box_clone::link'>
@@ -8008,9 +7679,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -8023,7 +7694,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -8078,95 +7749,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-3.74182 -7.79879 0.149 0 -0 0</pose>
-    </model>
-    <model name='box_clone_3_clone_clone_clone_3_clone_clone_clone_2'>
-      <link name='cardboard_box_clone::link'>
-        <inertial>
-          <mass>2</mass>
-          <inertia>
-            <ixx>0.0416667</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.0566667</iyy>
-            <iyz>0</iyz>
-            <izz>0.0683333</izz>
-          </inertia>
-        </inertial>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
-        <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
-              <scale>1.25932 1.00745 0.755591</scale>
-            </mesh>
-          </geometry>
-          <transparency>0</transparency>
-          <cast_shadows>1</cast_shadows>
-        </visual>
-        <collision name='collision'>
-          <laser_retro>0</laser_retro>
-          <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.5 0.4 0.3</size>
-            </box>
-          </geometry>
-          <surface>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-                <fdir1>0 0 0</fdir1>
-                <slip1>0</slip1>
-                <slip2>0</slip2>
-              </ode>
-              <torsional>
-                <coefficient>1</coefficient>
-                <patch_radius>0</patch_radius>
-                <surface_radius>0</surface_radius>
-                <use_patch_radius>1</use_patch_radius>
-                <ode>
-                  <slip>0</slip>
-                </ode>
-              </torsional>
-            </friction>
-            <bounce>
-              <restitution_coefficient>0</restitution_coefficient>
-              <threshold>1e+06</threshold>
-            </bounce>
-            <contact>
-              <collide_without_contact>0</collide_without_contact>
-              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-              <collide_bitmask>1</collide_bitmask>
-              <ode>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <max_vel>0.1</max_vel>
-                <min_depth>0.001</min_depth>
-              </ode>
-              <bullet>
-                <split_impulse>1</split_impulse>
-                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-              </bullet>
-            </contact>
-          </surface>
-        </collision>
-      </link>
-      <static>1</static>
-      <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.316135 -8.06227 0.149 0 -0 2.31083</pose>
+      <pose>-3.74182 -7.79879 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_3_clone_clone_11'>
       <link name='cardboard_box_clone::link'>
@@ -8184,9 +7767,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -8199,7 +7782,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -8254,7 +7837,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.65546 0.170058 0.149 0 -0 1.55153</pose>
+      <pose>-2.65546 0.170058 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_3_clone_clone_12'>
       <link name='cardboard_box_clone::link'>
@@ -8272,9 +7855,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -8287,7 +7870,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -8342,7 +7925,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.65028 0.632164 0.149 0 -0 1.55153</pose>
+      <pose>-2.65028 0.632164 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_2'>
       <link name='cardboard_box_clone::link'>
@@ -8360,9 +7943,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -8375,7 +7958,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -8430,7 +8013,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-2.22103 0.687687 0.149 0 -0 0</pose>
+      <pose>-2.22103 0.687687 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_32'>
       <link name='cardboard_box_clone::link'>
@@ -8448,9 +8031,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -8463,7 +8046,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -8518,7 +8101,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-1.78478 0.647683 0.149 0 -0 0</pose>
+      <pose>-1.78478 0.647683 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_33'>
       <link name='cardboard_box_clone::link'>
@@ -8536,9 +8119,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -8551,7 +8134,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -8606,7 +8189,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-1.33645 0.648898 0.149 0 -0 0</pose>
+      <pose>-1.33645 0.648898 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_34'>
       <link name='cardboard_box_clone::link'>
@@ -8624,9 +8207,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -8639,7 +8222,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -8694,7 +8277,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.889995 0.614023 0.149 0 -0 0</pose>
+      <pose>-0.889995 0.614023 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_35'>
       <link name='cardboard_box_clone::link'>
@@ -8712,9 +8295,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -8727,7 +8310,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -8782,7 +8365,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.459248 0.641005 0.149 0 -0 0</pose>
+      <pose>-0.459248 0.641005 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_36'>
       <link name='cardboard_box_clone::link'>
@@ -8800,9 +8383,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -8815,7 +8398,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -8870,7 +8453,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0 0.598558 0.149 0 -0 0</pose>
+      <pose>0 0.598558 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_37'>
       <link name='cardboard_box_clone::link'>
@@ -8888,9 +8471,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -8903,7 +8486,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -8958,7 +8541,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.427273 0.565972 0.149 0 -0 0</pose>
+      <pose>0.427273 0.565972 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_3_clone_clone_11_clone'>
       <link name='cardboard_box_clone::link'>
@@ -8976,9 +8559,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -8991,7 +8574,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -9046,7 +8629,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.548554 0.136261 0.149 0 -0 1.55153</pose>
+      <pose>0.548554 0.136261 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_32_clone'>
       <link name='cardboard_box_clone::link'>
@@ -9064,9 +8647,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -9079,7 +8662,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -9134,7 +8717,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-1.19979 -2.26762 0.149 0 -0 0</pose>
+      <pose>-1.19979 -2.26762 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_3_clone_clone_clone_3'>
       <link name='cardboard_box_clone::link'>
@@ -9152,9 +8735,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -9167,7 +8750,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -9222,95 +8805,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.363877 -0.460464 0.149 0 -0 1.55153</pose>
-    </model>
-    <model name='box_clone_3_clone_clone_clone_3_clone_clone_clone_1'>
-      <link name='cardboard_box_clone::link'>
-        <inertial>
-          <mass>2</mass>
-          <inertia>
-            <ixx>0.0416667</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.0566667</iyy>
-            <iyz>0</iyz>
-            <izz>0.0683333</izz>
-          </inertia>
-        </inertial>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
-        <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
-              <scale>1.25932 1.00745 0.755591</scale>
-            </mesh>
-          </geometry>
-          <transparency>0</transparency>
-          <cast_shadows>1</cast_shadows>
-        </visual>
-        <collision name='collision'>
-          <laser_retro>0</laser_retro>
-          <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.5 0.4 0.3</size>
-            </box>
-          </geometry>
-          <surface>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-                <fdir1>0 0 0</fdir1>
-                <slip1>0</slip1>
-                <slip2>0</slip2>
-              </ode>
-              <torsional>
-                <coefficient>1</coefficient>
-                <patch_radius>0</patch_radius>
-                <surface_radius>0</surface_radius>
-                <use_patch_radius>1</use_patch_radius>
-                <ode>
-                  <slip>0</slip>
-                </ode>
-              </torsional>
-            </friction>
-            <bounce>
-              <restitution_coefficient>0</restitution_coefficient>
-              <threshold>1e+06</threshold>
-            </bounce>
-            <contact>
-              <collide_without_contact>0</collide_without_contact>
-              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-              <collide_bitmask>1</collide_bitmask>
-              <ode>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <max_vel>0.1</max_vel>
-                <min_depth>0.001</min_depth>
-              </ode>
-              <bullet>
-                <split_impulse>1</split_impulse>
-                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-              </bullet>
-            </contact>
-          </surface>
-        </collision>
-      </link>
-      <static>1</static>
-      <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.33021 -5.71784 0.149 0 -0 2.31083</pose>
+      <pose>-0.363877 -0.460464 0.149 0 -0 1.55153</pose>
     </model>
     <model name='box_clone_31_clone'>
       <link name='cardboard_box_clone::link'>
@@ -9328,9 +8823,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -9343,7 +8838,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -9398,7 +8893,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-3.25589 -7.80439 0.149 0 -0 0</pose>
+      <pose>-3.25589 -7.80439 0.149 0 -0 0</pose>
     </model>
     <model name='box_clone_3_clone_clone_13'>
       <link name='cardboard_box_clone::link'>
@@ -9416,9 +8911,9 @@
         <self_collide>0</self_collide>
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
+        <pose>0 0 0 0 -0 0</pose>
         <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
+          <pose>0 0 -0.15 0 -0 0</pose>
           <geometry>
             <mesh>
               <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
@@ -9431,7 +8926,7 @@
         <collision name='collision'>
           <laser_retro>0</laser_retro>
           <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
+          <pose>0 0 0 0 -0 0</pose>
           <geometry>
             <box>
               <size>0.5 0.4 0.3</size>
@@ -9486,183 +8981,7 @@
       </link>
       <static>1</static>
       <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>1.13091 -3.13033 0.149 0 -0 1.55153</pose>
-    </model>
-    <model name='box_clone_3_clone_clone_15'>
-      <link name='cardboard_box_clone::link'>
-        <inertial>
-          <mass>2</mass>
-          <inertia>
-            <ixx>0.0416667</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.0566667</iyy>
-            <iyz>0</iyz>
-            <izz>0.0683333</izz>
-          </inertia>
-        </inertial>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
-        <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
-              <scale>1.25932 1.00745 0.755591</scale>
-            </mesh>
-          </geometry>
-          <transparency>0</transparency>
-          <cast_shadows>1</cast_shadows>
-        </visual>
-        <collision name='collision'>
-          <laser_retro>0</laser_retro>
-          <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.5 0.4 0.3</size>
-            </box>
-          </geometry>
-          <surface>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-                <fdir1>0 0 0</fdir1>
-                <slip1>0</slip1>
-                <slip2>0</slip2>
-              </ode>
-              <torsional>
-                <coefficient>1</coefficient>
-                <patch_radius>0</patch_radius>
-                <surface_radius>0</surface_radius>
-                <use_patch_radius>1</use_patch_radius>
-                <ode>
-                  <slip>0</slip>
-                </ode>
-              </torsional>
-            </friction>
-            <bounce>
-              <restitution_coefficient>0</restitution_coefficient>
-              <threshold>1e+06</threshold>
-            </bounce>
-            <contact>
-              <collide_without_contact>0</collide_without_contact>
-              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-              <collide_bitmask>1</collide_bitmask>
-              <ode>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <max_vel>0.1</max_vel>
-                <min_depth>0.001</min_depth>
-              </ode>
-              <bullet>
-                <split_impulse>1</split_impulse>
-                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-              </bullet>
-            </contact>
-          </surface>
-        </collision>
-      </link>
-      <static>1</static>
-      <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>-0.729935 -6.90395 0.149 0 -0 1.55153</pose>
-    </model>
-    <model name='box_clone_32_clone_0'>
-      <link name='cardboard_box_clone::link'>
-        <inertial>
-          <mass>2</mass>
-          <inertia>
-            <ixx>0.0416667</ixx>
-            <ixy>0</ixy>
-            <ixz>0</ixz>
-            <iyy>0.0566667</iyy>
-            <iyz>0</iyz>
-            <izz>0.0683333</izz>
-          </inertia>
-        </inertial>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-        <pose frame=''>0 0 0 0 -0 0</pose>
-        <visual name='visual'>
-          <pose frame=''>0 0 -0.15 0 -0 0</pose>
-          <geometry>
-            <mesh>
-              <uri>model://cardboard_box/meshes/cardboard_box.dae</uri>
-              <scale>1.25932 1.00745 0.755591</scale>
-            </mesh>
-          </geometry>
-          <transparency>0</transparency>
-          <cast_shadows>1</cast_shadows>
-        </visual>
-        <collision name='collision'>
-          <laser_retro>0</laser_retro>
-          <max_contacts>10</max_contacts>
-          <pose frame=''>0 0 0 0 -0 0</pose>
-          <geometry>
-            <box>
-              <size>0.5 0.4 0.3</size>
-            </box>
-          </geometry>
-          <surface>
-            <friction>
-              <ode>
-                <mu>1</mu>
-                <mu2>1</mu2>
-                <fdir1>0 0 0</fdir1>
-                <slip1>0</slip1>
-                <slip2>0</slip2>
-              </ode>
-              <torsional>
-                <coefficient>1</coefficient>
-                <patch_radius>0</patch_radius>
-                <surface_radius>0</surface_radius>
-                <use_patch_radius>1</use_patch_radius>
-                <ode>
-                  <slip>0</slip>
-                </ode>
-              </torsional>
-            </friction>
-            <bounce>
-              <restitution_coefficient>0</restitution_coefficient>
-              <threshold>1e+06</threshold>
-            </bounce>
-            <contact>
-              <collide_without_contact>0</collide_without_contact>
-              <collide_without_contact_bitmask>1</collide_without_contact_bitmask>
-              <collide_bitmask>1</collide_bitmask>
-              <ode>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-                <max_vel>0.1</max_vel>
-                <min_depth>0.001</min_depth>
-              </ode>
-              <bullet>
-                <split_impulse>1</split_impulse>
-                <split_impulse_penetration_threshold>-0.01</split_impulse_penetration_threshold>
-                <soft_cfm>0</soft_cfm>
-                <soft_erp>0.2</soft_erp>
-                <kp>1e+07</kp>
-                <kd>1</kd>
-              </bullet>
-            </contact>
-          </surface>
-        </collision>
-      </link>
-      <static>1</static>
-      <allow_auto_disable>1</allow_auto_disable>
-      <pose frame=''>0.094898 -4.71346 0.149 0 -0 0</pose>
+      <pose>1.13091 -3.13033 0.149 0 -0 1.55153</pose>
     </model>
     <model name='checkerboard_plane_clone'>
       <static>1</static>
@@ -9678,7 +8997,7 @@
         <enable_wind>0</enable_wind>
         <kinematic>0</kinematic>
       </link>
-      <pose frame=''>1.99653 2.00703 0.0005 0 -0 0</pose>
+      <pose>1.99653 2.00703 0.0005 0 -0 0</pose>
     </model>
   </world>
 </sdf>

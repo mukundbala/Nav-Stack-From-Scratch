@@ -23,9 +23,19 @@ class GridPlannerCore
 //##############Protected Data and Functions######################
 protected:
 
+    enum class NodeState: int
+    {
+    UNVISITED,
+    VISITED,
+    CLOSED,
+    OPEN,
+    INCONS
+    };
+
     struct Node
     {
         double g, h;
+        NodeState state;
         bool visited;
         bot_utils::Index idx;
         bot_utils::Index parent;

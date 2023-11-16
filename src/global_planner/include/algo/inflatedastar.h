@@ -16,7 +16,7 @@ private:
 
     std::vector<bot_utils::Pos2D> post_process_path(std::vector<bot_utils::Pos2D>& raw_path , bot_utils::MapData &map_data) override;
 
-    double inflation_factor_ = 3.5;
+    double inflation_factor_ = 2.5;
 public:
 
     InflatedAstar();

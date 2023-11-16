@@ -40,6 +40,7 @@ std::vector<bot_utils::Pos2D> InflatedAstar::plan(bot_utils::Index idx_start, bo
         node.h = bot_utils::dist_oct(node.idx, goal_);
         node.g = 1e5; // a reasonably large number. You can use infinity in clims as well, but clims is not included
         node.visited = false;
+        node.state = NodeState::UNVISITED;
     }
 
     //get the 1D flattened key of the start index
@@ -49,6 +50,9 @@ std::vector<bot_utils::Pos2D> InflatedAstar::plan(bot_utils::Index idx_start, bo
     Node * node = &(nodes[k]);
     node->g = 0;
 
+    //Set to Open
+    node->state = NodeState::OPEN;
+    
     //push the start node into the OpenList
     pushToOpenList(node);
 
@@ -56,14 +60,7 @@ std::vector<bot_utils::Pos2D> InflatedAstar::plan(bot_utils::Index idx_start, bo
     {
         node = popFromOpenList();
 
-        //Check if the node was visited, and continue to the next one if it already is visited
-        if (node->visited)
-        {   
-            continue; 
-        }
-
-        //mark the node as visited
-        node->visited = true; 
+        node->state = NodeState::CLOSED;
 
         //check if this node is our goal
         if (node->idx.i == goal_.i && node->idx.j == goal_.j)
@@ -118,6 +115,7 @@ std::vector<bot_utils::Pos2D> InflatedAstar::plan(bot_utils::Index idx_start, bo
             {   
                 nb_node.g = g_nb;
                 nb_node.parent = node->idx;
+                nb_node.state = NodeState::OPEN;
                 pushToOpenList(&nb_node , inflation_factor_);
             }
 
