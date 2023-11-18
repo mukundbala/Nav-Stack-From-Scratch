@@ -15,8 +15,11 @@ private:
     std::vector<bot_utils::Pos2D> plan(bot_utils::Pos2D pos_start, bot_utils::Pos2D pos_goal , bot_utils::MapData &map_data) override;
 
     std::vector<bot_utils::Pos2D> post_process_path(std::vector<bot_utils::Pos2D>& raw_path , bot_utils::MapData &map_data) override;
-
-    double inflation_factor_ = 2.5;
+    
+    std::vector<bot_utils::Pos2D> path_refinement(bot_utils::MapData &map_data);
+    
+    //Inflation Factor, following paper's nomenclature of EPSILON
+    double e_ = 2.8;
 public:
 
     InflatedAstar();

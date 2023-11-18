@@ -48,6 +48,7 @@ Navigator::Navigator(ros::NodeHandle& nh)
     lo_sub_ = nh_.subscribe("grid/mapinfo/logodds" , 1 , &Navigator::logoddsCallback , this);
     goal_sub_ = nh_.subscribe("goal" , 1 , &Navigator::goalCallback , this);
     replan_sub_ = nh_.subscribe("trigger_replan", 1 , &Navigator::replanCallback,this);
+    iterative_refinement_sub_ = nh_.subscribe("refined_path", 1 , &Navigator::refinedPathCallback,this);
 
     //setup service clients
     update_goal_client_ = nh_.serviceClient<tmsgs::UpdateTurtleGoal>("update_t_goal");
@@ -105,10 +106,6 @@ void Navigator::goalCallback(const tmsgs::GoalConstPtr &goal)
 
         if (verbose_){ROS_INFO_STREAM("[Navigator]: New goal received: (" << current_goal_.x << "," << current_goal_.y << ")");};
     }
-    // else
-    // {
-    //     trigger_plan = false; //if we dont get a new goal, we always set trigger plan to false
-    // }
 }
 
 //Replan callback that gets replan triggers from the Commander
@@ -121,6 +118,18 @@ void Navigator::replanCallback(const std_msgs::BoolConstPtr &trigger)
     }
 }
 
+void Navigator::refinedPathCallback(const nav_msgs::Path &path)
+{
+    ROS_WARN("[Navigator]: Refine path received!");
+    path_.clear();
+    for (auto& point : path.poses)
+    {
+        bot_utils::Pos2D path_point(point.pose.position.x,point.pose.position.y);
+        path_.push_back(path_point);
+    }
+    
+    writeToPathMsg();
+}
 
 //Main Logic
 void Navigator::run()
@@ -129,7 +138,7 @@ void Navigator::run()
 
     ROS_INFO("[Navigator]: Waiting for topics");
 
-    while(ros::ok() && nh_.param("trigger_nodes" , true) && (robot_position_.x == -500 
+    while(ros::ok() && nh_.param("trigger_nodes" , true) && (robot_index_.i == -500 
                                                             || mapdata.grid_inflation_.empty() 
                                                             || mapdata.grid_logodds_.empty() 
                                                             || current_goal_.x == -1000)
@@ -300,7 +309,7 @@ void Navigator::run()
             }
         }
 
-        else
+        else //If both trigger_plan and trigger_replan are false. This is where path refinement can be pubbed
         {
             if (path_.empty())
             {
@@ -557,8 +566,6 @@ bool Navigator::loadParams()
         ROS_WARN("[Navigator]: Param verbose_planner not found, defaulting to false");
         status = false;
     }
-
-
 
     return status;
 }

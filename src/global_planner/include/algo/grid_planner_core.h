@@ -95,6 +95,12 @@ protected:
 
         void clearQG();
 
+        double getFTopFG();
+
+        double getFTopF();
+
+        double getGTopG();
+
         void printFG();
 
         void printF();
@@ -117,6 +123,8 @@ protected:
         std::function<void()> print_callable;
 
         std::function<void()> clearQ_callable;
+
+        std::function<double()> getTopVal_callable;
 
         //sort_by f only , g only, or f then g
         std::string cost_mode_;
@@ -143,6 +151,8 @@ protected:
         int getSizeQ();
 
         void clearQ();
+
+        double getTop();
     };
     //#############################OpenList#############################
     
@@ -158,6 +168,8 @@ protected:
     virtual std::vector<bot_utils::Pos2D> plan(bot_utils::Pos2D pos_start, bot_utils::Pos2D pos_goal , bot_utils::MapData &map_data) = 0;
 
     virtual std::vector<bot_utils::Pos2D> post_process_path(std::vector<bot_utils::Pos2D>& raw_path , bot_utils::MapData &map_data) = 0;
+
+    virtual std::vector<bot_utils::Pos2D> path_refinement(bot_utils::MapData &map_data) = 0;
 
     //openlist push
     void pushToOpenList(Node *node);
@@ -238,6 +250,7 @@ public:
 
     std::vector<bot_utils::Pos2D> generatePath(bot_utils::Pos2D &pos_start, bot_utils::Pos2D &pos_goal , bot_utils::MapData &map_data);
 
+    std::vector<bot_utils::Pos2D> RefinePathRoutine(bot_utils::MapData &map_data);
 };
 //##############Public Data and Functions#########################
 

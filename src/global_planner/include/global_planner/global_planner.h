@@ -6,6 +6,7 @@
 #include "astar.h"
 #include "djikstra.h"
 #include "inflatedastar.h"
+#include "arastar.h"
 
 #include "bot_utils/bot_utils.h"
 #include "bot_utils/map_data.h"
@@ -21,6 +22,7 @@
 
 #include <vector>
 #include <memory>
+#include <mutex>
 /*
 GlobalPlanner class has the following roles:
 - Subscribe to pose
@@ -33,6 +35,18 @@ GlobalPlanner class has the following roles:
 class GlobalPlanner
 {
 private:
+
+    //robot state
+    geometry_msgs::PoseStamped robot_pose_;
+    bot_utils::Pos2D robot_position_;
+    bot_utils::Index robot_index_;
+
+    //Current Start and End goals
+    bot_utils::Pos2D current_start_;
+    bot_utils::Pos2D current_goal_;
+
+    //current path created
+    std::vector<bot_utils::Pos2D> current_path_;
 
     //All the map data and meta data. This to to make it easy to share with planner without copying so much stuff
     bot_utils::MapData mapdata;
@@ -49,14 +63,26 @@ private:
     std::string secondary_planner_name_;
     std::shared_ptr<GridPlannerCore> secondary_planner_;
 
-    //Planner Specific Parameters
-    ///Inflated Astar
-    double inflation_factor_;
-
     //Fallback Planner
     Djikstra fallback_planner_;
 
+    /*
+    anytime_routine_: This is true if the chosen planner is an anytime planner
+    trigger_anytime_routine_: This will be triggered after the main planning sequence
+    minimum_refinement_: Will be true if 
+    */
+    bool anytime_routine_;
+    bool trigger_anytime_routine_;
+    bool minimum_refinement_;
+
+    //A mutex to protect the shared planner resource
+    std::mutex planner_mutex_;
+
+    //refine path publisher
+    ros::Publisher refined_path_pub_;
+
     //subscribers
+    ros::Subscriber pose_sub_;
     ros::Subscriber inflation_sub_;
     ros::Subscriber lo_sub_;
 
@@ -77,6 +103,9 @@ public:
     void run();
 
     //callbacks
+
+    void poseCallback(const geometry_msgs::PoseStampedConstPtr &pose_msg);
+    
     void inflationCallback(const std_msgs::Int32MultiArrayConstPtr &inflation);
 
     void logoddsCallback(const std_msgs::Int32MultiArrayConstPtr &inflation);
@@ -103,6 +132,8 @@ public:
     bool testPos(bot_utils::Pos2D idx);
 
     nav_msgs::Path toPathMsg(std::vector<bot_utils::Pos2D> &path);
+
+    std::vector<bot_utils::Pos2D> reconnectRefinedPath(std::vector<bot_utils::Pos2D> &raw_refined);
 
 };
 

@@ -38,7 +38,6 @@ std::vector<bot_utils::Pos2D> Astar::plan(bot_utils::Index idx_start, bot_utils:
     {
         node.h = bot_utils::dist_oct(node.idx, goal_);
         node.g = 1e5; // a reasonably large number. You can use infinity in clims as well, but clims is not included
-        node.visited = false;
         node.state = NodeState::UNVISITED;
     }
 
@@ -143,6 +142,12 @@ std::vector<bot_utils::Pos2D> Astar::plan(bot_utils::Index idx_start, bot_utils:
     }
 
     return path_world;
+}
+
+std::vector<bot_utils::Pos2D> Astar::path_refinement(bot_utils::MapData &map_data)
+{
+    std::vector<bot_utils::Pos2D> empty;
+    return empty;
 }
 
 std::vector<bot_utils::Pos2D> Astar::post_process_path(std::vector<bot_utils::Pos2D>& raw_path , bot_utils::MapData &map_data)

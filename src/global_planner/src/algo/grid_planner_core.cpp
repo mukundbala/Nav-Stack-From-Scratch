@@ -142,6 +142,24 @@ void GridPlannerCore::OpenList::clearQG()
     pq_g = reset_pq_g;
 }
 
+//getting the f score at the top of the fg sorting priority queue min-heap in O(1)
+double GridPlannerCore::OpenList::getFTopFG()
+{
+    return pq_fg.top().f;
+}
+
+//getting the f score at the top of the f sorting priority queue min-heap in O(1)
+double GridPlannerCore::OpenList::getFTopF()
+{
+    return pq_f.top().f;
+}
+
+//getting the g score at the top of the g sorting priority queue min-heap in O(1)
+double GridPlannerCore::OpenList::getGTopG()
+{
+    return pq_g.top().g;
+}
+
 //printing a fg OpenList in nlogn (use only for debugging) in nlogn
 void GridPlannerCore::OpenList::printFG()
 {
@@ -208,6 +226,7 @@ GridPlannerCore::OpenList::OpenList(std::string &cost_mode)
         push_callable = std::bind(&OpenList::pushFG , this , std::placeholders::_1);
         print_callable = std::bind(&OpenList::printFG , this);
         clearQ_callable = std::bind(&OpenList::clearQFG , this);
+        getTopVal_callable = std::bind(&OpenList::getFTopFG,this);
         ROS_INFO("[GridPlannerCore]: OpenList Ready. Using FG cost mode");
     }
 
@@ -217,6 +236,7 @@ GridPlannerCore::OpenList::OpenList(std::string &cost_mode)
         push_callable = std::bind(&OpenList::pushF , this , std::placeholders::_1);
         print_callable = std::bind(&OpenList::printF , this);
         clearQ_callable = std::bind(&OpenList::clearQF , this);
+        getTopVal_callable = std::bind(&OpenList::getFTopF , this);
         ROS_INFO("[GridPlannerCore]: OpenList Ready. Using F cost mode");
     }
 
@@ -226,6 +246,7 @@ GridPlannerCore::OpenList::OpenList(std::string &cost_mode)
         push_callable = std::bind(&OpenList::pushG , this , std::placeholders::_1);
         print_callable = std::bind(&OpenList::printG , this);
         clearQ_callable = std::bind(&OpenList::clearQG, this);
+        getTopVal_callable = std::bind(&OpenList::getGTopG, this);
         ROS_INFO("[GridPlannerCore]: OpenList Ready. Using G cost mode");
     }
 
@@ -235,6 +256,7 @@ GridPlannerCore::OpenList::OpenList(std::string &cost_mode)
         push_callable = std::bind(&OpenList::pushFG , this , std::placeholders::_1);
         print_callable = std::bind(&OpenList::printFG , this);
         clearQ_callable = std::bind(&OpenList::clearQFG , this);
+        getTopVal_callable = std::bind(&OpenList::getFTopFG,this);
         ROS_INFO("[GridPlannerCore]: OpenList Ready. Using FG cost mode");
     }
     openlist_ready_ = 1;  
@@ -250,6 +272,7 @@ void GridPlannerCore::OpenList::setMode(std::string &cost_mode)
         push_callable = std::bind(&OpenList::pushFG , this , std::placeholders::_1);
         print_callable = std::bind(&OpenList::printFG , this);
         clearQ_callable = std::bind(&OpenList::clearQFG , this);
+        getTopVal_callable = std::bind(&OpenList::getFTopFG,this);
         ROS_INFO("[GridPlannerCore]: OpenList Ready. Using FG cost mode");
     }
 
@@ -259,6 +282,7 @@ void GridPlannerCore::OpenList::setMode(std::string &cost_mode)
         push_callable = std::bind(&OpenList::pushF , this , std::placeholders::_1);
         print_callable = std::bind(&OpenList::printF , this);
         clearQ_callable = std::bind(&OpenList::clearQF , this);
+        getTopVal_callable = std::bind(&OpenList::getFTopF , this);
         ROS_INFO("[GridPlannerCore]: OpenList Ready. Using F cost mode");
     }
 
@@ -268,6 +292,7 @@ void GridPlannerCore::OpenList::setMode(std::string &cost_mode)
         push_callable = std::bind(&OpenList::pushG , this , std::placeholders::_1);
         print_callable = std::bind(&OpenList::printG , this);
         clearQ_callable = std::bind(&OpenList::clearQG, this);
+        getTopVal_callable = std::bind(&OpenList::getGTopG, this);
         ROS_INFO("[GridPlannerCore]: OpenList Ready. Using G cost mode");
     }
 
@@ -277,6 +302,7 @@ void GridPlannerCore::OpenList::setMode(std::string &cost_mode)
         push_callable = std::bind(&OpenList::pushFG , this , std::placeholders::_1);
         print_callable = std::bind(&OpenList::printFG , this);
         clearQ_callable = std::bind(&OpenList::clearQFG , this);
+        getTopVal_callable = std::bind(&OpenList::getFTopFG,this);
         ROS_INFO("[GridPlannerCore]: OpenList Ready. Using FG cost mode");
     }
     openlist_ready_ = 1;
@@ -303,6 +329,11 @@ void GridPlannerCore::OpenList::pushNode(OpenNode node)
 
     push_callable(node);
     size_++;
+}
+
+double GridPlannerCore::OpenList::getTop()
+{
+    return getTopVal_callable();
 }
 
 //printQ function exposed to the user
@@ -620,4 +651,9 @@ std::vector<bot_utils::Pos2D> GridPlannerCore::generatePath(bot_utils::Pos2D &po
     auto idx_start = pos2idx(pos_start);
     auto idx_end  = pos2idx(pos_goal);
     return generatePath(idx_start  , idx_end , map_data);
+}
+
+std::vector<bot_utils::Pos2D> GridPlannerCore::RefinePathRoutine(bot_utils::MapData &map_data)
+{
+    return path_refinement(map_data);
 }

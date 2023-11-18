@@ -8,7 +8,7 @@ InflatedAstar::InflatedAstar():GridPlannerCore()
 InflatedAstar::InflatedAstar(std::string cost_mode,bot_utils::MapData &map_data):
 GridPlannerCore(cost_mode,map_data)
 {
-    ROS_INFO_STREAM("[GridPlannerCore - InflatedAstar]: Using Inflation Factor: " << inflation_factor_);
+    ROS_INFO_STREAM("[GridPlannerCore - InflatedAstar]: Using Inflation Factor: " << e_);
     ROS_INFO("[GridPlannerCore - InflatedAstar]: InflatedAstar Ready");
 }
 
@@ -116,7 +116,7 @@ std::vector<bot_utils::Pos2D> InflatedAstar::plan(bot_utils::Index idx_start, bo
                 nb_node.g = g_nb;
                 nb_node.parent = node->idx;
                 nb_node.state = NodeState::OPEN;
-                pushToOpenList(&nb_node , inflation_factor_);
+                pushToOpenList(&nb_node , e_);
             }
 
             is_cardinal = !is_cardinal;
@@ -144,6 +144,12 @@ std::vector<bot_utils::Pos2D> InflatedAstar::plan(bot_utils::Index idx_start, bo
     }
 
     return path_world;
+}
+
+std::vector<bot_utils::Pos2D> InflatedAstar::path_refinement(bot_utils::MapData &map_data)
+{
+    std::vector<bot_utils::Pos2D> empty;
+    return empty;
 }
 
 std::vector<bot_utils::Pos2D> InflatedAstar::post_process_path(std::vector<bot_utils::Pos2D>& raw_path , bot_utils::MapData &map_data)

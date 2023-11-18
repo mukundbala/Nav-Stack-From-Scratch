@@ -36,7 +36,7 @@ verbose_navigator: true #verbosity of logs
 #////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ##################################################################NAVIGATOR######################################################################
 gp_rate: 25.0 #rate
-primary_planner: "inflatedastar"  #name of primary planner
+primary_planner: "arastar"  #name of primary planner
 secondary_planner: "astar" #name of secondary planner
 planner_verbose: false
 #################################################################################################################################################

@@ -45,6 +45,7 @@ include_directories(
 add_executable(global_planner_node
   src/algo/grid_planner_core.cpp
   src/algo/astar.cpp
+  src/algo/arastar.cpp
   src/algo/inflatedastar.cpp
   src/algo/djikstra.cpp
   src/global_planner/global_planner.cpp

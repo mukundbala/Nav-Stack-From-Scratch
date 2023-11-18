@@ -144,6 +144,18 @@ std::vector<bot_utils::Pos2D> Djikstra::plan(bot_utils::Index idx_start, bot_uti
     return path_world;
 }
 
+std::vector<bot_utils::Pos2D> Djikstra::path_refinement(bot_utils::MapData &map_data)
+{
+    std::vector<bot_utils::Pos2D> empty;
+    return empty;
+}
+
+
+std::vector<bot_utils::Pos2D> Djikstra::ProcessPath(std::vector<bot_utils::Pos2D>& raw_path , bot_utils::MapData &map_data)
+{
+    return post_process_path(raw_path,map_data);
+}
+
 std::vector<bot_utils::Pos2D> Djikstra::post_process_path(std::vector<bot_utils::Pos2D>& raw_path , bot_utils::MapData &map_data)
 {
     if (raw_path.size() <= 2)

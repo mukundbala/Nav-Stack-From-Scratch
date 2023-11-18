@@ -13,6 +13,7 @@
 #include "tmsgs/FindFallbackPosition.h"
 
 #include <geometry_msgs/PoseStamped.h>
+#include <nav_msgs/Path.h>
 #include <std_msgs/Int32MultiArray.h>
 #include <std_msgs/Bool.h>
 #include <nav_msgs/Path.h>
@@ -81,6 +82,7 @@ private:
     ros::Subscriber lo_sub_;
     ros::Subscriber goal_sub_;
     ros::Subscriber replan_sub_;
+    ros::Subscriber iterative_refinement_sub_;
 
     /*
     * Connects to a server in Mission Planner to update a goal position.
@@ -115,6 +117,8 @@ public:
     void inflationCallback(const std_msgs::Int32MultiArrayConstPtr &inflation);
 
     void logoddsCallback(const std_msgs::Int32MultiArrayConstPtr &inflation);
+
+    void refinedPathCallback(const nav_msgs::Path &path);
 
     void goalCallback(const tmsgs::GoalConstPtr &goal);
 

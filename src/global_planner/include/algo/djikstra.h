@@ -18,6 +18,8 @@ private:
 
     std::vector<bot_utils::Pos2D> post_process_path(std::vector<bot_utils::Pos2D>& raw_path , bot_utils::MapData &map_data) override;
 
+    std::vector<bot_utils::Pos2D> path_refinement(bot_utils::MapData &map_data);
+
 public:
 
     Djikstra();
@@ -29,6 +31,8 @@ public:
     bot_utils::Pos2D find_better_point(bot_utils::Index idx_bad , bot_utils::MapData &map_data);
 
     bot_utils::Pos2D find_better_point(bot_utils::Pos2D pos_bad , bot_utils::MapData &map_data);
+
+    std::vector<bot_utils::Pos2D> ProcessPath(std::vector<bot_utils::Pos2D>& raw_path , bot_utils::MapData &map_data);
 
 };
 
